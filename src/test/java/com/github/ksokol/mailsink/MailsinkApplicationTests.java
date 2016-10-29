@@ -1,16 +1,33 @@
 package com.github.ksokol.mailsink;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.SpringApplication;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.Socket;
+
+import static org.junit.Assert.fail;
+
 public class MailsinkApplicationTests {
 
-	@Test
-	public void contextLoads() {
-	}
+    private static final int SMTP_PORT = 25;
+
+    @Test
+    public void shouldListenOnSmtpPort() throws IOException {
+        MailsinkApplication.main(new String[]{});
+
+        try {
+            new Socket("localhost", SMTP_PORT);
+        } catch(ConnectException exception) {
+            fail("smtp server does not listen on port " + SMTP_PORT);
+        } catch (Exception exception) {
+            fail("failed with unexpected exception: " + exception.getMessage());
+        } finally {
+            if(MailsinkApplication.applicationContext != null) {
+                SpringApplication.exit(MailsinkApplication.applicationContext);
+            }
+        }
+    }
 
 }
