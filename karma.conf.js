@@ -4,6 +4,7 @@ module.exports = function(config) {
             'target/dependency/META-INF/resources/webjars/angular/**/angular.js',
             'target/dependency/META-INF/resources/webjars/angular-sanitize/**/angular-sanitize.js',
             'target/dependency/META-INF/resources/webjars/angular-mocks/**/angular-mocks.js',
+            'target/dependency/META-INF/resources/webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap.min.js',
             'src/main/resources/static/app.js',
             'src/test/javascript/*.js'
         ],

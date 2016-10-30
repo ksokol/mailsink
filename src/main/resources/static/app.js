@@ -1,4 +1,19 @@
-var app = angular.module('mailsinkApp', ['ngSanitize']);
+var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal']);
+
+app.controller('MailModalCtrl', ['$scope', '$rootScope', '$uibModal', function ($scope, $rootScope, $modal) {
+
+    $rootScope.$on('mail-modal', function (event, mail) {
+        var modalInstance = $modal.open({
+            templateUrl: 'mail.html',
+            controller: function($scope) {
+                $scope.mail = mail;
+                $scope.close = function() {
+                    modalInstance.close();
+                }
+            }
+        });
+    });
+}]);
 
 app.controller('MailCtrl', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
 

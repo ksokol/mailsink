@@ -142,3 +142,30 @@ describe("MailCtrl controller", function() {
         expect(rootScope.$emit).toHaveBeenCalledWith('mail-modal', aMail);
     });
 });
+
+describe("MailModalCtrl controller", function() {
+
+    beforeEach(module('mailsinkApp'));
+
+    var scope, rootScope, modal;
+
+    beforeEach(inject(function ($rootScope, $controller, $uibModal) {
+        scope = $rootScope.$new();
+
+        rootScope = $rootScope;
+        modal = $uibModal;
+
+        spyOn($uibModal, 'open');
+
+        $controller('MailModalCtrl', {
+            $scope: scope,
+            $rootScope: $rootScope,
+            $uibModal: $uibModal
+        });
+    }));
+
+    it("should open modal with email when event 'mail-modal' has been fired", function () {
+        rootScope.$emit('mail-modal', {});
+        expect(modal.open).toHaveBeenCalled();
+    });
+});
