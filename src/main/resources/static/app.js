@@ -1,5 +1,25 @@
 var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal']);
 
+app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function RequestService($q, $rootScope) {
+
+    return {
+        'responseError': function(rejection) {
+            if(rejection.status >= 500) {
+                if(typeof rejection.data === 'string') {
+                    $rootScope.$broadcast('error', rejection.data);
+                } else {
+                    $rootScope.$broadcast('error', rejection.data.message);
+                }
+            }
+            return $q.reject(rejection);
+        }
+    };
+}]);
+
+app.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push('errorBroadcastingHttpInterceptor');
+}]);
+
 app.directive("alertMessage", ['$rootScope', function($rootScope) {
 
     return {
