@@ -63,8 +63,6 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', function($scope, $r
             url: 'mails/search/findAllOrderByCreatedAtDesc'
         }).then(function successCallback(response) {
             $scope.mails = response.data._embedded.mails;
-        }, function errorCallback(response) {
-            $rootScope.$emit('error', response.data.message);
         });
     };
 
@@ -87,8 +85,6 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scop
             url: 'createMail'
         }).then(function successCallback() {
             $rootScope.$emit('refresh');
-        }, function errorCallback(response) {
-            $rootScope.$emit('error', response.data.message);
         });
     };
 
@@ -102,8 +98,6 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scop
             url: 'purge'
         }).then(function successCallback() {
             $rootScope.$emit('refresh');
-        }, function errorCallback(response) {
-            $rootScope.$emit('error', response.data.message);
         });
     };
 }]);

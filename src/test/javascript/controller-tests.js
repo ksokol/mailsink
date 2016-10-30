@@ -33,15 +33,6 @@ describe("NavigationCtrl controller", function() {
         expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
     });
 
-    it("should show modal dialog when mail creation was unsuccessful", function () {
-        httpBackend.when('POST', 'createMail').respond(500, { message: 'expected error' });
-
-        scope.createMail();
-        httpBackend.flush();
-
-        expect(rootScope.$emit).toHaveBeenCalledWith('error', 'expected error');
-    });
-
     it("should emit 'refresh' event when refresh() has been called on controller", function () {
         scope.refresh();
 
@@ -55,15 +46,6 @@ describe("NavigationCtrl controller", function() {
         httpBackend.flush();
 
         expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
-    });
-
-    it("should show modal dialog when purge unsuccessful", function () {
-        httpBackend.when('POST', 'purge').respond(500, { message: 'expected error' });
-
-        scope.purge();
-        httpBackend.flush();
-
-        expect(rootScope.$emit).toHaveBeenCalledWith('error', 'expected error');
     });
 });
 
@@ -114,14 +96,6 @@ describe("MailCtrl controller", function() {
         httpBackend.flush();
 
         expect(scope.mails).toEqual([ aMail ]);
-    });
-
-    it("should emit 'error' event when mails can not be fetched from backend", function () {
-        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(500, { message: 'expected error' });
-
-        httpBackend.flush();
-
-        expect(rootScope.$emit).toHaveBeenCalledWith('error', 'expected error');
     });
 
     it("should refresh mails when event 'refresh' was fired", function () {
