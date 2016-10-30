@@ -40,6 +40,7 @@ public class MailRepositoryTest {
         Date cratedAt = toDate(EPOCH_UTC);
 
         Mail mail = new Mail();
+        mail.setMessageId("messageId");
         mail.setSubject("subject");
         mail.setSender("sender");
         mail.setRecipient("recipient");
@@ -49,6 +50,7 @@ public class MailRepositoryTest {
         mail = em.persist(mail);
         Mail expected = mailRepository.findOne(mail.getId());
 
+        assertThat(expected.getMessageId(), is("messageId"));
         assertThat(expected.getSender(), is("sender"));
         assertThat(expected.getRecipient(), is("recipient"));
         assertThat(expected.getSubject(), is("subject"));

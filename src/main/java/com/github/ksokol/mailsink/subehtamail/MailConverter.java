@@ -32,6 +32,7 @@ public class MailConverter implements Converter<InputStream, Mail> {
         Message message = new MessageBuilder().parse(source).build();
         Mail target = new Mail();
 
+        setMessageId(message, target);
         setSender(message, target);
         setRecipient(message, target);
         setSubject(message, target);
@@ -39,6 +40,10 @@ public class MailConverter implements Converter<InputStream, Mail> {
         setBody(message, target);
 
         return target;
+    }
+
+    private void setMessageId(Message source, Mail target) {
+        target.setMessageId(source.getMessageId());
     }
 
     private void setSender(Message source, Mail target) {

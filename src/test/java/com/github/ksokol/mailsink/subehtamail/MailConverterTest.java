@@ -47,6 +47,12 @@ public class MailConverterTest {
     }
 
     @Test
+    public void shouldExtractMessageIdFromPlainTextMail() throws Exception {
+        givenMail("plain1.txt");
+        assertThat(mail.getMessageId(), is("<208544674.1.1477820621771.JavaMail.localhost@localhost>"));
+    }
+
+    @Test
     public void shouldExtractSenderAndDisplayNameFromPlainTextMail() throws Exception {
         givenMail("plain1.txt");
         assertThat(mail.getSender(), is("Display Name <sender@localhost>"));

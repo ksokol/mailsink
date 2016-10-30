@@ -18,6 +18,7 @@ import java.util.Date;
 public class Mail {
 
     private Long id;
+    private String messageId;
     private String sender;
     private String recipient;
     private String subject;
@@ -32,6 +33,14 @@ public class Mail {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public String getSender() {
