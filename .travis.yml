@@ -1,3 +1,7 @@
-language: java
-jdk:
-  - oraclejdk8
+sudo: required
+
+services:
+  - docker
+
+script:
+  - docker run -it -v "$PWD":/usr/src/mymaven -w /usr/src/mymaven maven:3.3.9-jdk-8 mvn clean test

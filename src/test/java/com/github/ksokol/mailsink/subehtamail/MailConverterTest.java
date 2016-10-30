@@ -90,8 +90,9 @@ public class MailConverterTest {
 
     @Test
     public void shouldExtractBodyFromPlainTextMail() throws Exception {
+        String sep = System.getProperty("line.separator");
         givenMail("plain1.txt");
-        assertThat(mail.getBody(), is("Mail body\r\n new line\r\n another line\r\n"));
+        assertThat(mail.getBody(), is(String.format("Mail body%s new line%s another line%s", sep, sep, sep)));
     }
 
     @Test
