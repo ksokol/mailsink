@@ -1,5 +1,23 @@
 var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal']);
 
+app.directive("alertMessage", ['$rootScope', function($rootScope) {
+
+    return {
+        restrict: "E",
+        link: function ($scope, element) {
+            $rootScope.$on('error', function(event, message) {
+                $scope.message = message;
+                element.removeClass('hidden');
+            });
+
+            $scope.close = function() {
+                element.addClass('hidden');
+                $scope.message = null;
+            };
+        }
+    }
+}]);
+
 app.controller('MailModalCtrl', ['$scope', '$rootScope', '$uibModal', function ($scope, $rootScope, $modal) {
 
     $rootScope.$on('mail-modal', function (event, mail) {

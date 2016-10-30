@@ -34,3 +34,57 @@ describe("messageText directive", function() {
         expect(scope.messageText).toEqual([' a line with whitespaces ']);
     }));
 });
+
+describe("alertMessage directive", function() {
+
+    beforeEach(module('mailsinkApp'));
+
+    var scope, rootScope;
+
+    beforeEach(inject(function ($compile, $rootScope) {
+        scope = $rootScope.$new();
+        rootScope = $rootScope;
+    }));
+
+    function compiledElement(){
+        var element = angular.element('<alert-message>{{message}}</alert-message>');
+        var compiledElement = compile(element)(scope);
+        scope.$digest();
+        return compiledElement;
+    }
+
+    it("should set 'èrror' as value on scope attribute 'message' ", inject(function ($compile) {
+        $compile('<alert-message>{{message}}</alert-message>')(scope);
+
+        rootScope.$emit('error', 'èrror');
+
+        expect(scope.message).toEqual('èrror');
+    }));
+
+    it("should hide alert message when no 'error' event triggered", inject(function ($compile) {
+        var el = $compile('<alert-message class="hidden">{{message}}</alert-message>')(scope);
+
+        scope.$digest();
+
+        expect(el.text()).toBe('');
+    }));
+
+    it("should show alert message when 'error' event triggered", inject(function ($compile) {
+        var el = $compile('<alert-message class="hidden">{{message}}</alert-message>')(scope);
+
+        rootScope.$emit('error', 'èrror');
+        scope.$digest();
+
+        expect(el.text()).toBe('èrror');
+    }));
+
+    it("should hide alert message when dismissed", inject(function ($compile) {
+        var el = $compile('<alert-message class="hidden">{{message}}</alert-message>')(scope);
+
+        rootScope.$emit('error', 'èrror');
+        scope.close();
+        scope.$digest();
+
+        expect(el.text()).toBe('');
+    }));
+});
