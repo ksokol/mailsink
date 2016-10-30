@@ -1,4 +1,4 @@
-package com.github.ksokol.mailsink.handler;
+package com.github.ksokol.mailsink.subehtamail;
 
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.repository.MailRepository;

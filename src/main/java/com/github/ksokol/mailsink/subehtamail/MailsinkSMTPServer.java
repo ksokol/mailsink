@@ -1,4 +1,4 @@
-package com.github.ksokol.mailsink;
+package com.github.ksokol.mailsink.subehtamail;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;

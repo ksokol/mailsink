@@ -1,7 +1,6 @@
-package com.github.ksokol.mailsink.handler;
+package com.github.ksokol.mailsink.subehtamail;
 
 import com.github.ksokol.mailsink.repository.MailRepository;
-import org.springframework.stereotype.Component;
 import org.subethamail.smtp.helper.SimpleMessageListener;
 
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.io.InputStream;
 /**
  * @author Kamill Sokol
  */
-@Component
 public class MessageListener implements SimpleMessageListener {
 
     private final MailRepository mailRepository;

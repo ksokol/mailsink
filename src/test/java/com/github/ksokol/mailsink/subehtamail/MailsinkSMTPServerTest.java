@@ -1,5 +1,6 @@
-package com.github.ksokol.mailsink;
+package com.github.ksokol.mailsink.subehtamail;
 
+import com.github.ksokol.mailsink.subehtamail.MailsinkSMTPServer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
