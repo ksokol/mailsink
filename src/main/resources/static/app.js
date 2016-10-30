@@ -1,5 +1,34 @@
 var app = angular.module('mailsinkApp', ['ngSanitize']);
 
+app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scope, $rootScope, $http) {
+
+    $scope.createMail = function() {
+        $http({
+            method: 'POST',
+            url: 'createMail'
+        }).then(function successCallback() {
+            $rootScope.$emit('refresh');
+        }, function errorCallback(response) {
+            $rootScope.$emit('error', response.data.message);
+        });
+    };
+
+    $scope.refresh = function() {
+        $rootScope.$emit('refresh');
+    };
+
+    $scope.purge = function() {
+        $http({
+            method: 'POST',
+            url: 'purge'
+        }).then(function successCallback() {
+            $rootScope.$emit('refresh');
+        }, function errorCallback(response) {
+            $rootScope.$emit('error', response.data.message);
+        });
+    };
+}]);
+
 app.directive("messageText", function() {
 
     var cleanLines = function(lines) {
