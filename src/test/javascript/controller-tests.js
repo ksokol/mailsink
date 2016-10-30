@@ -66,3 +66,79 @@ describe("NavigationCtrl controller", function() {
         expect(rootScope.$emit).toHaveBeenCalledWith('error', 'expected error');
     });
 });
+
+describe("MailCtrl controller", function() {
+
+    beforeEach(module('mailsinkApp'));
+
+    var scope, rootScope, httpBackend, modal;
+
+    var aMail = {
+        "messageId" : "<68508964.31.1477845062277@localhost>",
+        "sender" : "root@localhost",
+        "recipient" : "root@localhost",
+        "subject" : "Subject",
+        "body" : "mail body",
+        "createdAt" : "2016-10-30T16:31:02.000+0000"
+    };
+
+    var aResponse = {
+        "_embedded" : {
+            "mails" : [ aMail ]
+        }
+    };
+
+    beforeEach(inject(function ($rootScope, $controller, _$httpBackend_) {
+        scope = $rootScope.$new();
+        httpBackend = _$httpBackend_;
+
+        rootScope = $rootScope;
+
+        spyOn($rootScope, '$emit');
+
+        $controller('MailCtrl', {
+            $scope: scope,
+            $rootScope: $rootScope,
+            $uibModal: modal
+        });
+    }));
+
+    afterEach(function() {
+        httpBackend.verifyNoOutstandingExpectation();
+        httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it("should fetch mails from backend when initialized", function () {
+        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, aResponse);
+
+        httpBackend.flush();
+
+        expect(scope.mails).toEqual([ aMail ]);
+    });
+
+    it("should emit 'error' event when mails can not be fetched from backend", function () {
+        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(500, { message: 'expected error' });
+
+        httpBackend.flush();
+
+        expect(rootScope.$emit).toHaveBeenCalledWith('error', 'expected error');
+    });
+
+    it("should refresh mails when event 'refresh' was fired", function () {
+        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'refreshed mails' }} );
+
+        httpBackend.flush();
+        rootScope.$emit('refresh');
+
+        expect(scope.mails).toBe('refreshed mails');
+    });
+
+    it("should emit 'mail-modal' event when 'click' event occured on controller", function () {
+        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, aResponse);
+
+        httpBackend.flush();
+        scope.click(aMail);
+
+        expect(rootScope.$emit).toHaveBeenCalledWith('mail-modal', aMail);
+    });
+});

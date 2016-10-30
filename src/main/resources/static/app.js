@@ -1,5 +1,31 @@
 var app = angular.module('mailsinkApp', ['ngSanitize']);
 
+app.controller('MailCtrl', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
+
+    $scope.mails = [];
+
+    var fetch = function() {
+        $http({
+            method: 'GET',
+            url: 'mails/search/findAllOrderByCreatedAtDesc'
+        }).then(function successCallback(response) {
+            $scope.mails = response.data._embedded.mails;
+        }, function errorCallback(response) {
+            $rootScope.$emit('error', response.data.message);
+        });
+    };
+
+    fetch();
+
+    $rootScope.$on('refresh', function() {
+        fetch();
+    });
+
+    $scope.click = function(mail) {
+        $rootScope.$emit('mail-modal', mail);
+    }
+}]);
+
 app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scope, $rootScope, $http) {
 
     $scope.createMail = function() {
