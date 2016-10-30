@@ -69,7 +69,7 @@ public class MailConverter implements Converter<InputStream, Mail> {
         //TODO add support for HTML
         if("text/plain".equals(source.getMimeType()) && source.getBody() instanceof TextBody) {
             TextBody textBody = (TextBody) source.getBody();
-            target.setBody(IOUtils.toString(textBody.getReader()).trim());
+            target.setBody(IOUtils.toString(textBody.getReader()));
         }
     }
 

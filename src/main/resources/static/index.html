@@ -14,6 +14,19 @@
         .hidden {
             display: none !important;
         }
+        pre{
+            display: block;
+            padding: 0px;
+            margin: 0 0 0px;
+            font-size: 13px;
+            line-height: 1.42857143;
+            color: #333;
+            word-break: break-all;
+            word-wrap: break-word;
+            background-color: #ffffff;
+            border: #ffffff;
+            border-radius: 0px;
+        }
     </style>
     <script src="webjars/angular/1.5.8/angular.min.js"></script>
     <script src="webjars/angular-sanitize/1.5.8/angular-sanitize.js"></script>
@@ -98,7 +111,9 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <message-text mail="mail">
-                                <div ng-repeat="line in messageText"><div ng-bind-html="::line | urlToLink"></div></div>
+                                <pre>
+                                    <div ng-repeat="line in messageText"><div ng-bind-html="::line | urlToLink"></div></div>
+                                </pre>
                             </message-text>
                         </div>
                     </div>

@@ -91,7 +91,7 @@ public class MailConverterTest {
     @Test
     public void shouldExtractBodyFromPlainTextMail() throws Exception {
         givenMail("plain1.txt");
-        assertThat(mail.getBody(), is("Mail body\r\n new line\r\n another line"));
+        assertThat(mail.getBody(), is("Mail body\r\n new line\r\n another line\r\n"));
     }
 
     @Test
