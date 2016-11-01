@@ -4,4 +4,4 @@ ADD target/mailsink.jar /opt/mailsink.jar
 
 EXPOSE 25 2525
 
-CMD [ "java", "-jar", "/opt/mailsink.jar" ]
+CMD [ "java", "-Dspring.mail.port=25","-jar", "/opt/mailsink.jar" ]

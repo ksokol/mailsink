@@ -11,7 +11,7 @@ import static org.junit.Assert.fail;
 
 public class MailsinkApplicationTests {
 
-    private static final int SMTP_PORT = 25;
+    private static final int SMTP_PORT = 2500;
 
     @Test
     public void shouldListenOnSmtpPort() throws IOException {
