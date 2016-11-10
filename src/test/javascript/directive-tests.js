@@ -25,7 +25,7 @@ describe("messageText directive", function() {
     it("should return array with elements 'first line' and 'second line'", inject(function ($compile) {
         scope.mail.body = "first line\r\nsecond line\r\n";
         $compile('<message-text></message-text>')(scope);
-        expect(scope.messageText).toEqual(['first line', 'second line']);
+        expect(scope.messageText).toEqual(['first line', 'second line', '']);
     }));
 
     it("should respect whitespaces in line", inject(function ($compile) {

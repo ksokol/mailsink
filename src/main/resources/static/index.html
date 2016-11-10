@@ -111,9 +111,10 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <message-text mail="mail">
-                                <pre>
-                                    <div ng-repeat="line in messageText"><div ng-bind-html="::line | urlToLink"></div></div>
-                                </pre>
+                                <div ng-repeat="line in messageText track by $index">
+                                    <br ng-if="line.length === 0">
+                                    <div ng-if="line.length !== 0" ng-bind-html="::line | urlToLink"></div>
+                                </div>
                             </message-text>
                         </div>
                     </div>

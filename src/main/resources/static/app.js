@@ -104,24 +104,12 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scop
 
 app.directive("messageText", function() {
 
-    var cleanLines = function(lines) {
-        var cleanedLines = [];
-
-        for(var i in lines) {
-            var line = lines[i];
-            if(line.length !== 0) {
-                cleanedLines.push(line);
-            }
-        }
-        return cleanedLines;
-    };
-
     var formatPlain = function (text) {
         var split = text.split("\r\n");
         if(split.length === 1) {
-            return cleanLines(text.split("\n"));
+            return text.split("\n");
         }
-        return cleanLines(split);
+        return split;
     };
 
     return {
