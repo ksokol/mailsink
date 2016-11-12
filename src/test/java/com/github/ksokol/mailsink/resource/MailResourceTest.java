@@ -37,6 +37,7 @@ public class MailResourceTest {
     @Before
     public void setUp() throws Exception {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        mailRepository.deleteAll();
     }
 
     @Test
