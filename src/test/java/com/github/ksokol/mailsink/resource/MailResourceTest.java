@@ -12,7 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -37,7 +38,6 @@ public class MailResourceTest {
     @Before
     public void setUp() throws Exception {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
-        mailRepository.deleteAll();
     }
 
     @Test
@@ -47,6 +47,6 @@ public class MailResourceTest {
         mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(CONTENT_TYPE, "application/hal+json;charset=UTF-8"))
-                .andExpect(jsonPath("_embedded.mails", hasSize(1)));
+                .andExpect(jsonPath("_embedded.mails", not(emptyArray())));
     }
 }
