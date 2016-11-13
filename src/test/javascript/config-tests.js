@@ -3,9 +3,7 @@ describe("errorBroadcastingHttpInterceptor", function() {
     var aUrl = 'http://example.com';
     var rootScope, httpBackend, http;
 
-    beforeEach(module('mailsinkApp', function($httpProvider) {
-        httpProviderIt = $httpProvider;
-    }));
+    beforeEach(module('mailsinkApp'));
 
     beforeEach(inject(function ($rootScope, _$httpBackend_, $http) {
         httpBackend = _$httpBackend_;
