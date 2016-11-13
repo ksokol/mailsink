@@ -1,0 +1,11 @@
+From: Display Name <sender@localhost>
+To: recipient@localhost
+Message-ID: <208544674.1.1477820621771.JavaMail.localhost@localhost>
+Date: Sun, 30 Oct 2016 10:10:10 +0000 (CET)
+Subject: Subject
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Mail body
+new line

@@ -1,0 +1,29 @@
+From: Display Name <sender@localhost>
+To: recipient@localhost
+Message-ID: <208544674.1.1477820621771.JavaMail.localhost@localhost>
+Date: Sun, 01 Nov 2016 10:10:10 +0000 (CET)
+Subject: HTML message with attachment
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------C8430DE9315E4C58B474A25B"
+
+This is a multi-part message in MIME format.
+--------------C8430DE9315E4C58B474A25B
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+<body>
+<p>html mail</p>
+</body>
+</html>
+
+--------------C8430DE9315E4C58B474A25B
+Content-Type: application/pdf;
+ name="example.pdf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="example.pdf"
+
+YQ==
+--------------C8430DE9315E4C58B474A25B--

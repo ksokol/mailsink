@@ -1,0 +1,35 @@
+From: Display Name <sender@localhost>
+To: recipient@localhost
+Message-ID: <208544674.1.1477820621771.JavaMail.localhost@localhost>
+Date: Sun, 31 Oct 2016 10:10:10 +0000 (CET)
+Subject: Nested message
+MIME-Version: 1.0
+Content-Type: multipart/report;
+	boundary="----=_Part_23_1449297892.1409202168923";
+	report-type=delivery-status
+
+------=_Part_23_1449297892.1409202168923
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+nested message
+------=_Part_23_1449297892.1409202168923
+Content-Type: message/delivery-status
+Content-Transfer-Encoding: 7bit
+
+
+
+------=_Part_23_1449297892.1409202168923
+Content-Type: message/rfc822
+
+Message-ID: <53FEB7F0.3030501@localhost>
+Disposition-Notification-To: testuser@localhost
+Date: Thu, 28 Aug 2014 07:02:40 +0200
+From: testuser@localhost
+MIME-Version: 1.0
+To: testuser@localhost
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+a
+------=_Part_23_1449297892.1409202168923--

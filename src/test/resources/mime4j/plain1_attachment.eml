@@ -1,0 +1,25 @@
+From: Display Name <sender@localhost>
+To: recipient@localhost
+Message-ID: <208544674.1.1477820621771.JavaMail.localhost@localhost>
+Date: Sun, 01 Nov 2016 10:10:10 +0000 (CET)
+Subject: Plain text with attachment
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------D1B9E46488465B9532151B2B"
+
+This is a multi-part message in MIME format.
+--------------D1B9E46488465B9532151B2B
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+This is a plain text message with a PDF attachment.
+
+--------------D1B9E46488465B9532151B2B
+Content-Type: application/pdf;
+ name="example.pdf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="example.pdf"
+
+YQ==
+--------------D1B9E46488465B9532151B2B--
