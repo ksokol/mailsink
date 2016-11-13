@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * @author Kamill Sokol
  */
-final class Mime4jAttachment {
+public final class Mime4jAttachment {
 
     private final String filename;
     private final String mimeType;
