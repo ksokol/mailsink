@@ -1,6 +1,7 @@
 package com.github.ksokol.mailsink.resource;
 
 import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.entity.MailAttachment;
 import com.github.ksokol.mailsink.repository.MailRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,5 +54,23 @@ public class MailResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string(CONTENT_TYPE, "application/hal+json;charset=UTF-8"))
                 .andExpect(jsonPath("_embedded.mails", not(emptyArray())));
+    }
+
+    @Test
+    public void shouldInlineAttachments() throws Exception {
+        String filename = "expectedFilename";
+        Mail mail = new Mail();
+        MailAttachment mailAttachment = new MailAttachment();
+        mailAttachment.setFilename(filename);
+        mailAttachment.setMail(mail);
+        mail.setAttachments(Collections.singletonList(mailAttachment));
+
+        mailRepository.save(mail);
+
+        mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(CONTENT_TYPE, "application/hal+json;charset=UTF-8"))
+                .andExpect(jsonPath("_embedded.mails..attachments..filename", hasSize(1)))
+                .andExpect(jsonPath("_embedded.mails..attachments..filename", everyItem(is(filename))));
     }
 }

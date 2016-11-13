@@ -1,6 +1,7 @@
 package com.github.ksokol.mailsink.repository;
 
 import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.entity.MailAttachment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -72,6 +75,22 @@ public class MailRepositoryTest {
                 "should order mails by creation date descending",
                 mailRepository.findAllOrderByCreatedAtDesc(),
                 contains(hasProperty("id", is(2L)), hasProperty("id", is(1L)))
+        );
+    }
+
+    @Test
+    public void shouldSaveMailWithAttachment() throws Exception {
+        Mail mail = new Mail();
+        MailAttachment mailAttachment = new MailAttachment();
+        mailAttachment.setMail(mail);
+        mail.setAttachments(Collections.singletonList(mailAttachment));
+
+        em.persist(mail);
+
+        assertThat(
+                "should save mail with attachment",
+                mailRepository.findAllOrderByCreatedAtDesc(),
+                contains(hasProperty("attachments", hasSize(1)))
         );
     }
 

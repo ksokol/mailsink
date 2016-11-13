@@ -2,13 +2,17 @@ package com.github.ksokol.mailsink.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Kamill Sokol
@@ -23,6 +27,7 @@ public class Mail {
     private String recipient;
     private String subject;
     private String body;
+    private List<MailAttachment> attachments;
     private Date createdAt;
 
     @Id
@@ -74,6 +79,15 @@ public class Mail {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    @OneToMany(mappedBy = "mail", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    public List<MailAttachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<MailAttachment> attachments) {
+        this.attachments = attachments;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
