@@ -11,11 +11,12 @@ import static org.junit.Assert.fail;
 
 public class MailsinkApplicationTests {
 
-    private static final int SMTP_PORT = 2500;
+    private static final int SMTP_PORT = 12500;
+    private static final int SERVER_PORT = 12525;
 
     @Test
     public void shouldListenOnSmtpPort() throws IOException {
-        MailsinkApplication.main(new String[]{});
+        MailsinkApplication.main(new String[] { "--spring.mail.port=" + SMTP_PORT, "--server.port=" + SERVER_PORT });
 
         try {
             new Socket("localhost", SMTP_PORT);
