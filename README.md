@@ -18,6 +18,6 @@ Mailsink listens on port `2500` for SMTP connections. The web UI is available on
 
 ### Docker
 
-Build your own Docker image with the provided `Dockerfile` or pull the latest images from the Dockerh Hub registry `ksokol/mailsink`.
+Build your own Docker image with the provided `Dockerfile` or pull the image from the Docker Hub registry [`ksokol/mailsink`](https://hub.docker.com/r/ksokol/mailsink/tags/) .
 Inside Docker Mailsink listens on port `25` for SMTP connections. The web UI is available on port `2525`.
 Run on local machine with `docker run -p 25:25 -p 2525:2525 -t ksokol/mailsink`
