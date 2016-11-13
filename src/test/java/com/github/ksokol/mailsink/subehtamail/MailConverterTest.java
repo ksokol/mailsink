@@ -15,7 +15,6 @@ import java.time.ZoneOffset;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -85,14 +84,13 @@ public class MailConverterTest {
     @Test
     public void shouldNotExtractHtmlBodyFromHtmlMail() throws Exception {
         givenMail("plain2.txt");
-        assertThat(mail.getBody(), nullValue());
+        assertThat(mail.getBody(), is(""));
     }
 
     @Test
     public void shouldExtractBodyFromPlainTextMail() throws Exception {
-        String sep = System.getProperty("line.separator");
         givenMail("plain1.txt");
-        assertThat(mail.getBody(), is(String.format("Mail body%s new line%s another line%s", sep, sep, sep)));
+        assertThat(mail.getBody(), is(String.format("Mail body%n new line%n another line%n")));
     }
 
     @Test
