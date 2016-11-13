@@ -61,6 +61,16 @@ describe("MailCtrl controller", function() {
         "recipient" : "root@localhost",
         "subject" : "Subject",
         "body" : "mail body",
+        "attachments" : [ {
+            "filename" : "example.pdf",
+            "mimeType" : "application/pdf",
+            "data" : "data",
+            "_links" : {
+                "mail" : {
+                    "href" : "http://localhost:2525/mails/2"
+                }
+            }
+        } ],
         "createdAt" : "2016-10-30T16:31:02.000+0000"
     };
 
