@@ -19,6 +19,10 @@ app.config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push('errorBroadcastingHttpInterceptor');
 }]);
 
+app.config(['$compileProvider', function($compileProvider) {
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data):/);
+}]);
+
 app.directive("alertMessage", ['$rootScope', function($rootScope) {
 
     return {

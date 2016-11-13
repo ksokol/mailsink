@@ -38,3 +38,29 @@ describe("errorBroadcastingHttpInterceptor", function() {
         expect(rootScope.$broadcast).not.toHaveBeenCalled();
     });
 });
+
+describe("$sanitize", function() {
+
+    var sanitize;
+
+    beforeEach(module('mailsinkApp'));
+
+    beforeEach(inject(function($sanitize) {
+        sanitize = $sanitize;
+    }));
+
+    it('should allow data uris to render', function() {
+        var element = sanitize('<a href="data:application/pdf;base64,"></a>');
+        expect(element).toEqual('<a href="data:application/pdf;base64,"></a>');
+    });
+
+    it('should allow http urls to render', function() {
+        var element = sanitize('<a href="http://localhost"></a>');
+        expect(element).toEqual('<a href="http://localhost"></a>');
+    });
+
+    it('should allow https urls to render', function() {
+        var element = sanitize('<a href="https://localhost"></a>');
+        expect(element).toEqual('<a href="https://localhost"></a>');
+    });
+});
