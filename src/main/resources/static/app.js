@@ -1,7 +1,6 @@
 var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal']);
 
-app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function RequestService($q, $rootScope) {
-
+app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
     return {
         'responseError': function(rejection) {
             if(rejection.status >= 500) {
