@@ -9,7 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import static java.lang.String.format;
@@ -69,8 +69,8 @@ public class Mime4jMessageTest {
     public void shouldReturnDate() throws Exception {
         givenMessage("plain1");
 
-        LocalDateTime localDateTime = LocalDateTime.of(2016, 10, 30, 11, 10, 10);
-        Date expectedDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        LocalDateTime localDateTime = LocalDateTime.of(2016, 10, 30, 10, 10, 10);
+        Date expectedDate = Date.from(localDateTime.toInstant(ZoneOffset.UTC));
 
         assertThat(message.getDate(), is(expectedDate));
     }
