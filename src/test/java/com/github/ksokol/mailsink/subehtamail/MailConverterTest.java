@@ -1,6 +1,7 @@
 package com.github.ksokol.mailsink.subehtamail;
 
 import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.entity.MailAttachment;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,8 +14,11 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -97,6 +101,19 @@ public class MailConverterTest {
     public void shouldExtractDateFromPlainTextMail() throws Exception {
         givenMail("plain1.txt");
         assertThat(mail.getCreatedAt(), is(Date.from(LocalDateTime.of(2016,10,30,10,10,10).toInstant(ZoneOffset.UTC))));
+    }
+
+    @Test
+    public void name() throws Exception {
+        givenMail("mime4j/plain1_attachment.eml");
+
+        List<MailAttachment> attachments = mail.getAttachments();
+
+        assertThat(attachments, hasSize(1));
+        assertThat(attachments.get(0).getFilename(), is("example.pdf"));
+        assertThat(attachments.get(0).getMimeType(), is("application/pdf"));
+        assertThat(attachments.get(0).getData(), is(new byte[] {97}));
+        assertThat(attachments.get(0).getMimeType(), notNullValue());
     }
 
     private void givenMail(String fileName) throws IOException {
