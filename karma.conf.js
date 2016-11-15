@@ -6,10 +6,16 @@ module.exports = function(config) {
             'target/dependency/META-INF/resources/webjars/angular-mocks/**/angular-mocks.js',
             'target/dependency/META-INF/resources/webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap.min.js',
             'src/main/resources/static/app.js',
-            'src/test/javascript/*.js'
+            'src/test/javascript/*.js',
+            'src/main/resources/static/*.html'
         ],
         preprocessors: {
-            'src/main/resources/static/app.js': ['coverage']
+            'src/main/resources/static/app.js': ['coverage'],
+            '**/*.html': ['ng-html2js']
+        },
+        ngHtml2JsPreprocessor: {
+            stripPrefix: 'src/main/resources/static/',
+            moduleName: 'htmlTemplates'
         },
         coverageReporter: {
             type : 'html',

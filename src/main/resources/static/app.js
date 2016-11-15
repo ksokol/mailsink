@@ -158,3 +158,10 @@ app.filter('urlToLink', ['$sanitize', function($sanitize) {
         return $sanitize(text);
     };
 }]);
+
+app.component('attachmentsPanel', {
+    bindings: {
+        attachments: '<'
+    },
+    templateUrl: 'attachments-panel.html'
+});
