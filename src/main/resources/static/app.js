@@ -132,7 +132,7 @@ app.directive('messageText', function() {
                 $scope.messageText = [];
             }
         }
-    }
+    };
 });
 
 app.filter('urlToLink', ['$sanitize', function($sanitize) {
