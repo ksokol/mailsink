@@ -84,7 +84,7 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', function(
 
     $scope.click = function(mail) {
         $rootScope.$emit('mail-modal', mail);
-    }
+    };
 }]);
 
 app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scope, $rootScope, $http) {

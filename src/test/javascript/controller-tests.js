@@ -98,7 +98,7 @@ describe('MailCtrl controller', function() {
                         }
                     };
                 }
-            }
+            };
         });
     }));
 
