@@ -31,7 +31,7 @@ class ExampleMails {
         this.mailConverter = mailConverter;
     }
 
-    public List<Mail> listExampleMails() {
+    public List<Mail> listExampleMails() throws IOException {
         List<Mail> exampleMails = new ArrayList<>();
 
         listEmlFiles().forEach(resource -> {
@@ -46,13 +46,10 @@ class ExampleMails {
         return exampleMails;
     }
 
-    private Stream<Resource> listEmlFiles() {
+    private Stream<Resource> listEmlFiles() throws IOException {
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        try {
-            return Arrays.stream(resolver.getResources(String.format("/%s/**", FOLDER)))
-                    .filter(resource -> resource.getFilename().endsWith(FILE_EXTENSION));
-        } catch (IOException exception) {
-            throw new IllegalArgumentException(exception.getMessage(), exception);
-        }
+        return Arrays.stream(resolver.getResources(String.format("/%s/**", FOLDER)))
+                .filter(resource -> resource.getFilename().endsWith(FILE_EXTENSION));
+
     }
 }
