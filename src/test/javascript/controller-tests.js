@@ -51,9 +51,8 @@ describe("NavigationCtrl controller", function() {
 
 describe("MailCtrl controller", function() {
 
-    beforeEach(module('mailsinkApp'));
-
     var scope, rootScope, httpBackend, modal;
+    var stomp = {};
 
     var aMail = {
         "messageId" : "<68508964.31.1477845062277@localhost>",
@@ -79,6 +78,29 @@ describe("MailCtrl controller", function() {
             "mails" : [ aMail ]
         }
     };
+
+    beforeEach(module('mailsinkApp', function($provide) {
+        $provide.provider('$stomp', function() {
+            return {
+                $get: function() {
+                    return {
+                        connect: function(broker) {
+                            stomp['broker'] = broker;
+                            return {
+                                then: function(fn) {
+                                    fn();
+                                }
+                            }
+                        },
+                        subscribe: function(url, fn) {
+                            stomp['topic'] = url;
+                            stomp['callback'] = fn;
+                        }
+                    }
+                }
+            }
+        });
+    }));
 
     beforeEach(inject(function ($rootScope, $controller, _$httpBackend_) {
         scope = $rootScope.$new();
@@ -124,6 +146,25 @@ describe("MailCtrl controller", function() {
         scope.click(aMail);
 
         expect(rootScope.$emit).toHaveBeenCalledWith('mail-modal', aMail);
+    });
+
+    it('should refresh mails when websocket message received', function() {
+        expect(scope.mails).toEqual([]);
+
+        stomp.callback();
+
+        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
+        httpBackend.flush();
+
+        expect(scope.mails).toBe('triggered by websocket message')
+    });
+
+    it('should connect to proper broker and subscribe to proper topic', function() {
+        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
+        httpBackend.flush();
+
+        expect(stomp.broker).toBe("/incoming-mail");
+        expect(stomp.topic).toBe("/topic/incoming-mail");
     });
 });
 

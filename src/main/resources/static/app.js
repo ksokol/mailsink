@@ -1,4 +1,4 @@
-var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal']);
+var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal', 'ngStomp']);
 
 app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
     return {
@@ -56,7 +56,7 @@ app.controller('MailModalCtrl', ['$scope', '$rootScope', '$uibModal', function (
     });
 }]);
 
-app.controller('MailCtrl', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
+app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', function($scope, $rootScope, $http, $stomp) {
 
     $scope.mails = [];
 
@@ -68,6 +68,13 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', function($scope, $r
             $scope.mails = response.data._embedded.mails;
         });
     };
+
+    $stomp.connect('/incoming-mail')
+    .then(function () {
+        $stomp.subscribe('/topic/incoming-mail', function () {
+            fetch();
+        })
+    });
 
     fetch();
 
