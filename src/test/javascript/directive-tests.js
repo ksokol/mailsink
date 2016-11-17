@@ -16,13 +16,13 @@ describe("messageText directive", function() {
         expect(scope.messageText).toEqual([]);
     }));
 
-    it('should return array with element "line"', inject(function ($compile) {
+    it("should return array with element 'line'", inject(function ($compile) {
         scope.mail.body = "line";
         $compile("<message-text></message-text>")(scope);
         expect(scope.messageText).toEqual(["line"]);
     }));
 
-    it('should return array with elements "first line" and "second line"', inject(function ($compile) {
+    it("should return array with elements 'first line' and 'second line'", inject(function ($compile) {
         scope.mail.body = "first line\r\nsecond line\r\n";
         $compile("<message-text></message-text>")(scope);
         expect(scope.messageText).toEqual(["first line", "second line", ""]);

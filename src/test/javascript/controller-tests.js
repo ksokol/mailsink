@@ -24,7 +24,7 @@ describe("NavigationCtrl controller", function() {
         httpBackend.verifyNoOutstandingRequest();
     });
 
-    it('should emit "refresh" event when mail creation was successful', function () {
+    it("should emit refresh event when mail creation was successful", function () {
         httpBackend.when("POST", "createMail").respond(204);
 
         scope.createMail();
@@ -33,13 +33,13 @@ describe("NavigationCtrl controller", function() {
         expect(rootScope.$emit).toHaveBeenCalledWith("refresh");
     });
 
-    it('should emit "refresh" event when refresh() has been called on controller', function () {
+    it("should emit refresh event when refresh() has been called on controller", function () {
         scope.refresh();
 
         expect(rootScope.$emit).toHaveBeenCalledWith("refresh");
     });
 
-    it('should emit "refresh" event when purge was successful', function () {
+    it("should emit refresh event when purge was successful", function () {
         httpBackend.when("POST", "purge").respond(204);
 
         scope.purge();
@@ -90,7 +90,7 @@ describe("MailCtrl controller", function() {
                                 then: function(fn) {
                                     fn();
                                 }
-                            }
+                            };
                         },
                         subscribe: function(url, fn) {
                             stomp["topic"] = url;
@@ -130,7 +130,7 @@ describe("MailCtrl controller", function() {
         expect(scope.mails).toEqual([ aMail ]);
     });
 
-    it('should refresh mails when event "refresh" was fired', function () {
+    it("should refresh mails when event refresh was fired", function () {
         httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, { _embedded: { mails:  "refreshed mails" }} );
 
         httpBackend.flush();
@@ -139,7 +139,7 @@ describe("MailCtrl controller", function() {
         expect(scope.mails).toBe("refreshed mails");
     });
 
-    it('should emit "mail-modal" event when "click" event occured on controller', function () {
+    it("should emit mail-modal event when click event occurred on controller", function () {
         httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, aResponse);
 
         httpBackend.flush();

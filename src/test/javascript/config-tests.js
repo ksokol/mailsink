@@ -17,7 +17,7 @@ describe("errorBroadcastingHttpInterceptor", function() {
         http.get(aUrl);
         httpBackend.flush();
 
-        expect(rootScope.$broadcast).toHaveBeenCalledWith("error", "plain string error message")
+        expect(rootScope.$broadcast).toHaveBeenCalledWith("error", "plain string error message");
     });
 
     it("should broadcast error message from error message object", function() {
@@ -25,7 +25,7 @@ describe("errorBroadcastingHttpInterceptor", function() {
         http.get("http://example.com");
         httpBackend.flush();
 
-        expect(rootScope.$broadcast).toHaveBeenCalledWith("error", "error message object")
+        expect(rootScope.$broadcast).toHaveBeenCalledWith("error", "error message object");
     });
 
     it("should not broadcast error message when status code is lower than 500", function() {

@@ -17,7 +17,7 @@ describe("Component: Attachments", function() {
             attachments: attachments
         };
 
-        $httpBackend.whenGET("attachments-panel.html").respond("attachments-panel.html")
+        $httpBackend.whenGET("attachments-panel.html").respond("attachments-panel.html");
         element = $compile('<attachments-panel attachments="mail.attachments"></attachments-panel>')(scope);
         scope.$digest();
     }));

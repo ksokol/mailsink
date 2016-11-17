@@ -73,7 +73,7 @@ app.controller("MailCtrl", ["$scope", "$rootScope", "$http", "$stomp", function(
     .then(function () {
         $stomp.subscribe("/topic/incoming-mail", function () {
             fetch();
-        })
+        });
     });
 
     fetch();
