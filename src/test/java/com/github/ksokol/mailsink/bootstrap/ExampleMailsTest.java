@@ -96,7 +96,7 @@ public class ExampleMailsTest {
                     actual = IOUtils.toString((InputStream) object).trim();
                     return actual.contains(expected);
                 } catch (IOException exception) {
-                    throw new RuntimeException(exception.getMessage(), exception);
+                    throw new IllegalArgumentException(exception.getMessage(), exception);
                 }
             }
 

@@ -52,7 +52,7 @@ class ExampleMails {
             return Arrays.stream(resolver.getResources(String.format("/%s/**", FOLDER)))
                     .filter(resource -> resource.getFilename().endsWith(FILE_EXTENSION));
         } catch (IOException exception) {
-            throw new RuntimeException(exception.getMessage(), exception);
+            throw new IllegalArgumentException(exception.getMessage(), exception);
         }
     }
 }
