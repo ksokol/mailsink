@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 /**
  * @author Kamill Sokol
  */
@@ -142,8 +140,7 @@ final class Mime4jMessageBody {
 
     private static String extractText(TextBody part) throws IOException {
         if (part != null) {
-            String mimeCharset = part.getMimeCharset() == null ? UTF_8.name() : part.getMimeCharset();
-            return IOUtils.toString(part.getInputStream(), mimeCharset);
+            return IOUtils.toString(part.getInputStream(), part.getMimeCharset());
         }
         return "";
     }

@@ -57,22 +57,16 @@ final class RFC2231Decoder {
             throw new IllegalArgumentException(String.format("could not parse content disposition '%s'", contentDisposition), exception);
         }
 
-        final String dispositionType = parser.getDispositionType();
+        List<String> paramNames = parser.getParamNames();
+        List<String> paramValues = parser.getParamValues();
 
-        if (dispositionType != null) {
-            List<String> paramNames = parser.getParamNames();
-            List<String> paramValues = parser.getParamValues();
-
-            if (paramNames != null && paramValues != null) {
-                final int len = Math.min(paramNames.size(), paramValues.size());
-                for (int i = 0; i < len; i++) {
-                    String paramName = paramNames.get(i).toLowerCase(Locale.US);
-                    String paramValue = paramValues.get(i);
-                    putParameter(paramName, paramValue);
-                }
-                combineMultisegmentParameters();
-            }
+        final int len = Math.min(paramNames.size(), paramValues.size());
+        for (int i = 0; i < len; i++) {
+            String paramName = paramNames.get(i).toLowerCase(Locale.US);
+            String paramValue = paramValues.get(i);
+            putParameter(paramName, paramValue);
         }
+        combineMultisegmentParameters();
 
         return parameters.get("filename");
     }
