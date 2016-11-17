@@ -96,7 +96,7 @@ describe("MailCtrl controller", function() {
                             stomp["topic"] = url;
                             stomp["callback"] = fn;
                         }
-                    }
+                    };
                 }
             }
         });
@@ -189,7 +189,7 @@ describe("MailModalCtrl controller", function() {
         });
     }));
 
-    it('should open modal with email when event "mail-modal" has been fired', function () {
+    it("should open modal with email when event mail-modal has been fired", function () {
         rootScope.$emit("mail-modal", {});
         expect(modal.open).toHaveBeenCalled();
     });
