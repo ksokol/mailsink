@@ -1,18 +1,20 @@
 package com.github.ksokol.mailsink.subehtamail;
 
 import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.repository.MailRepository;
+import com.github.ksokol.mailsink.websocket.IncomingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -27,14 +29,17 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class MessageListenerTest {
 
+    private static final InputStream SOME_INPUT_STREAM = new ByteArrayInputStream(new byte[]{});
+    private final Mail someMail = new Mail();
+
     @InjectMocks
     private MessageListener messageListener;
 
     @Mock
-    private MailRepository mailRepository;
+    private MailConverter mailConverter;
 
     @Mock
-    private MailConverter mailConverter;
+    private ApplicationEventPublisher publisher;
 
     @Test
     public void shouldAcceptEveryMessage() throws Exception {
@@ -43,31 +48,40 @@ public class MessageListenerTest {
 
     @Test
     public void shouldCallMailConverter() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(new byte[]{});
+        given(mailConverter.convert(any())).willReturn(new Mail());
 
-        messageListener.deliver("irrelevant", "irrelevant", inputStream);
+        messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
 
-        verify(mailConverter).convert(inputStream);
+        verify(mailConverter).convert(SOME_INPUT_STREAM);
     }
 
     @Test
-    public void shouldPersistReceivedMessageInMailRepository() throws Exception {
-        Mail mail = new Mail();
+    public void shouldPublishIncomingMail() throws Exception {
+        given(mailConverter.convert(any())).willReturn(someMail);
 
-        given(mailConverter.convert(any())).willReturn(mail);
+        messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
 
-        messageListener.deliver("irrelevant", "irrelevant", null);
-
-        verify(mailRepository).save(argThat(is(mail)));
+        verify(publisher).publishEvent(argThat(hasProperty("source", is(someMail))));
     }
 
     @Test
-    public void shouldConvertReceivedMessaageBeforeSavingInMailRepository() throws Exception {
-        messageListener.deliver("irrelevant", "irrelevant", null);
+    public void shouldConvertIncomingMessageBeforePublishingEvent() throws Exception {
+        given(mailConverter.convert(any())).willReturn(someMail);
 
-        InOrder callOrder = inOrder(mailConverter, mailRepository);
+        messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
 
-        callOrder.verify(mailConverter).convert(null);
-        callOrder.verify(mailRepository).save(Mockito.<Mail>any());
+        InOrder callOrder = inOrder(mailConverter, publisher);
+
+        callOrder.verify(mailConverter).convert(any());
+        callOrder.verify(publisher).publishEvent(argThat(hasProperty("source", instanceOf(Mail.class))));
+    }
+
+    @Test
+    public void shouldPublishIncomingEvent() throws Exception {
+        given(mailConverter.convert(any())).willReturn(someMail);
+
+        messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
+
+        verify(publisher).publishEvent(argThat(instanceOf(IncomingEvent.class)));
     }
 }

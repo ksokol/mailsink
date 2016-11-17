@@ -1,7 +1,7 @@
 package com.github.ksokol.mailsink.subehtamail;
 
-import com.github.ksokol.mailsink.repository.MailRepository;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.subethamail.smtp.helper.SimpleMessageListenerAdapter;
@@ -13,14 +13,14 @@ import org.subethamail.smtp.server.SMTPServer;
 @Configuration
 public class SubEthaMailConfiguration {
 
-    private final MailRepository mailRepository;
     private final MailConverter mailConverter;
     private final MailProperties mailProperties;
+    private final ApplicationEventPublisher publisher;
 
-    public SubEthaMailConfiguration(MailRepository mailRepository, MailConverter mailConverter, MailProperties mailProperties) {
-        this.mailRepository = mailRepository;
+    public SubEthaMailConfiguration(MailConverter mailConverter, MailProperties mailProperties, ApplicationEventPublisher publisher) {
         this.mailConverter = mailConverter;
         this.mailProperties = mailProperties;
+        this.publisher = publisher;
     }
 
     @Bean
@@ -31,7 +31,7 @@ public class SubEthaMailConfiguration {
     }
 
     private MessageListener messageListener() {
-        return new MessageListener(mailRepository, mailConverter);
+        return new MessageListener(mailConverter, publisher);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.github.ksokol.mailsink.subehtamail;
 
-import com.github.ksokol.mailsink.repository.MailRepository;
+import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.websocket.IncomingEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.subethamail.smtp.helper.SimpleMessageListener;
 
 import java.io.IOException;
@@ -9,14 +11,15 @@ import java.io.InputStream;
 /**
  * @author Kamill Sokol
  */
-public class MessageListener implements SimpleMessageListener {
+class MessageListener implements SimpleMessageListener {
 
-    private final MailRepository mailRepository;
     private final MailConverter mailConverter;
 
-    public MessageListener(MailRepository mailRepository, MailConverter mailConverter) {
-        this.mailRepository = mailRepository;
+    private final ApplicationEventPublisher publisher;
+
+    MessageListener(MailConverter mailConverter, ApplicationEventPublisher publisher) {
         this.mailConverter = mailConverter;
+        this.publisher = publisher;
     }
 
     @Override
@@ -26,6 +29,7 @@ public class MessageListener implements SimpleMessageListener {
 
     @Override
     public void deliver(String from, String recipient, InputStream body) throws IOException {
-        mailRepository.save(mailConverter.convert(body));
+        Mail mail = mailConverter.convert(body);
+        publisher.publishEvent(new IncomingEvent(mail));
     }
 }
