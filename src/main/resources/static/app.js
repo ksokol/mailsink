@@ -1,13 +1,13 @@
-var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal', 'ngStomp']);
+var app = angular.module("mailsinkApp", ["ngSanitize", "ui.bootstrap.modal", "ngStomp"]);
 
-app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
+app.factory("errorBroadcastingHttpInterceptor", ["$q", "$rootScope", function($q, $rootScope) {
     return {
-        'responseError': function(rejection) {
+        "responseError": function(rejection) {
             if(rejection.status >= 500) {
-                if(typeof rejection.data === 'string') {
-                    $rootScope.$broadcast('error', rejection.data);
+                if(typeof rejection.data === "string") {
+                    $rootScope.$broadcast("error", rejection.data);
                 } else {
-                    $rootScope.$broadcast('error', rejection.data.message);
+                    $rootScope.$broadcast("error", rejection.data.message);
                 }
             }
             return $q.reject(rejection);
@@ -15,37 +15,37 @@ app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q
     };
 }]);
 
-app.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push('errorBroadcastingHttpInterceptor');
+app.config(["$httpProvider", function($httpProvider) {
+    $httpProvider.interceptors.push("errorBroadcastingHttpInterceptor");
 }]);
 
-app.config(['$compileProvider', function($compileProvider) {
+app.config(["$compileProvider", function($compileProvider) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data):/);
 }]);
 
-app.directive("alertMessage", ['$rootScope', function($rootScope) {
+app.directive("alertMessage", ["$rootScope", function($rootScope) {
 
     return {
         restrict: "E",
         link: function ($scope, element) {
-            $rootScope.$on('error', function(event, message) {
+            $rootScope.$on("error", function(event, message) {
                 $scope.message = message;
-                element.removeClass('hidden');
+                element.removeClass("hidden");
             });
 
             $scope.close = function() {
-                element.addClass('hidden');
+                element.addClass("hidden");
                 $scope.message = null;
             };
         }
     }
 }]);
 
-app.controller('MailModalCtrl', ['$scope', '$rootScope', '$uibModal', function ($scope, $rootScope, $modal) {
+app.controller("MailModalCtrl", ["$scope", "$rootScope", "$uibModal", function ($scope, $rootScope, $modal) {
 
-    $rootScope.$on('mail-modal', function (event, mail) {
+    $rootScope.$on("mail-modal", function (event, mail) {
         var modalInstance = $modal.open({
-            templateUrl: 'mail.html',
+            templateUrl: "mail.html",
             controller: function($scope) {
                 $scope.mail = mail;
                 $scope.close = function() {
@@ -56,58 +56,58 @@ app.controller('MailModalCtrl', ['$scope', '$rootScope', '$uibModal', function (
     });
 }]);
 
-app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', function($scope, $rootScope, $http, $stomp) {
+app.controller("MailCtrl", ["$scope", "$rootScope", "$http", "$stomp", function($scope, $rootScope, $http, $stomp) {
 
     $scope.mails = [];
 
     var fetch = function() {
         $http({
-            method: 'GET',
-            url: 'mails/search/findAllOrderByCreatedAtDesc'
+            method: "GET",
+            url: "mails/search/findAllOrderByCreatedAtDesc"
         }).then(function successCallback(response) {
             $scope.mails = response.data._embedded.mails;
         });
     };
 
-    $stomp.connect('/incoming-mail')
+    $stomp.connect("/incoming-mail")
     .then(function () {
-        $stomp.subscribe('/topic/incoming-mail', function () {
+        $stomp.subscribe("/topic/incoming-mail", function () {
             fetch();
         })
     });
 
     fetch();
 
-    $rootScope.$on('refresh', function() {
+    $rootScope.$on("refresh", function() {
         fetch();
     });
 
     $scope.click = function(mail) {
-        $rootScope.$emit('mail-modal', mail);
+        $rootScope.$emit("mail-modal", mail);
     }
 }]);
 
-app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scope, $rootScope, $http) {
+app.controller("NavigationCtrl", ["$scope", "$rootScope","$http", function($scope, $rootScope, $http) {
 
     $scope.createMail = function() {
         $http({
-            method: 'POST',
-            url: 'createMail'
+            method: "POST",
+            url: "createMail"
         }).then(function successCallback() {
-            $rootScope.$emit('refresh');
+            $rootScope.$emit("refresh");
         });
     };
 
     $scope.refresh = function() {
-        $rootScope.$emit('refresh');
+        $rootScope.$emit("refresh");
     };
 
     $scope.purge = function() {
         $http({
-            method: 'POST',
-            url: 'purge'
+            method: "POST",
+            url: "purge"
         }).then(function successCallback() {
-            $rootScope.$emit('refresh');
+            $rootScope.$emit("refresh");
         });
     };
 }]);
@@ -135,7 +135,7 @@ app.directive("messageText", function() {
     }
 });
 
-app.filter('urlToLink', ['$sanitize', function($sanitize) {
+app.filter("urlToLink", ["$sanitize", function($sanitize) {
     var HREF_REGEXP = /(?:http?)[^\s]+/gi;
 
     var addBlankTarget = function(text) {
@@ -144,7 +144,7 @@ app.filter('urlToLink', ['$sanitize', function($sanitize) {
 
     return function(text) {
         if (!text) {
-            return '';
+            return "";
         }
 
         var match, raw = text;
@@ -166,9 +166,9 @@ app.filter('urlToLink', ['$sanitize', function($sanitize) {
     };
 }]);
 
-app.component('attachmentsPanel', {
+app.component("attachmentsPanel", {
     bindings: {
-        attachments: '<'
+        attachments: "<"
     },
-    templateUrl: 'attachments-panel.html'
+    templateUrl: "attachments-panel.html"
 });

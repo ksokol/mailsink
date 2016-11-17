@@ -1,6 +1,6 @@
 describe("NavigationCtrl controller", function() {
 
-    beforeEach(module('mailsinkApp'));
+    beforeEach(module("mailsinkApp"));
 
     var scope, rootScope, httpBackend, modal;
 
@@ -12,7 +12,7 @@ describe("NavigationCtrl controller", function() {
             $emit: jasmine.createSpy("mock")
         };
 
-        $controller('NavigationCtrl', {
+        $controller("NavigationCtrl", {
             $scope: scope,
             $rootScope: rootScope,
             $uibModal: modal
@@ -24,28 +24,28 @@ describe("NavigationCtrl controller", function() {
         httpBackend.verifyNoOutstandingRequest();
     });
 
-    it("should emit 'refresh' event when mail creation was successful", function () {
-        httpBackend.when('POST', 'createMail').respond(204);
+    it('should emit "refresh" event when mail creation was successful', function () {
+        httpBackend.when("POST", "createMail").respond(204);
 
         scope.createMail();
         httpBackend.flush();
 
-        expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
+        expect(rootScope.$emit).toHaveBeenCalledWith("refresh");
     });
 
-    it("should emit 'refresh' event when refresh() has been called on controller", function () {
+    it('should emit "refresh" event when refresh() has been called on controller', function () {
         scope.refresh();
 
-        expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
+        expect(rootScope.$emit).toHaveBeenCalledWith("refresh");
     });
 
-    it("should emit 'refresh' event when purge was successful", function () {
-        httpBackend.when('POST', 'purge').respond(204);
+    it('should emit "refresh" event when purge was successful', function () {
+        httpBackend.when("POST", "purge").respond(204);
 
         scope.purge();
         httpBackend.flush();
 
-        expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
+        expect(rootScope.$emit).toHaveBeenCalledWith("refresh");
     });
 });
 
@@ -79,13 +79,13 @@ describe("MailCtrl controller", function() {
         }
     };
 
-    beforeEach(module('mailsinkApp', function($provide) {
-        $provide.provider('$stomp', function() {
+    beforeEach(module("mailsinkApp", function($provide) {
+        $provide.provider("$stomp", function() {
             return {
                 $get: function() {
                     return {
                         connect: function(broker) {
-                            stomp['broker'] = broker;
+                            stomp["broker"] = broker;
                             return {
                                 then: function(fn) {
                                     fn();
@@ -93,8 +93,8 @@ describe("MailCtrl controller", function() {
                             }
                         },
                         subscribe: function(url, fn) {
-                            stomp['topic'] = url;
-                            stomp['callback'] = fn;
+                            stomp["topic"] = url;
+                            stomp["callback"] = fn;
                         }
                     }
                 }
@@ -108,9 +108,9 @@ describe("MailCtrl controller", function() {
 
         rootScope = $rootScope;
 
-        spyOn($rootScope, '$emit');
+        spyOn($rootScope, "$emit");
 
-        $controller('MailCtrl', {
+        $controller("MailCtrl", {
             $scope: scope,
             $rootScope: $rootScope,
             $uibModal: modal
@@ -123,44 +123,44 @@ describe("MailCtrl controller", function() {
     });
 
     it("should fetch mails from backend when initialized", function () {
-        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, aResponse);
+        httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, aResponse);
 
         httpBackend.flush();
 
         expect(scope.mails).toEqual([ aMail ]);
     });
 
-    it("should refresh mails when event 'refresh' was fired", function () {
-        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'refreshed mails' }} );
+    it('should refresh mails when event "refresh" was fired', function () {
+        httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, { _embedded: { mails:  "refreshed mails" }} );
 
         httpBackend.flush();
-        rootScope.$emit('refresh');
+        rootScope.$emit("refresh");
 
-        expect(scope.mails).toBe('refreshed mails');
+        expect(scope.mails).toBe("refreshed mails");
     });
 
-    it("should emit 'mail-modal' event when 'click' event occured on controller", function () {
-        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, aResponse);
+    it('should emit "mail-modal" event when "click" event occured on controller', function () {
+        httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, aResponse);
 
         httpBackend.flush();
         scope.click(aMail);
 
-        expect(rootScope.$emit).toHaveBeenCalledWith('mail-modal', aMail);
+        expect(rootScope.$emit).toHaveBeenCalledWith("mail-modal", aMail);
     });
 
-    it('should refresh mails when websocket message received', function() {
+    it("should refresh mails when websocket message received", function() {
         expect(scope.mails).toEqual([]);
 
         stomp.callback();
 
-        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
+        httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, { _embedded: { mails:  "triggered by websocket message" }});
         httpBackend.flush();
 
-        expect(scope.mails).toBe('triggered by websocket message')
+        expect(scope.mails).toBe("triggered by websocket message")
     });
 
-    it('should connect to proper broker and subscribe to proper topic', function() {
-        httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
+    it("should connect to proper broker and subscribe to proper topic", function() {
+        httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, { _embedded: { mails:  "triggered by websocket message" }});
         httpBackend.flush();
 
         expect(stomp.broker).toBe("/incoming-mail");
@@ -170,7 +170,7 @@ describe("MailCtrl controller", function() {
 
 describe("MailModalCtrl controller", function() {
 
-    beforeEach(module('mailsinkApp'));
+    beforeEach(module("mailsinkApp"));
 
     var scope, rootScope, modal;
 
@@ -180,17 +180,17 @@ describe("MailModalCtrl controller", function() {
         rootScope = $rootScope;
         modal = $uibModal;
 
-        spyOn($uibModal, 'open');
+        spyOn($uibModal, "open");
 
-        $controller('MailModalCtrl', {
+        $controller("MailModalCtrl", {
             $scope: scope,
             $rootScope: $rootScope,
             $uibModal: $uibModal
         });
     }));
 
-    it("should open modal with email when event 'mail-modal' has been fired", function () {
-        rootScope.$emit('mail-modal', {});
+    it('should open modal with email when event "mail-modal" has been fired', function () {
+        rootScope.$emit("mail-modal", {});
         expect(modal.open).toHaveBeenCalled();
     });
 });
