@@ -31,7 +31,7 @@ class ExampleMails {
         this.mailConverter = mailConverter;
     }
 
-    List<Mail> listExampleMails() {
+    public List<Mail> listExampleMails() {
         List<Mail> exampleMails = new ArrayList<>();
 
         listEmlFiles().forEach(resource -> {

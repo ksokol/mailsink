@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication
 public class MailsinkApplication {
 
-    static ApplicationContext applicationContext;
+    protected static ApplicationContext applicationContext;
 
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(MailsinkApplication.class, args);

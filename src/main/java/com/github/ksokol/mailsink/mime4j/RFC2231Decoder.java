@@ -121,19 +121,19 @@ final class RFC2231Decoder {
 		 * never need more bytes than encoded characters, so use that to size
 		 * the array.
 		 */
-        byte[] b = new byte[value.length()];
-        int i, bi;
-        for (i = 0, bi = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
+        byte[] bytes = new byte[value.length()];
+        int idx, bytesIdx;
+        for (idx = 0, bytesIdx = 0; idx < value.length(); idx++) {
+            char c = value.charAt(idx);
             if (c == '%') {
-                String hex = value.substring(i + 1, i + 3);
+                String hex = value.substring(idx + 1, idx + 3);
                 c = (char) Integer.parseInt(hex, 16);
-                i += 2;
+                idx += 2;
             }
-            b[bi++] = (byte) c;
+            bytes[bytesIdx++] = (byte) c;
         }
         try {
-            return new String(b, 0, bi, MimeUtility.javaCharset(charset));
+            return new String(bytes, 0, bytesIdx, MimeUtility.javaCharset(charset));
         } catch (UnsupportedEncodingException exception) {
             throw new IllegalArgumentException(String.format(" unsupported encoding: '%s'", exception.getMessage()), exception);
         }
@@ -149,32 +149,33 @@ final class RFC2231Decoder {
      * parameter.
      */
     private void putParameter(String name, String value) {
-        int star = name.indexOf('*');
+        String key = name;
+        int star = key.indexOf('*');
         if (star < 0) {
             // single parameter, unencoded value
-            parameters.put(name, value);
-        } else if (star == name.length() - 1) {
+            parameters.put(key, value);
+        } else if (star == key.length() - 1) {
             // single parameter, encoded value
-            name = name.substring(0, star);
+            key = key.substring(0, star);
             RFC2231Value v = decodeRFC2231Value(value);
-            parameters.put(name, v.value);
+            parameters.put(key, v.value);
         } else {
             // multiple segments
-            String paramName = name.substring(0, star);
+            String paramName = key.substring(0, star);
             multisegmentNames.add(paramName);
             parameters.put(paramName, "");
 
-            if (name.endsWith("*")) {
+            if (key.endsWith("*")) {
                 // encoded value
                 RFC2231Value valObject = new RFC2231Value();
                 valObject.encodedValue = value;
                 valObject.value = value; // default; decoded later
 
-                String segmentName = name.substring(0, name.length() - 1);
+                String segmentName = key.substring(0, key.length() - 1);
                 segmentList.put(segmentName, valObject);
             } else {
                 // plain value
-                segmentList.put(name, value);
+                segmentList.put(key, value);
             }
         }
     }
@@ -231,8 +232,8 @@ final class RFC2231Decoder {
      * will return the same value that was set.
      */
     private static class RFC2231Value {
-        String value;
-        String charset;
-        String encodedValue;
+        public String value;
+        public String charset;
+        public String encodedValue;
     }
 }

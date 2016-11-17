@@ -34,15 +34,15 @@ final class Mime4jMessageBody {
         this.message = message;
     }
 
-    String getPlainTextPart() throws IOException {
+    public String getPlainTextPart() throws IOException {
         return extractByMimeType(message, "text/plain");
     }
 
-    String getHtmlTextPart() throws IOException {
+    public String getHtmlTextPart() throws IOException {
         return extractByMimeType(message, "text/html");
     }
 
-    List<Mime4jAttachment> getAttachments() throws IOException, MimeTypeException {
+    public List<Mime4jAttachment> getAttachments() throws IOException, MimeTypeException {
         if (!message.isMultipart()) {
             return Collections.emptyList();
         }
