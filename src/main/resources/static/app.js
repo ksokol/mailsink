@@ -50,7 +50,7 @@ app.controller('MailModalCtrl', ['$scope', '$rootScope', '$uibModal', function (
                 $scope.mail = mail;
                 $scope.close = function() {
                     modalInstance.close();
-                }
+                };
             }
         });
     });
