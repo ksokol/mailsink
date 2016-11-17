@@ -8,7 +8,7 @@ describe("messageText directive", function() {
         scope = $rootScope.$new();
         scope.mail = {
             body: null
-        }
+        };
     }));
 
     it("should set empty array when body is null", inject(function ($compile) {
@@ -46,15 +46,15 @@ describe("alertMessage directive", function() {
         rootScope = $rootScope;
     }));
 
-    it('should set "error" as value on scope attribute "message"', inject(function ($compile) {
+    it("should set error as value on scope attribute message", inject(function ($compile) {
         $compile("<alert-message>{{message}}</alert-message>")(scope);
 
-        rootScope.$emit("error", "èrror");
+        rootScope.$emit("error", "error");
 
-        expect(scope.message).toEqual("èrror");
+        expect(scope.message).toEqual("error");
     }));
 
-    it('should hide alert message when no "error" event triggered', inject(function ($compile) {
+    it("should hide alert message when no error event triggered", inject(function ($compile) {
         var el = $compile('<alert-message class="hidden">{{message}}</alert-message>')(scope);
 
         scope.$digest();
@@ -62,13 +62,13 @@ describe("alertMessage directive", function() {
         expect(el.text()).toBe("");
     }));
 
-    it('should show alert message when "error" event triggered', inject(function ($compile) {
+    it("should show alert message when error event triggered", inject(function ($compile) {
         var el = $compile('<alert-message class="hidden">{{message}}</alert-message>')(scope);
 
-        rootScope.$emit("error", "èrror");
+        rootScope.$emit("error", "error");
         scope.$digest();
 
-        expect(el.text()).toBe("èrror");
+        expect(el.text()).toBe("error");
     }));
 
     it("should hide alert message when dismissed", inject(function ($compile) {

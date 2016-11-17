@@ -156,7 +156,7 @@ describe("MailCtrl controller", function() {
         httpBackend.when("GET", "mails/search/findAllOrderByCreatedAtDesc").respond(200, { _embedded: { mails:  "triggered by websocket message" }});
         httpBackend.flush();
 
-        expect(scope.mails).toBe("triggered by websocket message")
+        expect(scope.mails).toBe("triggered by websocket message");
     });
 
     it("should connect to proper broker and subscribe to proper topic", function() {
