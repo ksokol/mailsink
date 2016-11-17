@@ -26,7 +26,7 @@ public class MailConverter implements Converter<InputStream, Mail> {
             Message message = new MessageBuilder().parse(source).build();
             return convertInternal(new Mime4jMessage(message));
         } catch (IOException exception) {
-            throw new RuntimeException(exception.getMessage(), exception);
+            throw new IllegalArgumentException(exception.getMessage(), exception);
         }
     }
 

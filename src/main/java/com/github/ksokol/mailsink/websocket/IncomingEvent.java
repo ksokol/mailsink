@@ -12,7 +12,7 @@ public class IncomingEvent extends ApplicationEvent {
         super(source);
     }
 
-    Mail getIncomingMail() {
+    protected Mail getIncomingMail() {
         return (Mail) super.getSource();
     }
 }

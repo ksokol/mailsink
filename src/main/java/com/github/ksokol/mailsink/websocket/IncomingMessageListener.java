@@ -17,13 +17,13 @@ class IncomingMessageListener {
     private final MailRepository mailRepository;
     private final SimpMessagingTemplate template;
 
-    IncomingMessageListener(MailRepository mailRepository, SimpMessagingTemplate template) {
+    public IncomingMessageListener(MailRepository mailRepository, SimpMessagingTemplate template) {
         this.mailRepository = mailRepository;
         this.template = template;
     }
 
     @EventListener
-    void handleIncomingEvent(IncomingEvent event) {
+    public void handleIncomingEvent(IncomingEvent event) {
         Mail incomingMail = event.getIncomingMail();
         mailRepository.save(incomingMail);
         template.convertAndSend(TOPIC_INCOMING_MAIL, incomingMail);

@@ -49,7 +49,7 @@ final class RFC2231Decoder {
      */
     private final Map<String, Object> segmentList = new HashMap<>();
 
-    String parse(String contentDisposition) {
+    public String parse(String contentDisposition) {
         ContentDispositionParser parser = new ContentDispositionParser(new StringReader(contentDisposition));
         try {
             parser.parseAll();
@@ -80,7 +80,8 @@ final class RFC2231Decoder {
     /**
      * Decode RFC2231 parameter value with charset
      */
-    private static RFC2231Value decodeRFC2231Value(String value) {
+    private static RFC2231Value decodeRFC2231Value(String rawValue) {
+        String value = rawValue;
         String charset;
 
         RFC2231Value v = new RFC2231Value();
@@ -122,7 +123,9 @@ final class RFC2231Decoder {
 		 * the array.
 		 */
         byte[] bytes = new byte[value.length()];
-        int idx, bytesIdx;
+        int idx;
+        int bytesIdx;
+
         for (idx = 0, bytesIdx = 0; idx < value.length(); idx++) {
             char c = value.charAt(idx);
             if (c == '%') {

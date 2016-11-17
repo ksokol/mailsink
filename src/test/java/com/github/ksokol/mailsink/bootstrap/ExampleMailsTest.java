@@ -78,7 +78,7 @@ public class ExampleMailsTest {
 
     @Test
     public void shouldContinueWhenExceptionThrown() throws Exception {
-        when(mailConverter.convert(any(InputStream.class))).thenThrow(new RuntimeException()).thenReturn(new Mail());
+        when(mailConverter.convert(any(InputStream.class))).thenThrow(new IllegalArgumentException()).thenReturn(new Mail());
 
         List<Mail> expected = exampleMails.listExampleMails();
 
