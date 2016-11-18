@@ -93,8 +93,6 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scop
         $http({
             method: 'POST',
             url: 'createMail'
-        }).then(function successCallback() {
-            $rootScope.$emit('refresh');
         });
     };
 

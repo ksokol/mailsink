@@ -24,13 +24,11 @@ describe('NavigationCtrl controller', function() {
         httpBackend.verifyNoOutstandingRequest();
     });
 
-    it('should emit refresh event when mail creation was successful', function () {
+    it('should create new mail', function () {
         httpBackend.when('POST', 'createMail').respond(204);
 
         scope.createMail();
         httpBackend.flush();
-
-        expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
     });
 
     it('should emit refresh event when refresh() has been called on controller', function () {
