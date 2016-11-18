@@ -70,7 +70,7 @@ public class MailsinkApplicationTests {
 
         MyStompSessionHandler session = new MyStompSessionHandler();
         stompClient.connect("ws://localhost:" + SERVER_PORT + WEB_SOCKET_PATH, session);
-        Thread.sleep(1000); // wait one second before proceeding
+        Thread.sleep(2000); // wait one second before proceeding
         return session;
     }
 
