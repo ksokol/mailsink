@@ -5,7 +5,7 @@
 
   <groupId>com.github.ksokol</groupId>
   <artifactId>mailsink</artifactId>
-  <version>0.3_SNAPSHOT</version>
+  <version>0.3</version>
   <packaging>jar</packaging>
 
   <name>mailsink</name>
