@@ -54,6 +54,7 @@ public class MailRepositoryTest {
         mail = em.persist(mail);
         Mail expected = mailRepository.findOne(mail.getId());
 
+        assertThat(expected.getId(), is(mail.getId()));
         assertThat(expected.getMessageId(), is("messageId"));
         assertThat(expected.getSender(), is("sender"));
         assertThat(expected.getRecipient(), is("recipient"));
