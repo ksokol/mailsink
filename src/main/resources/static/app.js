@@ -115,10 +115,13 @@ app.directive('messageText', function() {
 
     return {
         restrict: 'E',
-        link: function ($scope) {
-            //TODO support html mails
-            if($scope.mail.text) {
-                $scope.messageText = formatPlain($scope.mail.text);
+        scope: {
+            text: '@'
+        },
+        template: '<p ng-repeat="line in messageText track by $index"><span ng-bind-html="::line | urlToLink"></span></p>',
+        link: function ($scope, element, attrs) {
+            if(attrs.text) {
+                $scope.messageText = formatPlain(attrs.text);
             } else {
                 $scope.messageText = [];
             }

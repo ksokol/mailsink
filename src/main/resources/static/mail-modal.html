@@ -26,14 +26,10 @@
             </tr>
             </tbody>
         </table>
+
         <div class="panel panel-default">
             <div class="panel-body">
-                <message-text mail="mail">
-                    <div ng-repeat="line in messageText track by $index">
-                        <br ng-if="line.length === 0">
-                        <div ng-if="line.length !== 0" ng-bind-html="::line | urlToLink"></div>
-                    </div>
-                </message-text>
+                <message-text text="{{mail.text}}"></message-text>
             </div>
         </div>
 
