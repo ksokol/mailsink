@@ -57,7 +57,7 @@ describe('MailCtrl controller', function() {
         'sender' : 'root@localhost',
         'recipient' : 'root@localhost',
         'subject' : 'Subject',
-        'body' : 'mail body',
+        'text' : 'mail body',
         'attachments' : [ {
             'filename' : 'example.pdf',
             'mimeType' : 'application/pdf',

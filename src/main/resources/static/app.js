@@ -124,8 +124,8 @@ app.directive('messageText', function() {
         restrict: 'E',
         link: function ($scope) {
             //TODO support html mails
-            if($scope.mail.body) {
-                $scope.messageText = formatPlain($scope.mail.body);
+            if($scope.mail.text) {
+                $scope.messageText = formatPlain($scope.mail.text);
             } else {
                 $scope.messageText = [];
             }

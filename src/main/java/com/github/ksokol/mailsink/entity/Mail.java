@@ -26,7 +26,7 @@ public class Mail {
     private String sender;
     private String recipient;
     private String subject;
-    private String body;
+    private String text;
     private List<MailAttachment> attachments;
     private Date createdAt;
 
@@ -73,12 +73,12 @@ public class Mail {
     }
 
     @Lob
-    public String getBody() {
-        return body;
+    public String getText() {
+        return text;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setText(String text) {
+        this.text = text;
     }
 
     @OneToMany(mappedBy = "mail", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
