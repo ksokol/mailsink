@@ -1,4 +1,4 @@
-var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ngStomp']);
+var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ui.bootstrap.tabs', 'ngStomp']);
 
 app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
     return {
@@ -165,4 +165,11 @@ app.component('attachmentsPanel', {
         attachments: '<'
     },
     templateUrl: 'attachments-panel.html'
+});
+
+app.component('mailBodyPanel', {
+    bindings: {
+        mail: '<'
+    },
+    templateUrl: 'mail-body-panel.html'
 });

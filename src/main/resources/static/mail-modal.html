@@ -27,13 +27,7 @@
             </tbody>
         </table>
 
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <message-text text="{{mail.text}}"></message-text>
-            </div>
-        </div>
-
-        <attachments-panel attachments="mail.attachments"></attachments-panel>
+        <mail-body-panel mail="mail"></mail-body-panel>
     </div>
     <div class="modal-footer">
         <button class="btn" ng-click="close()">close</button>
