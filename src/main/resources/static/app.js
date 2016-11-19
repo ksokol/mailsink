@@ -41,22 +41,7 @@ app.directive('alertMessage', ['$rootScope', function($rootScope) {
     };
 }]);
 
-app.controller('MailModalCtrl', ['$scope', '$rootScope', '$uibModal', function ($scope, $rootScope, $modal) {
-
-    $rootScope.$on('mail-modal', function (event, mail) {
-        var modalInstance = $modal.open({
-            templateUrl: 'mail.html',
-            controller: function($scope) {
-                $scope.mail = mail;
-                $scope.close = function() {
-                    modalInstance.close();
-                };
-            }
-        });
-    });
-}]);
-
-app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', function($scope, $rootScope, $http, $stomp) {
+app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', '$uibModal', function($scope, $rootScope, $http, $stomp, $modal) {
 
     $scope.mails = [];
 
@@ -83,7 +68,15 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', function(
     });
 
     $scope.click = function(mail) {
-        $rootScope.$emit('mail-modal', mail);
+        var modalInstance = $modal.open({
+            templateUrl: 'mail-modal.html',
+            controller: function($scope) {
+                $scope.mail = mail;
+                $scope.close = function() {
+                    modalInstance.close();
+                };
+            }
+        });
     };
 }]);
 
