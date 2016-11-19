@@ -38,6 +38,7 @@ public class MailConverter implements Converter<InputStream, Mail> {
         target.setRecipient(source.getRecipient());
         target.setSubject(source.getSubject());
         target.setText(source.getPlainTextPart());
+        target.setHtml(source.getHtmlTextPart());
         target.setCreatedAt(source.getDate());
         target.setAttachments(convertAttachments(source, target));
 

@@ -86,7 +86,7 @@ public class MailConverterTest {
     }
 
     @Test
-    public void shouldNotExtractHtmlBodyFromHtmlMail() throws Exception {
+    public void shouldNotExtractHtmlBodyFromPlainTextMail() throws Exception {
         givenMail("plain2");
         assertThat(mail.getText(), is(""));
     }
@@ -95,6 +95,18 @@ public class MailConverterTest {
     public void shouldExtractBodyFromPlainTextMail() throws Exception {
         givenMail("plain1");
         assertThat(mail.getText(), is(String.format("Mail body%nnew line%n")));
+    }
+
+    @Test
+    public void shouldExtractBodyFromHtmlTextMail() throws Exception {
+        givenMail("html1");
+        assertThat(mail.getHtml(), is(String.format("<html>%n<body>%n<p>html mail</p>%n</body>%n</html>%n")));
+    }
+
+    @Test
+    public void shouldNotExtractPlainBodyFromHtmlTextMail() throws Exception {
+        givenMail("html1");
+        assertThat(mail.getText(), is(""));
     }
 
     @Test

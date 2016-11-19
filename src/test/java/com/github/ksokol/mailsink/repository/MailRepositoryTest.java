@@ -47,7 +47,8 @@ public class MailRepositoryTest {
         mail.setSubject("subject");
         mail.setSender("sender");
         mail.setRecipient("recipient");
-        mail.setText("body");
+        mail.setText("plain");
+        mail.setHtml("html");
         mail.setCreatedAt(cratedAt);
 
         mail = em.persist(mail);
@@ -57,7 +58,8 @@ public class MailRepositoryTest {
         assertThat(expected.getSender(), is("sender"));
         assertThat(expected.getRecipient(), is("recipient"));
         assertThat(expected.getSubject(), is("subject"));
-        assertThat(expected.getText(), is("body"));
+        assertThat(expected.getText(), is("plain"));
+        assertThat(expected.getHtml(), is("html"));
         assertThat(expected.getCreatedAt(), is(cratedAt));
     }
 
