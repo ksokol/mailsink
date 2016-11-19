@@ -1,4 +1,4 @@
-var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.modal', 'ngStomp']);
+var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ngStomp']);
 
 app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
     return {
