@@ -173,3 +173,13 @@ app.component('mailBodyPanel', {
     },
     templateUrl: 'mail-body-panel.html'
 });
+
+app.component('messageHtml', {
+    bindings: {
+        id: '<'
+    },
+    template: '<iframe ng-src="{{url}}"></iframe>',
+    controller: function($scope) {
+        $scope.url = 'mails/' + this.id + '/html';
+    }
+});

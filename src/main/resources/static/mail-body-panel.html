@@ -8,7 +8,13 @@
             </div>
         </uib-tab>
 
-        <uib-tab class="attachments" index="1" heading="Attachments" ng-if="$ctrl.mail.attachments.length > 0">
+        <uib-tab class="html" index="1" heading="HTML" ng-if="$ctrl.mail.html.length > 0">
+            <div class="panel panel-default">
+                <message-html id="$ctrl.mail.id"></message-html>
+            </div>
+        </uib-tab>
+
+        <uib-tab class="attachments" index="2" heading="Attachments" ng-if="$ctrl.mail.attachments.length > 0">
             <attachments-panel attachments="$ctrl.mail.attachments"></attachments-panel>
         </uib-tab>
     </uib-tabset>

@@ -85,15 +85,46 @@ describe('Component: mailBodyPanel', function() {
         expect(element.find('li').attr('class')).toContain('attachments');
     });
 
-    it('should have text content and attachments', function () {
+    it('should have html content', function () {
+        scope.mail = {
+            html: 'html'
+        };
+        scope.$digest();
+
+        expect(element.find('li').attr('class')).toContain('html');
+    });
+
+    it('should have text content, html content and attachments', function () {
         scope.mail = {
             text: 'text',
+            html: 'html',
             attachments: [{}]
         };
         scope.$digest();
 
-        expect(element.find('li').length).toBe(2);
+        expect(element.find('li').length).toBe(3);
         expect(element.find('li')[0].classList).toContain('plain');
-        expect(element.find('li')[1].classList).toContain('attachments');
+        expect(element.find('li')[1].classList).toContain('html');
+        expect(element.find('li')[2].classList).toContain('attachments');
+    });
+});
+
+describe('Component: messageHtml', function() {
+
+    var scope, element;
+
+    beforeEach(module('mailsinkApp', 'htmlTemplates'));
+
+    beforeEach(inject(function($compile, $rootScope, $httpBackend) {
+        scope = $rootScope.$new();
+
+        $httpBackend.whenGET('message-html.html').respond('message-html.html');
+        element = $compile('<message-html id="42"></message-html>')(scope);
+    }));
+
+    it('should build src attribute for iframe', function () {
+        scope.$digest();
+
+        expect(element.find('iframe').attr('src')).toBe('mails/42/html')
     });
 });
