@@ -1,5 +1,6 @@
 package com.github.ksokol.mailsink.controller;
 
+import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.repository.MailRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -57,5 +61,25 @@ public class MailsinkControllerTest {
                     )
                 )
             );
+    }
+
+    @Test
+    public void shouldAnswerWith404WhenMailForGivenIdNotFound() throws Exception {
+        given(mailRepository.findOne(1L)).willReturn(null);
+
+        mvc.perform(get("/mails/1/html"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldAnswerWithHtmlBodyWhenMailForGivenIdFound() throws Exception {
+        Mail mail = new Mail();
+        mail.setHtml("html");
+        given(mailRepository.findOne(1L)).willReturn(mail);
+
+        mvc.perform(get("/mails/1/html"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/html;charset=UTF-8"))
+                .andExpect(content().string("html"));
     }
 }
