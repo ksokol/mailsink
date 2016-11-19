@@ -125,6 +125,6 @@ describe('Component: messageHtml', function() {
     it('should build src attribute for iframe', function () {
         scope.$digest();
 
-        expect(element.find('iframe').attr('src')).toBe('mails/42/html')
+        expect(element.find('iframe').attr('src')).toBe('mails/42/html');
     });
 });
