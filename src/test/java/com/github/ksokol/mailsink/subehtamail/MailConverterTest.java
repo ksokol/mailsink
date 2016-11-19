@@ -51,61 +51,61 @@ public class MailConverterTest {
 
     @Test
     public void shouldExtractMessageIdFromPlainTextMail() throws Exception {
-        givenMail("plain1.txt");
+        givenMail("plain1");
         assertThat(mail.getMessageId(), is("<208544674.1.1477820621771.JavaMail.localhost@localhost>"));
     }
 
     @Test
     public void shouldExtractSenderAndDisplayNameFromPlainTextMail() throws Exception {
-        givenMail("plain1.txt");
+        givenMail("plain1");
         assertThat(mail.getSender(), is("Display Name <sender@localhost>"));
     }
 
     @Test
     public void shouldExtractSenderFromPlainTextMail() throws Exception {
-        givenMail("plain2.txt");
+        givenMail("plain2");
         assertThat(mail.getSender(), is("sender@localhost"));
     }
 
     @Test
     public void shouldExtractOneRecipientFromPlainTextMail() throws Exception {
-        givenMail("plain1.txt");
+        givenMail("plain1");
         assertThat(mail.getRecipient(), is("recipient@localhost"));
     }
 
     @Test
     public void shouldIgnoreSecondRecipientInPlainTextMail() throws Exception {
-        givenMail("plain2.txt");
+        givenMail("plain2");
         assertThat(mail.getRecipient(), is("recipient1@localhost"));
     }
 
     @Test
     public void shouldExtractSubjectFromPlainTextMail() throws Exception {
-        givenMail("plain1.txt");
+        givenMail("plain1");
         assertThat(mail.getSubject(), is("Subject"));
     }
 
     @Test
     public void shouldNotExtractHtmlBodyFromHtmlMail() throws Exception {
-        givenMail("plain2.txt");
+        givenMail("plain2");
         assertThat(mail.getBody(), is(""));
     }
 
     @Test
     public void shouldExtractBodyFromPlainTextMail() throws Exception {
-        givenMail("plain1.txt");
-        assertThat(mail.getBody(), is(String.format("Mail body%n new line%n another line%n")));
+        givenMail("plain1");
+        assertThat(mail.getBody(), is(String.format("Mail body%nnew line%n")));
     }
 
     @Test
     public void shouldExtractDateFromPlainTextMail() throws Exception {
-        givenMail("plain1.txt");
+        givenMail("plain1");
         assertThat(mail.getCreatedAt(), is(Date.from(LocalDateTime.of(2016,10,30,10,10,10).toInstant(ZoneOffset.UTC))));
     }
 
     @Test
-    public void name() throws Exception {
-        givenMail("mime4j/plain1_attachment.eml");
+    public void shouldExtractAttachments() throws Exception {
+        givenMail("plain1_attachment");
 
         List<MailAttachment> attachments = mail.getAttachments();
 
@@ -116,7 +116,7 @@ public class MailConverterTest {
         assertThat(attachments.get(0).getMimeType(), notNullValue());
     }
 
-    private void givenMail(String fileName) throws IOException {
-        mail = converter.convert(new ClassPathResource(fileName).getInputStream());
+    private void givenMail(String name) throws IOException {
+        mail = converter.convert(new ClassPathResource("mime4j/" + name + ".eml").getInputStream());
     }
 }
