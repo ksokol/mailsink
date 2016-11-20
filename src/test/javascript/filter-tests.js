@@ -28,4 +28,15 @@ describe('urlToLink filter', function() {
     it('should not modify given text without URL', function () {
         expect(urlToLink('text without an URL')).toBe('text without an URL');
     });
+
+    it('should shorten display url when too long', function() {
+        var url = 'http://';
+        var maxLength = 10;
+
+        for(var i=0; i<maxLength; i++) {
+            url = url + 'a';
+        }
+
+        expect(urlToLink(url, maxLength +1)).toBe('<a href="http://aaaaaaaaaa" target="_blank">http://aaaa...</a>');
+    });
 });

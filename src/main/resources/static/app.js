@@ -118,7 +118,7 @@ app.directive('messageText', function() {
         scope: {
             text: '@'
         },
-        template: '<p ng-repeat="line in messageText track by $index"><span ng-bind-html="::line | urlToLink"></span></p>',
+        template: '<p ng-repeat="line in messageText track by $index"><span ng-bind-html="::line | urlToLink:90"></span></p>',
         link: function ($scope, element, attrs) {
             if(attrs.text) {
                 $scope.messageText = formatPlain(attrs.text);
@@ -132,11 +132,17 @@ app.directive('messageText', function() {
 app.filter('urlToLink', ['$sanitize', function($sanitize) {
     var HREF_REGEXP = /(?:http?)[^\s]+/gi;
 
-    var addBlankTarget = function(text) {
-        return '<a href="' + text + '" target="_blank">' + text + '</a>';
+    var addBlankTarget = function(url, maxLength) {
+        var displayText = url;
+
+        if(url.length > maxLength) {
+            displayText = url.substr(0, maxLength) + '...';
+        }
+
+        return '<a href="' + url + '" target="_blank">' + displayText + '</a>';
     };
 
-    return function(text) {
+    return function(text, maxLength) {
         if (!text) {
             return '';
         }
@@ -152,7 +158,7 @@ app.filter('urlToLink', ['$sanitize', function($sanitize) {
 
         for(var j=0;j<matches.length;j++) {
             var regexMatch = matches[j];
-            var blank = addBlankTarget(regexMatch);
+            var blank = addBlankTarget(regexMatch, maxLength);
             text = text.replace(regexMatch, blank);
         }
 
