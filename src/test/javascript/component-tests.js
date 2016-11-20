@@ -160,7 +160,7 @@ describe('Component: messageHtml', function () {
         expect(iframe.on).toHaveBeenCalledWith('load', jasmine.any(Function));
     });
 
-    it('should resize iframe after load', function() {
+    it('should resize and show iframe after load', function() {
         var loadCallback;
 
         var iframe = {
@@ -176,7 +176,8 @@ describe('Component: messageHtml', function () {
                     }
                 }
             },
-            css: jasmine.createSpy()
+            css: jasmine.createSpy(),
+            removeClass: jasmine.createSpy()
         };
 
         var el = {
@@ -189,5 +190,6 @@ describe('Component: messageHtml', function () {
         loadCallback();
 
         expect(iframe.css.calls.allArgs()).toEqual([['width', '100%'], ['height', '200px']]);
+        expect(iframe.removeClass).toHaveBeenCalledWith('hidden');
     });
 });

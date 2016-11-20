@@ -184,7 +184,7 @@ app.component('messageHtml', {
     bindings: {
         id: '<'
     },
-    template: '<iframe frameborder="0" ng-src="{{url}}"></iframe>',
+    template: '<iframe class="hidden" frameborder="0" ng-src="{{url}}"></iframe>',
     controller: function($scope, $element) {
         $scope.url = 'mails/' + this.id + '/html';
 
@@ -194,6 +194,7 @@ app.component('messageHtml', {
             var height = iframe[0].contentWindow.document.body.scrollHeight + 'px';
             iframe.css('width', '100%');
             iframe.css('height', height);
+            iframe.removeClass('hidden');
         });
     }
 });
