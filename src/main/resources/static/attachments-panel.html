@@ -1,14 +1,12 @@
-<div class="panel panel-default" ng-if="$ctrl.attachments.length > 0">
-    <table class="table table-striped">
-        <tbody>
-        <tr ng-repeat="attachment in $ctrl.attachments track by $index">
-            <td>
-                <a class="glyphicon glyphicon-download-alt"
-                   target="_blank"
-                   title="{{::attachment.filename}} ({{::attachment.mimeType}})"
-                   href="data:{{::attachment.mimeType}};base64,{{::attachment.data}}"> {{::attachment.filename}}</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+<table class="table table-striped" ng-if="$ctrl.attachments.length > 0">
+    <tbody>
+    <tr ng-repeat="attachment in $ctrl.attachments track by $index">
+        <td>
+            <a class="glyphicon glyphicon-download-alt"
+               target="_blank"
+               title="{{::attachment.filename}} ({{::attachment.mimeType}})"
+               href="data:{{::attachment.mimeType}};base64,{{::attachment.data}}"> {{::attachment.filename}}</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
