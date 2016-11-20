@@ -73,4 +73,15 @@ public class MailResourceTest {
                 .andExpect(jsonPath("_embedded.mails..attachments..filename", hasSize(1)))
                 .andExpect(jsonPath("_embedded.mails..attachments..filename", everyItem(is(filename))));
     }
+
+    @Test
+    public void shouldNotExposeMailSourceAttribute() throws Exception {
+        Mail mail = new Mail();
+        mail.setSource("source");
+
+        mailRepository.save(mail);
+
+        mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
+                .andExpect(jsonPath("_embedded.mails..source", hasSize(0)));
+    }
 }

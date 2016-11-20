@@ -1,5 +1,7 @@
 package com.github.ksokol.mailsink.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
@@ -28,6 +30,7 @@ public class Mail {
     private String subject;
     private String text;
     private String html;
+    private String source;
     private List<MailAttachment> attachments;
     private Date createdAt;
 
@@ -89,6 +92,16 @@ public class Mail {
 
     public void setHtml(String html) {
         this.html = html;
+    }
+
+    @JsonIgnore
+    @Lob
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @OneToMany(mappedBy = "mail", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

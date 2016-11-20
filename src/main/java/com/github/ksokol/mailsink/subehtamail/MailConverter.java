@@ -4,11 +4,14 @@ import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.entity.MailAttachment;
 import com.github.ksokol.mailsink.mime4j.Mime4jAttachment;
 import com.github.ksokol.mailsink.mime4j.Mime4jMessage;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.james.mime4j.dom.Message;
 import org.apache.james.mime4j.message.MessageBuilder;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,8 +26,9 @@ public class MailConverter implements Converter<InputStream, Mail> {
     @Override
     public Mail convert(InputStream source) {
         try {
-            Message message = new MessageBuilder().parse(source).build();
-            return convertInternal(new Mime4jMessage(message));
+            InputStream inputStream = buffer(source);
+            Message message = new MessageBuilder().parse(inputStream).build();
+            return setSource(inputStream, message);
         } catch (IOException exception) {
             throw new IllegalArgumentException(exception.getMessage(), exception);
         }
@@ -61,5 +65,18 @@ public class MailConverter implements Converter<InputStream, Mail> {
         target.setAttachments(mailAttachments);
 
         return mailAttachments;
+    }
+
+    private Mail setSource(InputStream inputStream, Message message) throws IOException {
+        Mail mail = convertInternal(new Mime4jMessage(message));
+        inputStream.reset();
+        mail.setSource(IOUtils.toString(inputStream));
+        return mail;
+    }
+
+    private static InputStream buffer(InputStream source) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        IOUtils.copy(source, byteArrayOutputStream);
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 }

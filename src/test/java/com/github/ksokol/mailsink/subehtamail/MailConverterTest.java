@@ -2,6 +2,7 @@ package com.github.ksokol.mailsink.subehtamail;
 
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.entity.MailAttachment;
+import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -116,6 +117,14 @@ public class MailConverterTest {
     }
 
     @Test
+    public void shouldAttachMailSource() throws Exception {
+        String source = "plain1";
+        givenMail(source);
+
+        assertThat(mail.getSource(), is(IOUtils.toString(fromSource(source))));
+    }
+
+    @Test
     public void shouldExtractAttachments() throws Exception {
         givenMail("plain1_attachment");
 
@@ -129,6 +138,10 @@ public class MailConverterTest {
     }
 
     private void givenMail(String name) throws IOException {
-        mail = converter.convert(new ClassPathResource("mime4j/" + name + ".eml").getInputStream());
+        mail = converter.convert(fromSource(name));
+    }
+
+    private static InputStream fromSource(String name) throws IOException {
+        return new ClassPathResource("mime4j/" + name + ".eml").getInputStream();
     }
 }
