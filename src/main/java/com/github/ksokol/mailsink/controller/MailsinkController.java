@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 /**
  * @author Kamill Sokol
@@ -52,6 +53,15 @@ public class MailsinkController {
         Mail mail = mailRepository.findOne(id);
         if(mail != null) {
             return ResponseEntity.ok(mail.getHtml());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "mails/{id}/source", produces = TEXT_PLAIN_VALUE)
+    public ResponseEntity<?> mailsSource(@PathVariable Long id) {
+        Mail mail = mailRepository.findOne(id);
+        if(mail != null) {
+            return ResponseEntity.ok(mail.getSource());
         }
         return ResponseEntity.notFound().build();
     }

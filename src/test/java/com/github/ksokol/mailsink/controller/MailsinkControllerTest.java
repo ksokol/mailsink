@@ -82,4 +82,16 @@ public class MailsinkControllerTest {
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(content().string("html"));
     }
+
+    @Test
+    public void shouldAnswerWitMailSourceWhenMailForGivenIdFound() throws Exception {
+        Mail mail = new Mail();
+        mail.setSource("source");
+        given(mailRepository.findOne(1L)).willReturn(mail);
+
+        mvc.perform(get("/mails/1/source"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain;charset=UTF-8"))
+                .andExpect(content().string("source"));
+    }
 }
