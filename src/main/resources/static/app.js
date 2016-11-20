@@ -198,3 +198,13 @@ app.component('messageHtml', {
         });
     }
 });
+
+app.component('messageSource', {
+    bindings: {
+        id: '<'
+    },
+    template: '<a target="_blank" href="{{url}}">Source</a>',
+    controller: function($scope) {
+        $scope.url = 'mails/' + this.id + '/source';
+    }
+});

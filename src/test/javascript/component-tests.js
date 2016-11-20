@@ -193,3 +193,24 @@ describe('Component: messageHtml', function () {
         expect(iframe.removeClass).toHaveBeenCalledWith('hidden');
     });
 });
+
+describe('Component: messageSourcec', function() {
+
+    var scope, element;
+
+    beforeEach(module('mailsinkApp'));
+
+    beforeEach(inject(function($compile, $rootScope) {
+        scope = $rootScope.$new();
+        element = $compile('<message-source id="42"></message-source>')(scope);
+        scope.$digest();
+    }));
+
+    it('should build href attribute for mail source', function () {
+        expect(element.find('a').attr('href')).toBe('mails/42/source');
+    });
+
+    it('should open mail source in new tab', function () {
+        expect(element.find('a').attr('target')).toBe('_blank');
+    });
+});
