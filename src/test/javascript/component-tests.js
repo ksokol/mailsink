@@ -127,4 +127,67 @@ describe('Component: messageHtml', function() {
 
         expect(element.find('iframe').attr('src')).toBe('mails/42/html');
     });
+
+    it('should hide frame border', function () {
+        expect(element.find('iframe').attr('frameborder')).toBe('0');
+    });
+
+});
+
+describe('Component: messageHtml', function () {
+
+    var $componentController;
+
+    beforeEach(module('mailsinkApp'));
+
+    beforeEach(inject(function(_$componentController_) {
+        $componentController = _$componentController_;
+    }));
+
+    it('should subscribe to load function on iframe', function() {
+        var el = {
+            find: {}
+        };
+
+        var iframe = {
+            on: jasmine.createSpy('iframe on function')
+        };
+
+        spyOn(el, 'find').and.returnValue(iframe);
+        $componentController('messageHtml', {$element: el}, null);
+
+        expect(el.find).toHaveBeenCalledWith('iframe');
+        expect(iframe.on).toHaveBeenCalledWith('load', jasmine.any(Function));
+    });
+
+    it('should resize iframe after load', function() {
+        var loadCallback;
+
+        var iframe = {
+            on: function(type, fn) {
+                loadCallback = fn;
+            },
+            0: {
+                contentWindow: {
+                    document: {
+                        body: {
+                            scrollHeight: 200
+                        }
+                    }
+                }
+            },
+            css: jasmine.createSpy()
+        };
+
+        var el = {
+            find: function() {
+                return iframe;
+            }
+        };
+
+        $componentController('messageHtml', {$element: el}, null);
+        loadCallback();
+
+        expect(iframe.css.calls.allArgs()).toEqual([['width', '100%'], ['height', '200px']]);
+    });
 });
