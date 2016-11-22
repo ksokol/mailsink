@@ -54,7 +54,7 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', '$uibModa
         });
     };
 
-    $stomp.connect('/incoming-mail')
+    $stomp.connect('/ws')
     .then(function () {
         $stomp.subscribe('/topic/incoming-mail', function () {
             fetch();

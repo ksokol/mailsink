@@ -38,7 +38,7 @@ public class MailsinkApplicationTests {
     private static final int SERVER_PORT = 12525;
     private static final String TOPIC_INCOMING_MAIL = "/topic/incoming-mail";
     private static final String TOPIC_SMTP_LOG = "/topic/smtp-log";
-    private static final String WEB_SOCKET_PATH = "/incoming-mail/websocket";
+    private static final String WEB_SOCKET_PATH = "/ws/websocket";
 
     @BeforeClass
     public static void setUp() throws Exception {

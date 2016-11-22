@@ -209,7 +209,7 @@ describe('MailCtrl controller', function() {
             httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
             httpBackend.flush();
 
-            expect(stomp.broker).toBe('/incoming-mail');
+            expect(stomp.broker).toBe('/ws');
             expect(stomp.topic).toBe('/topic/incoming-mail');
         });
     });
