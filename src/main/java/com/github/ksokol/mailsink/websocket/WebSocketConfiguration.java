@@ -1,5 +1,7 @@
 package com.github.ksokol.mailsink.websocket;
 
+import ch.qos.logback.ext.spring.ApplicationContextHolder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
@@ -23,4 +25,8 @@ public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfig
         registry.addEndpoint("/incoming-mail").withSockJS();
     }
 
+    @Bean
+    public ApplicationContextHolder applicationContextHolder() {
+        return new ApplicationContextHolder();
+    }
 }

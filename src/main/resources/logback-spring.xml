@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+  <appender name="websocketAppender" class="ch.qos.logback.ext.spring.DelegatingLogbackAppender" />
+
+  <logger name="org.subethamail.smtp.server.Session" level="DEBUG">
+    <appender-ref ref="websocketAppender"/>
+  </logger>
+
+</configuration>

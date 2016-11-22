@@ -18,19 +18,26 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 
 public class MailsinkApplicationTests {
 
     private static final int SMTP_PORT = 12500;
     private static final int SERVER_PORT = 12525;
-    private static final String TOPIC = "/topic/incoming-mail";
+    private static final String TOPIC_INCOMING_MAIL = "/topic/incoming-mail";
+    private static final String TOPIC_SMTP_LOG = "/topic/smtp-log";
     private static final String WEB_SOCKET_PATH = "/incoming-mail/websocket";
 
     @BeforeClass
@@ -57,18 +64,37 @@ public class MailsinkApplicationTests {
     }
 
     @Test
-    public void shouldSendMessageThrowWebSocketWhenMailReceived() throws Exception {
-        WebSocketConnection connection = connectToWebSocket();
+    public void shouldSendIncomingMailThroughWebSocketWhenMailReceived() throws Exception {
+        WebSocketConnection connection = connectToIncomingLogTopic();
         sendMail();
 
-        assertThat(connection.getMessage(), hasEntry("sender", "from"));
+        assertThat(connection.getMessages(), hasItem(hasEntry("sender", "from")));
     }
 
-    private WebSocketConnection connectToWebSocket() throws InterruptedException {
+    @Test
+    public void shouldSendSmtpLogThroughWebSocketWhenMailReceived() throws Exception {
+        WebSocketConnection connection = connectToSmtpLogTopic();
+        sendMail();
+
+        assertThat(connection.getMessages(), hasItem(allOf(
+                hasEntry(is("line"), is("Server: 250 Ok")),
+                hasEntry(is("time"), notNullValue())
+        )));
+    }
+
+    private WebSocketConnection connectToIncomingLogTopic() throws InterruptedException {
+        return connectToWebSocket(TOPIC_INCOMING_MAIL, 1);
+    }
+
+    private WebSocketConnection connectToSmtpLogTopic() throws InterruptedException {
+        return connectToWebSocket(TOPIC_SMTP_LOG, 13);
+    }
+
+    private WebSocketConnection connectToWebSocket(String topic, int messageCount) throws InterruptedException {
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-        MyStompSessionHandler session = new MyStompSessionHandler();
+        MyStompSessionHandler session = new MyStompSessionHandler(topic, messageCount);
         stompClient.connect("ws://localhost:" + SERVER_PORT + WEB_SOCKET_PATH, session);
         Thread.sleep(2000); // wait one second before proceeding
         return session;
@@ -89,35 +115,41 @@ public class MailsinkApplicationTests {
 
     private static class MyStompSessionHandler extends StompSessionHandlerAdapter implements WebSocketConnection {
 
-        private final CountDownLatch latch = new CountDownLatch(1);
+        private final CountDownLatch latch;
+        private final String topic;
 
-        private Map<String, String> res;
+        private List<Map<String, String>> messages = new ArrayList<>();
+
+        public MyStompSessionHandler(String topic, int messageCount) {
+            this.topic = topic;
+            this.latch = new CountDownLatch(messageCount);
+        }
 
         @Override
-        public Map<String, String> getMessage() throws InterruptedException {
+        public List<Map<String, String>> getMessages() throws InterruptedException {
             if (latch.await(5, TimeUnit.SECONDS)) {
-                return res;
+                return messages;
             }
             throw new AssertionError("no message received");
         }
 
         @Override
         public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-            session.subscribe(TOPIC, new StompFrameHandler() {
+            session.subscribe(topic, new StompFrameHandler() {
                 @Override
                 public Type getPayloadType(StompHeaders headers) {
                     return Map.class;
                 }
                 @Override
                 public void handleFrame(StompHeaders headers, Object payload) {
+                    messages.add((Map<String, String>) payload);
                     latch.countDown();
-                    res = (Map<String, String>) payload;
                 }
             });
         }
     }
 
     private interface WebSocketConnection {
-        Map<String, String> getMessage() throws InterruptedException;
+        List<Map<String, String>> getMessages() throws InterruptedException;
     }
 }
