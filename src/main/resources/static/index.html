@@ -8,6 +8,26 @@
 
     <link rel="stylesheet" type="text/css" media="screen" href="webjars/bootstrap/3.3.7-1/css/bootstrap.min.css"/>
     <style>
+        #wrapper {
+            min-height: 100%;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: inline-block;
+        }
+        #main-wrapper {
+            height: 100%;
+            overflow-y: auto;
+            padding: 50px 0 0 0;
+        }
+        #main {
+            position: relative;
+            height: 100%;
+            padding: 0 15px;
+            overflow-y: scroll;
+        }
         .nav li a:hover {
             cursor: pointer;
         }
@@ -27,46 +47,54 @@
     <script src="app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-default" ng-controller="NavigationCtrl">
-            <div class="container-fluid">
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a class="glyphicon glyphicon-envelope" ng-click="createMail()"></a></li>
-                        <li><a class="glyphicon glyphicon-refresh" ng-click="refresh()"></a></li>
-                        <li><a class="glyphicon glyphicon-trash" ng-click="purge()"></a></li>
-                    </ul>
+    <nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavigationCtrl">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a class="glyphicon glyphicon-envelope" ng-click="createMail()"></a></li>
+                    <li><a class="glyphicon glyphicon-refresh" ng-click="refresh()"></a></li>
+                    <li><a class="glyphicon glyphicon-trash" ng-click="purge()"></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="wrapper">
+        <div id="main-wrapper" class="col-md-12">
+            <div id="main">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <alert-message class="hidden">
+                            <div class="alert alert-warning alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" ng-click="close()">
+                                    <span>&times;</span>
+                                </button>
+                                <strong>Warning!</strong> {{message}}
+                            </div>
+                        </alert-message>
+
+                        <table class="table table-hover" ng-controller="MailCtrl">
+                            <thead ng-if="mails.length > 0">
+                            <tr>
+                                <th>Sender</th>
+                                <th>Recipient</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="mail in mails" ng-click="click(mail)">
+                                <td>{{::mail.sender}}</td>
+                                <td>{{::mail.recipient}}</td>
+                                <td>{{::mail.subject}}</td>
+                                <td>{{::mail.createdAt}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </nav>
-
-        <alert-message class="hidden">
-            <div class="alert alert-warning alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" ng-click="close()">
-                    <span>&times;</span>
-                </button>
-                <strong>Warning!</strong> {{message}}
-            </div>
-        </alert-message>
-
-        <table class="table table-hover" ng-controller="MailCtrl">
-            <thead ng-if="mails.length > 0">
-            <tr>
-                <th>Sender</th>
-                <th>Recipient</th>
-                <th>Subject</th>
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="mail in mails" ng-click="click(mail)">
-                <td>{{::mail.sender}}</td>
-                <td>{{::mail.recipient}}</td>
-                <td>{{::mail.subject}}</td>
-                <td>{{::mail.createdAt}}</td>
-            </tr>
-            </tbody>
-        </table>
+        </div>
     </div>
 </body>
 </html>
