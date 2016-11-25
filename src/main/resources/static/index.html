@@ -76,18 +76,18 @@
                         <table class="table table-hover" ng-controller="MailCtrl">
                             <thead ng-if="mails.length > 0">
                             <tr>
-                                <th>Sender</th>
-                                <th>Recipient</th>
-                                <th>Subject</th>
-                                <th>Date</th>
+                                <th class="col-xs-2">Sender</th>
+                                <th class="col-xs-2">Recipient</th>
+                                <th class="col-xs-2">Subject</th>
+                                <th class="col-xs-2">Date</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="mail in mails" ng-click="click(mail)">
-                                <td>{{::mail.sender}}</td>
-                                <td>{{::mail.recipient}}</td>
-                                <td>{{::mail.subject}}</td>
-                                <td>{{::mail.createdAt}}</td>
+                                <td class="col-xs-2">{{::mail.sender}}</td>
+                                <td class="col-xs-2">{{::mail.recipient}}</td>
+                                <td class="col-xs-2">{{::mail.subject}}</td>
+                                <td class="col-xs-2">{{::mail.createdAt}}</td>
                             </tr>
                             </tbody>
                         </table>
