@@ -36,7 +36,8 @@ public class WebsocketLogAppenderTest {
 
         appender.append(event);
 
-        Map<String, String> message = new HashMap<>();
+        Map<String, Object> message = new HashMap<>();
+        message.put("number", 1L);
         message.put("line", "formatted message");
         message.put("time", "1970-01-01T00:00:01.020");
 

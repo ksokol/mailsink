@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 
@@ -25,6 +26,7 @@ class WebsocketLogAppender extends AppenderBase<ILoggingEvent> {
     private static final DateTimeFormatter formatterMillis = new DateTimeFormatterBuilder().appendFraction(NANO_OF_SECOND, 0, 3, false).toFormatter();
     private static final String TOPIC_SMTP_LOG = "/topic/smtp-log";
 
+    private final AtomicLong lineNumber = new AtomicLong(0);
     private final SimpMessagingTemplate template;
 
     public WebsocketLogAppender(SimpMessagingTemplate template) {
@@ -35,6 +37,7 @@ class WebsocketLogAppender extends AppenderBase<ILoggingEvent> {
     protected void append(ILoggingEvent event) {
         Map<String, Object> map = new HashMap<>();
 
+        map.put("number", lineNumber.incrementAndGet());
         map.put("line", event.getFormattedMessage());
         map.put("time", formatIsoTime(event));
 
