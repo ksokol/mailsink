@@ -32,13 +32,13 @@ public class WebsocketLogAppenderTest {
     @Test
     public void shouldEmitLogMessage() throws Exception {
         given(event.getFormattedMessage()).willReturn("formatted message");
-        given(event.getTimeStamp()).willReturn(1L);
+        given(event.getTimeStamp()).willReturn(1020L);
 
         appender.append(event);
 
         Map<String, String> message = new HashMap<>();
         message.put("line", "formatted message");
-        message.put("time", "1970-01-01T00:00:00.001");
+        message.put("time", "1970-01-01T00:00:01.020");
 
         verify(template).convertAndSend("/topic/smtp-log", message);
     }

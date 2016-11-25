@@ -9,16 +9,20 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 
 /**
  * @author Kamill Sokol
  */
 @Component(value = "websocketAppender")
-public class WebsocketLogAppender extends AppenderBase<ILoggingEvent> {
+class WebsocketLogAppender extends AppenderBase<ILoggingEvent> {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private static final DateTimeFormatter formatterMillis = new DateTimeFormatterBuilder().appendFraction(NANO_OF_SECOND, 0, 3, false).toFormatter();
     private static final String TOPIC_SMTP_LOG = "/topic/smtp-log";
 
     private final SimpMessagingTemplate template;
@@ -29,7 +33,7 @@ public class WebsocketLogAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        Map<Object, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
         map.put("line", event.getFormattedMessage());
         map.put("time", formatIsoTime(event));
@@ -40,6 +44,7 @@ public class WebsocketLogAppender extends AppenderBase<ILoggingEvent> {
     private static String formatIsoTime(ILoggingEvent event) {
         long timeStamp = event.getTimeStamp();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStamp), ZoneId.of("UTC"));
-        return localDateTime.format(formatter);
+        String millisWithPaddingRight = String.format("%-3s", localDateTime.format(formatterMillis)).replace(' ', '0');
+        return localDateTime.format(formatter) + "." + millisWithPaddingRight;
     }
 }
