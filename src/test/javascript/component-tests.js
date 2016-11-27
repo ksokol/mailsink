@@ -224,7 +224,7 @@ describe('Component: smtpLog', function() {
         stompService.subscribe.calls.argsFor(0)[1](data);
     };
 
-    beforeEach(module('mailsinkApp', 'htmlTemplates', 'mockNgStomp'));
+    beforeEach(module('mailsinkApp', 'htmlTemplates'));
 
     beforeEach(inject(function($compile, $rootScope, $httpBackend, _stompService_) {
         scope = $rootScope.$new();
