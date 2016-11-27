@@ -217,14 +217,21 @@ describe('Component: messageSource', function() {
 
 describe('Component: smtpLog', function() {
 
-    var scope, element, stomp, httpBackend;
+    var scope, element, httpBackend;
+    var stompService = {};
+
+    var push = function(data) {
+        stompService.subscribe.calls.argsFor(0)[1](data);
+    };
 
     beforeEach(module('mailsinkApp', 'htmlTemplates', 'mockNgStomp'));
 
-    beforeEach(inject(function($compile, $rootScope, $httpBackend, $stomp) {
+    beforeEach(inject(function($compile, $rootScope, $httpBackend, _stompService_) {
         scope = $rootScope.$new();
-        stomp = $stomp;
         httpBackend = $httpBackend;
+
+        stompService = _stompService_;
+        spyOn(stompService, 'subscribe');
 
         httpBackend.whenGET('smtp-log.html').respond('smtp-log.html');
         element = $compile('<smtp-log></smtp-log>')(scope);
@@ -237,7 +244,7 @@ describe('Component: smtpLog', function() {
     });
 
     it('should show smtp log event', function () {
-        stomp.push({ number: 1, line: 'line1', time: 'time1'});
+        push({ number: 1, line: 'line1', time: 'time1'});
         scope.$digest();
 
         expect(element.find('.intellij-default-line-number-text')[0].innerText).toEqual('1');
@@ -246,8 +253,8 @@ describe('Component: smtpLog', function() {
     });
 
     it('should show multiple log events', function () {
-        stomp.push('expected data1');
-        stomp.push('expected data2');
+        push('expected data1');
+        push('expected data2');
 
         expect(element.isolateScope().emptyLogs()).toEqual(false);
         expect(element.isolateScope().logs()).toEqual(['expected data1', 'expected data2']);
@@ -255,7 +262,7 @@ describe('Component: smtpLog', function() {
 
     it('should recycle buffer when more than fifty log events received', function () {
         for(var i=0;i<=51;i++) {
-            stomp.push(i);
+            push(i);
         }
 
         var expected = [];
@@ -267,8 +274,7 @@ describe('Component: smtpLog', function() {
     });
 
     it('should connect to proper broker and subscribe to proper topic', function() {
-        expect(stomp.broker()).toBe('/ws');
-        expect(stomp.topic()).toBe('/topic/smtp-log');
+        expect(stompService.subscribe).toHaveBeenCalledWith('smtp-log', jasmine.any(Function));
     });
 
     it('should scroll to bottom when new smtp log event received', function() {

@@ -41,7 +41,7 @@ app.directive('alertMessage', ['$rootScope', function($rootScope) {
     };
 }]);
 
-app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', '$uibModal', function($scope, $rootScope, $http, $stomp, $modal) {
+app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$uibModal', 'stompService', function($scope, $rootScope, $http, $modal, stompService) {
 
     $scope.mails = [];
 
@@ -54,12 +54,7 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$stomp', '$uibModa
         });
     };
 
-    $stomp.connect('/ws')
-    .then(function () {
-        $stomp.subscribe('/topic/incoming-mail', function () {
-            fetch();
-        });
-    });
+    stompService.subscribe('incoming-mail', fetch);
 
     fetch();
 
@@ -211,13 +206,11 @@ app.component('messageSource', {
 
 app.component('smtpLog', {
     templateUrl: 'smtp-log.html',
-    controller: function($scope, $element, $stomp) {
+    controller: function($scope, $element, stompService) {
         var buffer = new CBuffer(50);
 
-        $stomp.connect('/ws').then(function() {
-            $stomp.subscribe('/topic/smtp-log', function (logLine) {
-                buffer.push(logLine);
-            });
+        stompService.subscribe('smtp-log', function(logLine) {
+            buffer.push(logLine);
         });
 
         $scope.emptyLogs = function() {
@@ -228,4 +221,20 @@ app.component('smtpLog', {
             return buffer.toArray();
         };
     }
+});
+
+app.service('stompService', function($stomp) {
+    var endpoint = '/ws';
+    var topicPrefix = '/topic/';
+
+    var errorFn = function() {};
+
+    return {
+        subscribe: function(topicName, fn) {
+            $stomp.connect(endpoint, null, errorFn)
+            .then(function() {
+                $stomp.subscribe(topicPrefix + topicName, fn);
+            });
+        }
+    };
 });

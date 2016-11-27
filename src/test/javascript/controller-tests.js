@@ -109,7 +109,9 @@ describe('MailCtrl controller', function() {
 
     describe('on interaction', function() {
 
-        var httpBackend, stomp;
+        var httpBackend, httpCallChain;
+
+        var stompService = {};
 
         var aMail = {
             'messageId' : '<68508964.31.1477845062277@localhost>',
@@ -136,18 +138,22 @@ describe('MailCtrl controller', function() {
             }
         };
 
-        beforeEach(module('mailsinkApp', 'mockNgStomp'));
+        beforeEach(module('mailsinkApp'));
 
-        beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, $stomp) {
+        beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, _stompService_) {
             scope = $rootScope.$new();
             httpBackend = _$httpBackend_;
             rootScope = $rootScope;
-            stomp = $stomp;
+
+            stompService = _stompService_;
+            spyOn(stompService, 'subscribe');
 
             $controller('MailCtrl', {
                 $scope: scope,
                 $rootScope: rootScope
             });
+
+            httpCallChain = httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, aResponse);
         }));
 
         afterEach(function() {
@@ -156,15 +162,13 @@ describe('MailCtrl controller', function() {
         });
 
         it('should fetch mails from backend when initialized', function () {
-            httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, aResponse);
-
             httpBackend.flush();
 
             expect(scope.mails).toEqual([ aMail ]);
         });
 
         it('should refresh mails when event refresh was fired', function () {
-            httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'refreshed mails' }} );
+            httpCallChain.respond(200, { _embedded: { mails:  'refreshed mails' }} );
 
             rootScope.$emit('refresh');
             httpBackend.flush();
@@ -173,20 +177,18 @@ describe('MailCtrl controller', function() {
         });
 
         it('should refresh mails when websocket message received', function() {
-            httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
-
-            stomp.push();
+            httpCallChain.respond(200, { _embedded: { mails:  'triggered by websocket message' }});
+            stompService.subscribe.calls.argsFor(0)[1]();
+            scope.$digest();
             httpBackend.flush();
 
             expect(scope.mails).toBe('triggered by websocket message');
         });
 
-        it('should connect to proper broker and subscribe to proper topic', function() {
-            httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
+        it('should subscribe to proper topic', function() {
             httpBackend.flush();
 
-            expect(stomp.broker()).toBe('/ws');
-            expect(stomp.topic()).toBe('/topic/incoming-mail');
+            expect(stompService.subscribe).toHaveBeenCalledWith('incoming-mail', jasmine.any(Function));
         });
     });
 });
