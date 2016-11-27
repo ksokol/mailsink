@@ -194,7 +194,7 @@ describe('Component: messageHtml', function () {
     });
 });
 
-describe('Component: messageSourcec', function() {
+describe('Component: messageSource', function() {
 
     var scope, element;
 
@@ -212,5 +212,66 @@ describe('Component: messageSourcec', function() {
 
     it('should open mail source in new tab', function () {
         expect(element.find('a').attr('target')).toBe('_blank');
+    });
+});
+
+describe('Component: smtpLog', function() {
+
+    var scope, element, stomp, httpBackend;
+
+    beforeEach(module('mailsinkApp', 'htmlTemplates', 'mockNgStomp'));
+
+    beforeEach(inject(function($compile, $rootScope, $httpBackend, $stomp) {
+        scope = $rootScope.$new();
+        stomp = $stomp;
+        httpBackend = $httpBackend;
+
+        httpBackend.whenGET('smtp-log.html').respond('smtp-log.html');
+        element = $compile('<smtp-log></smtp-log>')(scope);
+        scope.$digest();
+    }));
+
+    it('should initialize empty buffer', function () {
+        expect(element.isolateScope().emptyLogs()).toEqual(true);
+        expect(element.isolateScope().logs()).toEqual([]);
+    });
+
+    it('should show smtp log event', function () {
+        stomp.push({ number: 1, line: 'line1', time: 'time1'});
+        scope.$digest();
+
+        expect(element.find('.intellij-default-line-number-text')[0].innerText).toEqual('1');
+        expect(element.find('.intellij-default-todo-text')[0].innerText).toEqual('time1');
+        expect(element.find('.intellij-default-text')[0].innerText).toEqual('line1');
+    });
+
+    it('should show multiple log events', function () {
+        stomp.push('expected data1');
+        stomp.push('expected data2');
+
+        expect(element.isolateScope().emptyLogs()).toEqual(false);
+        expect(element.isolateScope().logs()).toEqual(['expected data1', 'expected data2']);
+    });
+
+    it('should recycle buffer when more than fifty log events received', function () {
+        for(var i=0;i<=51;i++) {
+            stomp.push(i);
+        }
+
+        var expected = [];
+        for(var j=2;j<=51;j++) {
+            expected.push(j);
+        }
+
+        expect(element.isolateScope().logs()).toEqual(expected);
+    });
+
+    it('should connect to proper broker and subscribe to proper topic', function() {
+        expect(stomp.broker()).toBe('/ws');
+        expect(stomp.topic()).toBe('/topic/smtp-log');
+    });
+
+    it('should scroll to bottom when new smtp log event received', function() {
+        expect(element.find('.smtp-log')[0].hasAttribute('scroll-glue')).toBe(true);
     });
 });

@@ -1,0 +1,10 @@
+<div class="smtp-log" scroll-glue>
+    <div class="row smtp-log-row" ng-repeat="log in logs()">
+        <div class="col-xs-1 intellij-default-background-line-number">
+            <span class="intellij-default-line-number-text">{{log.number}}</span>
+        </div>
+        <div class="col-xs-11 intellij-default-background smtp-log-line">
+            <span class="intellij-default-todo-text">{{log.time}}</span><span class="intellij-default-text">{{log.line}}</span>
+        </div>
+    </div>
+</div>

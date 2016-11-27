@@ -109,9 +109,7 @@ describe('MailCtrl controller', function() {
 
     describe('on interaction', function() {
 
-        var httpBackend;
-
-        var stomp = {};
+        var httpBackend, stomp;
 
         var aMail = {
             'messageId' : '<68508964.31.1477845062277@localhost>',
@@ -138,33 +136,13 @@ describe('MailCtrl controller', function() {
             }
         };
 
-        beforeEach(module('mailsinkApp', function($provide) {
-            $provide.provider('$stomp', function() {
-                return {
-                    $get: function() {
-                        return {
-                            connect: function(broker) {
-                                stomp['broker'] = broker;
-                                return {
-                                    then: function(fn) {
-                                        fn();
-                                    }
-                                };
-                            },
-                            subscribe: function(url, fn) {
-                                stomp['topic'] = url;
-                                stomp['callback'] = fn;
-                            }
-                        };
-                    }
-                };
-            });
-        }));
+        beforeEach(module('mailsinkApp', 'mockNgStomp'));
 
-        beforeEach(inject(function ($rootScope, $controller, _$httpBackend_) {
+        beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, $stomp) {
             scope = $rootScope.$new();
             httpBackend = _$httpBackend_;
             rootScope = $rootScope;
+            stomp = $stomp;
 
             $controller('MailCtrl', {
                 $scope: scope,
@@ -195,11 +173,9 @@ describe('MailCtrl controller', function() {
         });
 
         it('should refresh mails when websocket message received', function() {
-            expect(scope.mails).toEqual([]);
-
-            stomp.callback();
-
             httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
+
+            stomp.push();
             httpBackend.flush();
 
             expect(scope.mails).toBe('triggered by websocket message');
@@ -209,8 +185,8 @@ describe('MailCtrl controller', function() {
             httpBackend.when('GET', 'mails/search/findAllOrderByCreatedAtDesc').respond(200, { _embedded: { mails:  'triggered by websocket message' }});
             httpBackend.flush();
 
-            expect(stomp.broker).toBe('/ws');
-            expect(stomp.topic).toBe('/topic/incoming-mail');
+            expect(stomp.broker()).toBe('/ws');
+            expect(stomp.topic()).toBe('/topic/incoming-mail');
         });
     });
 });

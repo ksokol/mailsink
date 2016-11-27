@@ -1,4 +1,4 @@
-var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ui.bootstrap.tabs', 'ngStomp']);
+var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ui.bootstrap.tabs', 'ngStomp', 'luegg.directives']);
 
 app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
     return {
@@ -206,5 +206,26 @@ app.component('messageSource', {
     template: '<a target="_blank" href="{{url}}">Source</a>',
     controller: function($scope) {
         $scope.url = 'mails/' + this.id + '/source';
+    }
+});
+
+app.component('smtpLog', {
+    templateUrl: 'smtp-log.html',
+    controller: function($scope, $element, $stomp) {
+        var buffer = new CBuffer(50);
+
+        $stomp.connect('/ws').then(function() {
+            $stomp.subscribe('/topic/smtp-log', function (logLine) {
+                buffer.push(logLine);
+            });
+        });
+
+        $scope.emptyLogs = function() {
+            return buffer.toArray().length === 0;
+        };
+
+        $scope.logs = function() {
+            return buffer.toArray();
+        };
     }
 });

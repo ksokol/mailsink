@@ -20,7 +20,7 @@
         #main-wrapper {
             height: 100%;
             overflow-y: auto;
-            padding: 50px 0 0 0;
+            padding: 50px 0 140px 0;
         }
         #main {
             position: relative;
@@ -38,12 +38,51 @@
             width: 900px;
             margin-left: -150px;
         }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .smtp-log {
+            background: linear-gradient(90deg, #313335 70px, #2B2B2B 70px);
+            width: 100%;
+            height: 140px;
+            overflow-y: scroll;
+        }
+        .smtp-log-row {
+            margin-right: 0;
+            margin-left: 0;
+        }
+        .smtp-log-line > span:first-child {
+            padding-right: 5px;
+        }
+        .intellij-default-background {
+            padding-left: 10px;
+            width: calc(100% - 70px);
+        }
+        .intellij-default-background-line-number {
+            width: 70px;
+            padding-right: 5px;
+            text-align: right;
+        }
+        .intellij-default-line-number-text {
+            color: #606366;
+        }
+        .intellij-default-todo-text {
+            color: #A8C023;
+        }
+        .intellij-default-text {
+            color: #BABABA;
+        }
     </style>
     <script src="webjars/angular/1.5.8/angular.min.js"></script>
     <script src="webjars/angular-sanitize/1.5.8/angular-sanitize.js"></script>
     <script src="webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap-tpls.min.js"></script>
     <script src="webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap.min.js"></script>
     <script src="webjars/ng-stomp/0.3.0/dist/ng-stomp.standalone.min.js"></script>
+    <script src="webjars/angular-scroll-glue/2.0.6/src/scrollglue.js"></script>
+    <script src="webjars/CBuffer/1.1.1/cbuffer.js"></script>
     <script src="app.js"></script>
 </head>
 <body>
@@ -95,6 +134,9 @@
                 </div>
             </div>
         </div>
+        <footer class="col-xs-12 footer">
+            <smtp-log></smtp-log>
+        </footer>
     </div>
 </body>
 </html>
