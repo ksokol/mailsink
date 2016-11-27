@@ -100,8 +100,8 @@
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
-      <artifactId>ng-stomp</artifactId>
-      <version>0.3.0</version>
+      <artifactId>stomp-websocket</artifactId>
+      <version>2.3.4</version>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>

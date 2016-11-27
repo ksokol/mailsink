@@ -1,50 +1,157 @@
 describe('Service: stompService', function() {
 
-    var stomp = {};
+    var stompService, rootScope;
 
-    var stompService;
+    var stompMock = {
+        listener: {}
+    };
+
+    var timeoutMock = {};
 
     beforeEach(module('mailsinkApp', function($provide) {
-        $provide.provider('$stomp', function() {
+        $provide.provider('stompFactory', function() {
             return {
                 $get: function() {
                     return {
-                        connect: function(broker) {
-                            stomp['broker'] = broker;
+                        endpoint: null,
+                        client: function(endpoint) {
+                            stompMock['endpoint'] = endpoint;
                             return {
-                                then: function(fn) {
-                                    fn();
+                                connect: function(login,password, onConnect, onError) {
+                                    stompMock['onConnect'] = onConnect;
+                                    stompMock['onError'] = onError;
+                                },
+                                subscribe: function(topic, fn) {
+                                    stompMock.listener[topic] = fn;
                                 }
-                            };
-                        },
-                        subscribe: function(url, fn) {
-                            stomp['topic'] = url;
-                            stomp['push'] = fn;
+                            }
                         }
                     };
                 }
             };
         });
-    }));
 
-    beforeEach(inject(function ($stomp, _stompService_) {
-        stomp = $stomp;
-        stompService = _stompService_;
-    }));
-
-    it('should push data to subscriber', function(done) {
-        stompService.subscribe('test', function(data) {
-            expect(data).toEqual('data');
-            done()
+        $provide.provider('WEB_SOCKET_ENDPOINT', function() {
+            return {
+                $get: function() {
+                    return 'WEB_SOCKET_ENDPOINT';
+                }
+            };
         });
 
-        stomp.push('data');
+        $provide.provider('TOPIC_PREFIX', function() {
+            return {
+                $get: function() {
+                    return 'TOPIC_PREFIX';
+                }
+            };
+        });
+
+        $provide.provider('$timeout', function() {
+            return {
+                $get: function() {
+                    return function(fn, delay, invokeApply) {
+                        timeoutMock['fn'] = fn;
+                        timeoutMock['delay'] = delay;
+                        timeoutMock['invokeApply'] = invokeApply;
+                        fn(delay, invokeApply);
+                    }
+                }
+            };
+        });
+    }));
+
+    beforeEach(inject(function ($rootScope, _stompService_) {
+        stompService = _stompService_;
+        rootScope = $rootScope;
+    }));
+
+    xit('should connect to proper websocket endpoint', function() {
+        expect(stompMock.endpoint).toEqual('WEB_SOCKET_ENDPOINT');
     });
 
-    it('should subscribe to proper broker and topic', function() {
-        stompService.subscribe('test');
+    it('should connect with proper topic prefix', function() {
+        stompService.subscribe('aTopic', function() {});
+        stompMock.onConnect();
+        rootScope.$digest();
 
-        expect(stomp.broker).toEqual('/ws');
-        expect(stomp.topic).toEqual('/topic/test');
+        expect(stompMock.listener['/topic/aTopic']).toBeDefined();
+    });
+
+    it('should propagate message to subscribers', function(done) {
+        stompService.subscribe('firstTopic', function(data) {
+            expect(data).toEqual(['expected firstTopic message']);
+            done();
+        });
+
+        stompService.subscribe('secondTopic', function(data) {
+            expect(data).toEqual(['expected secondTopic message']);
+            done();
+        });
+
+        stompMock.onConnect();
+        rootScope.$digest();
+
+        stompMock.listener['/topic/firstTopic']({
+            headers: {
+                destination: '/topic/firstTopic'
+            },
+            body: '["expected firstTopic message"]'
+        });
+
+        stompMock.listener['/topic/secondTopic']({
+            headers: {
+                destination: '/topic/secondTopic'
+            },
+            body: '["expected secondTopic message"]'
+        });
+    });
+
+    it('should not propagate message to unrelated topic', function() {
+        stompService.subscribe('firstTopic', function() {
+            fail("unexpected message");
+        });
+
+        stompMock.onConnect();
+        rootScope.$digest();
+
+        stompMock.listener['/topic/secondTopic']({
+            headers: {
+                destination: '/topic/secondTopic'
+            },
+            body: '["expected secondTopic message"]'
+        });
+    });
+
+    it('should receive message after reconnect', function(done) {
+        stompMock.onError();
+
+        stompService.subscribe('firstTopic', function(data) {
+            expect(data).toEqual(["expected firstTopic message"]);
+            done();
+        });
+
+        timeoutMock.fn();
+        stompMock.onConnect();
+        rootScope.$digest();
+
+        stompMock.listener['/topic/firstTopic']({
+            headers: {
+                destination: '/topic/firstTopic'
+            },
+            body: '["expected firstTopic message"]'
+        });
+    });
+
+    it('should try to reconnect after a predefined amount of milliseconds', function() {
+        stompMock.onError();
+
+        expect(timeoutMock.delay).toEqual(1000);
+    });
+
+    it('should not call apply', function() {
+        stompMock.onError();
+
+        expect(timeoutMock.invokeApply).toEqual(false);
     });
 });

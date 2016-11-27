@@ -1,4 +1,14 @@
-var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ui.bootstrap.tabs', 'ngStomp', 'luegg.directives']);
+var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ui.bootstrap.tabs', 'luegg.directives']);
+
+app.constant('TOPIC_PREFIX', '/topic');
+
+app.factory('WEB_SOCKET_ENDPOINT', function($window) {
+    return 'ws://' + $window.location.hostname + ':' + $window.location.port + '/ws/websocket';
+});
+
+app.factory('stompFactory', function() {
+    return Stomp;
+});
 
 app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
     return {
@@ -223,18 +233,61 @@ app.component('smtpLog', {
     }
 });
 
-app.service('stompService', function($stomp) {
-    var endpoint = '/ws';
-    var topicPrefix = '/topic/';
+app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $timeout, $log, stompFactory) {
+    var deferred = $q.defer();
+    var listeners = [];
+    var stompClient;
 
-    var errorFn = function() {};
+    var onConnect = function() {
+        $log.log('connected');
+        deferred.resolve();
+    };
+
+    var onError =  function() {
+        var timeout = 1000;
+        $log.log('connection lost. Trying to reconnect in ' + timeout + ' milliseconds');
+        $timeout(connect, timeout, false);
+    };
+
+    var addListener = function(topicName, fn) {
+        var listener = {
+            destination : TOPIC_PREFIX + '/' + topicName,
+            listenFunction : fn
+        };
+        listeners.push(listener);
+        return listener;
+    };
+
+    var subscribeInternal = function(listener) {
+        deferred.promise.then(function() {
+            stompClient.subscribe(listener.destination, function (msg) {
+                angular.forEach(listeners, function (listener) {
+                    if (listener.destination === msg.headers.destination) {
+                        listener.listenFunction(JSON.parse(msg.body));
+                    }
+                });
+            });
+        });
+    };
+
+    var connect = function() {
+        deferred = $q.defer();
+        stompClient =  stompFactory.client(WEB_SOCKET_ENDPOINT);
+        stompClient.debug = function() {};
+
+        $log.log('connecting....');
+        stompClient.connect('', '', onConnect, onError);
+
+        angular.forEach(listeners, function(listener) {
+            subscribeInternal(listener);
+        })
+    };
+
+    connect();
 
     return {
         subscribe: function(topicName, fn) {
-            $stomp.connect(endpoint, null, errorFn)
-            .then(function() {
-                $stomp.subscribe(topicPrefix + topicName, fn);
-            });
+            subscribeInternal(addListener(topicName, fn));
         }
-    };
+    }
 });

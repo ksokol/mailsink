@@ -7,9 +7,9 @@ module.exports = function(config) {
             'target/dependency/META-INF/resources/webjars/angular-mocks/**/angular-mocks.js',
             'target/dependency/META-INF/resources/webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap-tpls.min.js',
             'target/dependency/META-INF/resources/webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap.min.js',
-            'target/dependency/META-INF/resources/webjars/ng-stomp/0.3.0/dist/ng-stomp.standalone.min.js',
-            'target/dependency/META-INF/resources/webjars/angular-scroll-glue/2.0.6/src/scrollglue.js',
-            'target/dependency/META-INF/resources/webjars/CBuffer/1.1.1/cbuffer.js',
+            'target/dependency/META-INF/resources/webjars/stomp-websocket/**/lib/stomp.js',
+            'target/dependency/META-INF/resources/webjars/angular-scroll-glue/**/src/scrollglue.js',
+            'target/dependency/META-INF/resources/webjars/CBuffer/**/cbuffer.js',
             'src/main/resources/static/app.js',
             'src/test/javascript/*.js',
             'src/main/resources/static/*.html'
