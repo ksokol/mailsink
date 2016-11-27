@@ -77,7 +77,7 @@ public class MailRepositoryTest {
         assertThat(
                 "should order mails by creation date descending",
                 mailRepository.findAllOrderByCreatedAtDesc(),
-                contains(hasProperty("id", is(2L)), hasProperty("id", is(1L)))
+                contains(hasProperty("id", is(1L)), hasProperty("id", is(0L)))
         );
     }
 
