@@ -99,3 +99,63 @@ describe('alertMessage directive', function() {
         expect(el.text()).toBe('');
     }));
 });
+
+describe('toggleSmtpServer directive', function() {
+
+    var scope, httpBackend;
+
+    beforeEach(module('mailsinkApp'));
+
+    beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
+        scope = $rootScope.$new();
+        httpBackend = $httpBackend;
+    }));
+
+    it('should show play button', inject(function ($compile) {
+        httpBackend.whenGET('smtpServer/status').respond({ isRunning: true });
+        var element = $compile('<a toggle-smtp-server></a>')(scope);
+        httpBackend.flush();
+        scope.$digest();
+
+        expect(element.hasClass('glyphicon-play')).toEqual(true);
+        expect(element.hasClass('glyphicon-stop')).toEqual(false);
+    }));
+
+    it('should show stop button', inject(function ($compile) {
+        httpBackend.whenGET('smtpServer/status').respond({ isRunning: false });
+        var element = $compile('<a toggle-smtp-server></a>')(scope);
+        httpBackend.flush();
+        scope.$digest();
+
+        expect(element.hasClass('glyphicon-stop')).toEqual(true);
+        expect(element.hasClass('glyphicon-play')).toEqual(false);
+    }));
+
+    it('should show stop button when play pressed', inject(function ($compile) {
+        httpBackend.whenGET('smtpServer/status').respond({ isRunning: true });
+        var element = $compile('<a toggle-smtp-server></a>')(scope);
+        httpBackend.flush();
+        scope.$digest();
+
+        httpBackend.whenPOST('smtpServer/status/toggle').respond({ isRunning: false });
+        element.click();
+        httpBackend.flush();
+        scope.$digest();
+
+        expect(element.hasClass('glyphicon-stop')).toEqual(true);
+    }));
+
+    it('should show play button when stop pressed', inject(function ($compile) {
+        httpBackend.whenGET('smtpServer/status').respond({ isRunning: false });
+        var element = $compile('<a toggle-smtp-server></a>')(scope);
+        httpBackend.flush();
+        scope.$digest();
+
+        httpBackend.whenPOST('smtpServer/status/toggle').respond({ isRunning: true });
+        element.click();
+        httpBackend.flush();
+        scope.$digest();
+
+        expect(element.hasClass('glyphicon-play')).toEqual(true);
+    }));
+});

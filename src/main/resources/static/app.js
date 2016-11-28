@@ -291,3 +291,26 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
         }
     }
 });
+
+app.directive('toggleSmtpServer', function($http) {
+    return {
+        restrict: 'A',
+        link: function ($scope, element) {
+            var toggle = function(response) {
+                if(response.data.isRunning) {
+                    element.removeClass('glyphicon glyphicon-stop');
+                    element.addClass('glyphicon glyphicon-play');
+                } else {
+                    element.removeClass('glyphicon glyphicon-play');
+                    element.addClass('glyphicon glyphicon-stop');
+                }
+            };
+
+            $http.get('smtpServer/status').then(toggle);
+
+            element.on('click', function() {
+                $http.post('smtpServer/status/toggle', {}).then(toggle);
+            });
+        }
+    };
+});
