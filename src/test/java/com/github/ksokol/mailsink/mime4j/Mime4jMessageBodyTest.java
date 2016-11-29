@@ -12,6 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author Kamill Sokol
@@ -55,6 +56,7 @@ public class Mime4jMessageBodyTest {
         Mime4jAttachment attachment = body.getAttachments().get(0);
 
         assertThat(attachment.getFilename(), is("example.pdf"));
+        assertThat(attachment.getContentId(), nullValue());
         assertThat(attachment.getMimeType(), is("application/pdf"));
         assertThat(attachment.getData(), equalTo(BODY));
     }
@@ -69,6 +71,7 @@ public class Mime4jMessageBodyTest {
         Mime4jAttachment attachment = body.getAttachments().get(0);
 
         assertThat(attachment.getFilename(), is("example.pdf"));
+        assertThat(attachment.getContentId(), nullValue());
         assertThat(attachment.getMimeType(), is("application/pdf"));
         assertThat(attachment.getData(), equalTo(BODY));
     }
@@ -84,6 +87,7 @@ public class Mime4jMessageBodyTest {
         Mime4jAttachment attachment = body.getAttachments().get(0);
 
         assertThat(attachment.getFilename(), is("Disposition Notification Test.txt"));
+        assertThat(attachment.getContentId(), nullValue());
         assertThat(attachment.getMimeType(), is("text/plain"));
         assertThat(attachment.getData(), equalTo(BODY));
     }
@@ -99,6 +103,7 @@ public class Mime4jMessageBodyTest {
         Mime4jAttachment attachment = body.getAttachments().get(0);
 
         assertThat(attachment.getFilename(), is("<53FEB7F0.3030501@localhost>.html"));
+        assertThat(attachment.getContentId(), nullValue());
         assertThat(attachment.getMimeType(), is("text/html"));
         assertThat(attachment.getData(), equalTo(BODY));
     }
@@ -120,6 +125,31 @@ public class Mime4jMessageBodyTest {
         assertThat(body.getHtmlTextPart(), is("<html><body><p>html mail</p></body></html>"));
         assertThat(body.getPlainTextPart(), is("Mail body"));
         assertThat(body.getAttachments(), hasSize(0));
+    }
+
+    @Test
+    public void shouldContainInlineAttachments() throws Exception {
+        givenMessage("alternative1");
+
+        assertThat(body.getInlineAttachments(), hasSize(3));
+
+        Mime4jAttachment firstInline = body.getInlineAttachments().get(0);
+        assertThat(firstInline.getContentId(), is("1367760625.51865ef16cc8c@swift.generated"));
+        assertThat(firstInline.getMimeType(), is("image/png"));
+        assertThat(firstInline.getFilename(), is("logo.png"));
+        assertThat(firstInline.getData(), is(BODY));
+
+        Mime4jAttachment secondInline = body.getInlineAttachments().get(1);
+        assertThat(secondInline.getContentId(), is("1367760625.51865ef16f798@swift.generated"));
+        assertThat(secondInline.getMimeType(), is("image/png"));
+        assertThat(secondInline.getFilename(), is("bg2.png"));
+        assertThat(secondInline.getData(), is(BODY));
+
+        Mime4jAttachment thirdInline = body.getInlineAttachments().get(2);
+        assertThat(thirdInline.getContentId(), is("1367760625.51865ef16e3f6@swift.generated"));
+        assertThat(thirdInline.getMimeType(), is("image/png"));
+        assertThat(thirdInline.getFilename(), is("bg1.png"));
+        assertThat(thirdInline.getData(), is(BODY));
     }
 
     @Test

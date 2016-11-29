@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamill Sokol
@@ -40,7 +41,15 @@ final class Mime4jMessageBody {
         return extractByMimeType(message, "text/html");
     }
 
+    public List<Mime4jAttachment> getInlineAttachments() throws IOException, MimeTypeException {
+        return getAllAttachments(message).stream().filter(Mime4jAttachment::isInlineAttachment).collect(Collectors.toList());
+    }
+
     public List<Mime4jAttachment> getAttachments() throws IOException, MimeTypeException {
+        return getAllAttachments(message).stream().filter(Mime4jAttachment::isAttachment).collect(Collectors.toList());
+    }
+
+    private static List<Mime4jAttachment> getAllAttachments(Message message) throws IOException, MimeTypeException {
         if (!message.isMultipart()) {
             return Collections.emptyList();
         }
@@ -65,7 +74,7 @@ final class Mime4jMessageBody {
         return attachments;
     }
 
-    private static List<BodyPart> getBodyPartsFromMultipart(Multipart multipart) {
+    private static List<BodyPart> getBodyPartsFromMultipart(Multipart multipart) throws IOException, MimeTypeException {
         List<BodyPart> attachments = new ArrayList<>(multipart.getBodyParts().size());
         for (Entity entity : multipart.getBodyParts()) {
             BodyPart part = (BodyPart) entity;
@@ -80,6 +89,9 @@ final class Mime4jMessageBody {
             if("message/rfc822".equals(part.getMimeType())) {
                 attachments.add(part);
                 break;
+            }
+            if("inline".equals(part.getDispositionType())) {
+                attachments.add(part);
             }
         }
         return attachments;
@@ -102,7 +114,7 @@ final class Mime4jMessageBody {
 
     private static Mime4jAttachment extractFromBinaryBody(BodyPart bodyPart) throws IOException {
         BinaryBody binaryBody = (BinaryBody) bodyPart.getBody();
-        return new Mime4jAttachment(extractFileName(bodyPart), bodyPart.getMimeType(), binaryBody.getInputStream());
+        return new Mime4jAttachment(extractFileName(bodyPart), extractContentId(bodyPart), bodyPart.getDispositionType(), bodyPart.getMimeType(), binaryBody.getInputStream());
     }
 
     private static Mime4jAttachment extractFromTextBody(Message message) throws IOException, MimeTypeException {
@@ -143,5 +155,16 @@ final class Mime4jMessageBody {
             return IOUtils.toString(part.getInputStream(), part.getMimeCharset());
         }
         return "";
+    }
+
+    private static String extractContentId(BodyPart bodyPart) {
+        Field field = bodyPart.getHeader().getField("content-id");
+        if(field != null) {
+            String contentId = field.getBody();
+            contentId = contentId.startsWith("<") ? contentId.substring(1) : contentId;
+            contentId = contentId.endsWith(">") ? contentId.substring(0, contentId.length() - 1) : contentId;
+            return contentId;
+        }
+        return null;
     }
 }
