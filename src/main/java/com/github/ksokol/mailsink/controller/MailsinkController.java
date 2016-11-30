@@ -1,8 +1,14 @@
 package com.github.ksokol.mailsink.controller;
 
+import com.github.ksokol.mailsink.configuration.MailsinkConversionService;
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.mime4j.ContentIdSanitizer;
+import com.github.ksokol.mailsink.mime4j.Mime4jAttachment;
+import com.github.ksokol.mailsink.mime4j.Mime4jMessage;
 import com.github.ksokol.mailsink.repository.MailRepository;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +19,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Optional;
+
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
@@ -26,11 +36,16 @@ public class MailsinkController {
     private final MailRepository mailRepository;
     private final JavaMailSender javaMailSender;
     private final ContentIdSanitizer contentIdSanitizer;
+    private final ConversionService conversionService;
 
-    public MailsinkController(MailRepository mailRepository, JavaMailSender javaMailSender, ContentIdSanitizer contentIdSanitizer) {
+    public MailsinkController(MailRepository mailRepository,
+                              JavaMailSender javaMailSender,
+                              ContentIdSanitizer contentIdSanitizer,
+                              @MailsinkConversionService ConversionService conversionService) {
         this.mailRepository = mailRepository;
         this.javaMailSender = javaMailSender;
         this.contentIdSanitizer = contentIdSanitizer;
+        this.conversionService = conversionService;
     }
 
     @ResponseStatus(NO_CONTENT)
@@ -58,6 +73,23 @@ public class MailsinkController {
         if(mail != null) {
             return ResponseEntity.ok(contentIdSanitizer.sanitize(mail, uriComponentsBuilder));
         }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "mails/{id}/html/{contentId:.*}")
+    public ResponseEntity<?> mailsHtmlContentId(@PathVariable Long id, @PathVariable String contentId) {
+        Mail mail = mailRepository.findOne(id);
+        Mime4jMessage mime4jMessage = conversionService.convert(mail, Mime4jMessage.class);
+        Optional<Mime4jAttachment> inlineAttachment = mime4jMessage.getInlineAttachment(contentId);
+
+        if(inlineAttachment.isPresent()) {
+            Mime4jAttachment mime4jAttachment = inlineAttachment.get();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(CONTENT_TYPE, mime4jAttachment.getMimeType());
+            httpHeaders.add(CONTENT_DISPOSITION, mime4jAttachment.getFilename());
+            return new ResponseEntity<>(mime4jAttachment.getData(), httpHeaders, HttpStatus.OK);
+        }
+
         return ResponseEntity.notFound().build();
     }
 
