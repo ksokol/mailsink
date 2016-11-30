@@ -6,11 +6,12 @@ import org.apache.james.mime4j.dom.address.Mailbox;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Kamill Sokol
  */
-public final class Mime4jMessage {
+public class Mime4jMessage {
 
     private final Message message;
     private final Mime4jMessageBody body;
@@ -67,6 +68,15 @@ public final class Mime4jMessage {
             return body.getAttachments();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    public Optional<Mime4jAttachment> getInlineAttachment(String contentId) {
+        try {
+            List<Mime4jAttachment> inlineAttachments = body.getInlineAttachments();
+            return inlineAttachments.stream().filter(mime4jAttachment -> contentId.equals(mime4jAttachment.getContentId())).findFirst();
+        } catch (Exception exception) {
+            return Optional.empty();
         }
     }
 }

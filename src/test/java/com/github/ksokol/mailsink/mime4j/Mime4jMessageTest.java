@@ -126,6 +126,27 @@ public class Mime4jMessageTest {
         message.getAttachments();
     }
 
+    @Test
+    public void shouldNotHaveInlineAttachmentInPlainTextMessage() throws Exception {
+        givenMessage("plain1");
+
+        assertThat(message.getInlineAttachment("unknown").isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldNotHaveInlineAttachment() throws Exception {
+        givenMessage("alternative1");
+
+        assertThat(message.getInlineAttachment("1367760625.51865ef16e3f6@swift.generated").isPresent(), is(true));
+    }
+
+    @Test
+    public void shouldReturnEmptyOptionalWhenExceptionThrown() throws Exception {
+        givenFaultyMessage();
+
+        assertThat(message.getInlineAttachment("irrelevant").isPresent(), is(false));
+    }
+
     private void givenMessage(String fileName) throws Exception {
         InputStream inputStream = new ClassPathResource(format("mime4j/%s.eml", fileName)).getInputStream();
         message = new Mime4jMessage(new MessageBuilder().parse(inputStream).build());
