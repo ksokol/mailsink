@@ -14,6 +14,7 @@ import java.util.Date;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -134,7 +135,7 @@ public class Mime4jMessageTest {
     }
 
     @Test
-    public void shouldNotHaveInlineAttachment() throws Exception {
+    public void shouldHaveInlineAttachment() throws Exception {
         givenMessage("alternative1");
 
         assertThat(message.getInlineAttachment("1367760625.51865ef16e3f6@swift.generated").isPresent(), is(true));
@@ -145,6 +146,27 @@ public class Mime4jMessageTest {
         givenFaultyMessage();
 
         assertThat(message.getInlineAttachment("irrelevant").isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldNotHaveInlineAttachmentsInPlainTextMessage() throws Exception {
+        givenMessage("plain1");
+
+        assertThat(message.getInlineAttachments(), hasSize(0));
+    }
+
+    @Test
+    public void shouldHaveInlineAttachments() throws Exception {
+        givenMessage("alternative1");
+
+        assertThat(message.getInlineAttachments(), hasSize(3));
+    }
+
+    @Test
+    public void shouldReturnEmptyCollectionsWhenExceptionThrown() throws Exception {
+        givenFaultyMessage();
+
+        assertThat(message.getInlineAttachments(), empty());
     }
 
     private void givenMessage(String fileName) throws Exception {

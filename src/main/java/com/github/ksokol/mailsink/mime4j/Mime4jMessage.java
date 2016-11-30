@@ -4,6 +4,7 @@ import org.apache.james.mime4j.dom.Message;
 import org.apache.james.mime4j.dom.address.Address;
 import org.apache.james.mime4j.dom.address.Mailbox;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -68,6 +69,14 @@ public class Mime4jMessage {
             return body.getAttachments();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    public List<Mime4jAttachment> getInlineAttachments() {
+        try {
+            return body.getInlineAttachments();
+        } catch (Exception exception) {
+            return Collections.emptyList();
         }
     }
 
