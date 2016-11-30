@@ -24,7 +24,7 @@ describe('Service: stompService', function() {
                                 subscribe: function(topic, fn) {
                                     stompMock.listener[topic] = fn;
                                 }
-                            }
+                            };
                         }
                     };
                 }
@@ -109,7 +109,7 @@ describe('Service: stompService', function() {
 
     it('should not propagate message to unrelated topic', function() {
         stompService.subscribe('firstTopic', function() {
-            fail("unexpected message");
+            fail('unexpected message');
         });
 
         stompMock.onConnect();
@@ -127,7 +127,7 @@ describe('Service: stompService', function() {
         stompMock.onError();
 
         stompService.subscribe('firstTopic', function(data) {
-            expect(data).toEqual(["expected firstTopic message"]);
+            expect(data).toEqual(['expected firstTopic message']);
             done();
         });
 

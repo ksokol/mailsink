@@ -243,6 +243,19 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
         deferred.resolve();
     };
 
+    var connect = function() {
+        deferred = $q.defer();
+        stompClient =  stompFactory.client(WEB_SOCKET_ENDPOINT);
+        stompClient.debug = function() {};
+
+        $log.log('connecting....');
+        stompClient.connect('', '', onConnect, onError);
+
+        angular.forEach(listeners, function(listener) {
+            subscribeInternal(listener);
+        });
+    };
+
     var onError =  function() {
         var timeout = 1000;
         $log.log('connection lost. Trying to reconnect in ' + timeout + ' milliseconds');
@@ -270,26 +283,13 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
         });
     };
 
-    var connect = function() {
-        deferred = $q.defer();
-        stompClient =  stompFactory.client(WEB_SOCKET_ENDPOINT);
-        stompClient.debug = function() {};
-
-        $log.log('connecting....');
-        stompClient.connect('', '', onConnect, onError);
-
-        angular.forEach(listeners, function(listener) {
-            subscribeInternal(listener);
-        })
-    };
-
     connect();
 
     return {
         subscribe: function(topicName, fn) {
             subscribeInternal(addListener(topicName, fn));
         }
-    }
+    };
 });
 
 app.directive('toggleSmtpServer', function($http) {

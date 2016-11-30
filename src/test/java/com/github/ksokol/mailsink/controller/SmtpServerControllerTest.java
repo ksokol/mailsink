@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 public class SmtpServerControllerTest {
 
-    static final int SMTP_PORT = 12501;
+    protected static final int SMTP_PORT = 12501;
 
     @Autowired
     private MockMvc mvc;
