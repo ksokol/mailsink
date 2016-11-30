@@ -21,7 +21,7 @@ import java.util.List;
  * @author Kamill Sokol
  */
 @Component
-public class MailConverter implements Converter<InputStream, Mail> {
+public class InputStreamToMailConverter implements Converter<InputStream, Mail> {
 
     @Override
     public Mail convert(InputStream source) {

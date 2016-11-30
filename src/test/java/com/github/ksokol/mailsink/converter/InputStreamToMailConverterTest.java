@@ -1,6 +1,5 @@
 package com.github.ksokol.mailsink.converter;
 
-import com.github.ksokol.mailsink.converter.MailConverter;
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.entity.MailAttachment;
 import org.apache.commons.io.IOUtils;
@@ -27,9 +26,9 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Kamill Sokol
  */
-public class MailConverterTest {
+public class InputStreamToMailConverterTest {
 
-    private MailConverter converter = new MailConverter();
+    private InputStreamToMailConverter converter = new InputStreamToMailConverter();
 
     private Mail mail;
 
