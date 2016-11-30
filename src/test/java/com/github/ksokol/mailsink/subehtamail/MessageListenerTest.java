@@ -1,6 +1,5 @@
 package com.github.ksokol.mailsink.subehtamail;
 
-import com.github.ksokol.mailsink.converter.MailConverter;
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.websocket.IncomingEvent;
 import org.junit.Test;
@@ -10,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.ConversionService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public class MessageListenerTest {
     private MessageListener messageListener;
 
     @Mock
-    private MailConverter mailConverter;
+    private ConversionService conversionService;
 
     @Mock
     private ApplicationEventPublisher publisher;
@@ -49,16 +49,16 @@ public class MessageListenerTest {
 
     @Test
     public void shouldCallMailConverter() throws Exception {
-        given(mailConverter.convert(any())).willReturn(new Mail());
+        given(conversionService.convert(any(), any())).willReturn(new Mail());
 
         messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
 
-        verify(mailConverter).convert(SOME_INPUT_STREAM);
+        verify(conversionService).convert(SOME_INPUT_STREAM, Mail.class);
     }
 
     @Test
     public void shouldPublishIncomingMail() throws Exception {
-        given(mailConverter.convert(any())).willReturn(someMail);
+        given(conversionService.convert(any(), any())).willReturn(someMail);
 
         messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
 
@@ -67,19 +67,19 @@ public class MessageListenerTest {
 
     @Test
     public void shouldConvertIncomingMessageBeforePublishingEvent() throws Exception {
-        given(mailConverter.convert(any())).willReturn(someMail);
+        given(conversionService.convert(any(), any())).willReturn(someMail);
 
         messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
 
-        InOrder callOrder = inOrder(mailConverter, publisher);
+        InOrder callOrder = inOrder(conversionService, publisher);
 
-        callOrder.verify(mailConverter).convert(any());
+        callOrder.verify(conversionService).convert(any(), any());
         callOrder.verify(publisher).publishEvent(argThat(hasProperty("source", instanceOf(Mail.class))));
     }
 
     @Test
     public void shouldPublishIncomingEvent() throws Exception {
-        given(mailConverter.convert(any())).willReturn(someMail);
+        given(conversionService.convert(any(), any())).willReturn(someMail);
 
         messageListener.deliver("irrelevant", "irrelevant", SOME_INPUT_STREAM);
 
