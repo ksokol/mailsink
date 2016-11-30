@@ -55,7 +55,7 @@ describe('Service: stompService', function() {
                         timeoutMock['delay'] = delay;
                         timeoutMock['invokeApply'] = invokeApply;
                         fn(delay, invokeApply);
-                    }
+                    };
                 }
             };
         });

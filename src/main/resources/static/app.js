@@ -243,6 +243,24 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
         deferred.resolve();
     };
 
+    var onError =  function() {
+        var timeout = 1000;
+        $log.log('connection lost. Trying to reconnect in ' + timeout + ' milliseconds');
+        $timeout(connect, timeout, false);
+    };
+
+    var subscribeInternal = function(listener) {
+        deferred.promise.then(function() {
+            stompClient.subscribe(listener.destination, function (msg) {
+                angular.forEach(listeners, function (listener) {
+                    if (listener.destination === msg.headers.destination) {
+                        listener.listenFunction(JSON.parse(msg.body));
+                    }
+                });
+            });
+        });
+    };
+
     var connect = function() {
         deferred = $q.defer();
         stompClient =  stompFactory.client(WEB_SOCKET_ENDPOINT);
@@ -256,12 +274,6 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
         });
     };
 
-    var onError =  function() {
-        var timeout = 1000;
-        $log.log('connection lost. Trying to reconnect in ' + timeout + ' milliseconds');
-        $timeout(connect, timeout, false);
-    };
-
     var addListener = function(topicName, fn) {
         var listener = {
             destination : TOPIC_PREFIX + '/' + topicName,
@@ -269,18 +281,6 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
         };
         listeners.push(listener);
         return listener;
-    };
-
-    var subscribeInternal = function(listener) {
-        deferred.promise.then(function() {
-            stompClient.subscribe(listener.destination, function (msg) {
-                angular.forEach(listeners, function (listener) {
-                    if (listener.destination === msg.headers.destination) {
-                        listener.listenFunction(JSON.parse(msg.body));
-                    }
-                });
-            });
-        });
     };
 
     connect();
