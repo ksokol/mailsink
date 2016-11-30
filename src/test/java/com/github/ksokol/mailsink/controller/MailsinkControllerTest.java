@@ -105,6 +105,14 @@ public class MailsinkControllerTest {
     }
 
     @Test
+    public void shouldAnswerWith404WhenMailSourceForGivenIdNotFound() throws Exception {
+        given(mailRepository.findOne(1L)).willReturn(null);
+
+        mvc.perform(get("/mails/1/source"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void shouldAnswerWitMailSourceWhenMailForGivenIdFound() throws Exception {
         Mail mail = new Mail();
         mail.setSource("source");
