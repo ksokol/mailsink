@@ -1,4 +1,4 @@
-package com.github.ksokol.mailsink.subehtamail;
+package com.github.ksokol.mailsink.converter;
 
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.entity.MailAttachment;

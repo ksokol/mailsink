@@ -1,7 +1,7 @@
 package com.github.ksokol.mailsink.bootstrap;
 
 import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.subehtamail.MailConverter;
+import com.github.ksokol.mailsink.converter.MailConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;

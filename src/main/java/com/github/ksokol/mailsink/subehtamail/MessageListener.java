@@ -1,5 +1,6 @@
 package com.github.ksokol.mailsink.subehtamail;
 
+import com.github.ksokol.mailsink.converter.MailConverter;
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.websocket.IncomingEvent;
 import org.springframework.context.ApplicationEventPublisher;
