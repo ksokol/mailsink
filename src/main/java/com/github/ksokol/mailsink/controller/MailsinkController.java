@@ -1,6 +1,7 @@
 package com.github.ksokol.mailsink.controller;
 
 import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.mime4j.ContentIdSanitizer;
 import com.github.ksokol.mailsink.repository.MailRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
@@ -23,10 +25,12 @@ public class MailsinkController {
 
     private final MailRepository mailRepository;
     private final JavaMailSender javaMailSender;
+    private final ContentIdSanitizer contentIdSanitizer;
 
-    public MailsinkController(MailRepository mailRepository, JavaMailSender javaMailSender) {
+    public MailsinkController(MailRepository mailRepository, JavaMailSender javaMailSender, ContentIdSanitizer contentIdSanitizer) {
         this.mailRepository = mailRepository;
         this.javaMailSender = javaMailSender;
+        this.contentIdSanitizer = contentIdSanitizer;
     }
 
     @ResponseStatus(NO_CONTENT)
@@ -49,10 +53,10 @@ public class MailsinkController {
     }
 
     @GetMapping(value = "mails/{id}/html", produces = TEXT_HTML_VALUE)
-    public ResponseEntity<?> mailsHtml(@PathVariable Long id) {
+    public ResponseEntity<?> mailsHtml(@PathVariable Long id, UriComponentsBuilder uriComponentsBuilder) {
         Mail mail = mailRepository.findOne(id);
         if(mail != null) {
-            return ResponseEntity.ok(mail.getHtml());
+            return ResponseEntity.ok(contentIdSanitizer.sanitize(mail, uriComponentsBuilder));
         }
         return ResponseEntity.notFound().build();
     }

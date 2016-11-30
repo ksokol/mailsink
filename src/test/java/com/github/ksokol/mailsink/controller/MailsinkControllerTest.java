@@ -1,6 +1,7 @@
 package com.github.ksokol.mailsink.controller;
 
 import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.mime4j.ContentIdSanitizer;
 import com.github.ksokol.mailsink.repository.MailRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +13,14 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,6 +42,9 @@ public class MailsinkControllerTest {
 
     @MockBean
     private JavaMailSender javaMailSender;
+
+    @MockBean
+    private ContentIdSanitizer contentIdSanitizer;
 
     @Test
     public void shouldPurgeAllMailsFromMailRepository() throws Exception {
@@ -76,6 +83,7 @@ public class MailsinkControllerTest {
         Mail mail = new Mail();
         mail.setHtml("html");
         given(mailRepository.findOne(1L)).willReturn(mail);
+        given(contentIdSanitizer.sanitize(eq(mail), any(UriComponentsBuilder.class))).willReturn("html");
 
         mvc.perform(get("/mails/1/html"))
                 .andExpect(status().isOk())
