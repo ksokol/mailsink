@@ -1,7 +1,6 @@
 package com.github.ksokol.mailsink.bootstrap;
 
 import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.converter.MailConverter;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -10,9 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.IOException;
@@ -22,8 +23,10 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.typeCompatibleWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,8 +40,14 @@ public class ExampleMailsTest {
     @InjectMocks
     private ExampleMails exampleMails;
 
-    @Mock
-    private MailConverter mailConverter;
+    @Mock(name = "mailsinkConversionService")
+    private ConversionService conversionService;
+
+    @Captor
+    private ArgumentCaptor<Class<Mail>> classCaptor;
+
+    @Captor
+    private ArgumentCaptor<InputStream> inputStreamCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -50,7 +59,7 @@ public class ExampleMailsTest {
     public void shouldConvertTwoFiles() throws Exception {
         exampleMails.listExampleMails();
 
-        verify(mailConverter, times(2)).convert(any());
+        verify(conversionService, times(2)).convert(any(), any());
     }
 
     @Test
@@ -58,7 +67,7 @@ public class ExampleMailsTest {
         Mail mail1 = new Mail();
         Mail mail2 = new Mail();
 
-        when(mailConverter.convert(any())).thenReturn(mail1).thenReturn(mail2);
+        when(conversionService.convert(any(), eq(Mail.class))).thenReturn(mail1).thenReturn(mail2);
 
         List<Mail> expected = exampleMails.listExampleMails();
 
@@ -67,18 +76,19 @@ public class ExampleMailsTest {
 
     @Test
     public void shouldDetectFilesWithEmlFileExtension() throws Exception {
-        ArgumentCaptor<InputStream> mailCaptor = ArgumentCaptor.forClass(InputStream.class);
-        when(mailConverter.convert(mailCaptor.capture())).thenReturn(any(Mail.class));
+        when(conversionService.convert(inputStreamCaptor.capture(), classCaptor.capture())).thenReturn(any(Mail.class)).thenReturn(any(Mail.class));
 
         exampleMails.listExampleMails();
 
-        assertThat(mailCaptor.getAllValues().get(0), containsString("1"));
-        assertThat(mailCaptor.getAllValues().get(1), containsString("2"));
+        assertThat(classCaptor.getAllValues().get(0), typeCompatibleWith(Mail.class));
+        assertThat(classCaptor.getAllValues().get(1), typeCompatibleWith(Mail.class));
+        assertThat(inputStreamCaptor.getAllValues().get(0), containsString("1"));
+        assertThat(inputStreamCaptor.getAllValues().get(1), containsString("2"));
     }
 
     @Test
     public void shouldContinueWhenExceptionThrown() throws Exception {
-        when(mailConverter.convert(any(InputStream.class))).thenThrow(new IllegalArgumentException()).thenReturn(new Mail());
+        when(conversionService.convert(any(InputStream.class), eq(Mail.class))).thenThrow(new IllegalArgumentException()).thenReturn(new Mail());
 
         List<Mail> expected = exampleMails.listExampleMails();
 

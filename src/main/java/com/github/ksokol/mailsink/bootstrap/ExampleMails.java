@@ -1,9 +1,10 @@
 package com.github.ksokol.mailsink.bootstrap;
 
+import com.github.ksokol.mailsink.configuration.MailsinkConversionService;
 import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.converter.MailConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -25,10 +26,10 @@ class ExampleMails {
     private static final String FOLDER = "example";
     private static final String FILE_EXTENSION = ".eml";
 
-    private final MailConverter mailConverter;
+    private final ConversionService conversionService;
 
-    public ExampleMails(MailConverter mailConverter) {
-        this.mailConverter = mailConverter;
+    public ExampleMails(@MailsinkConversionService ConversionService conversionService) {
+        this.conversionService = conversionService;
     }
 
     public List<Mail> listExampleMails() throws IOException {
@@ -37,7 +38,7 @@ class ExampleMails {
         listEmlFiles().forEach(resource -> {
             try {
                 log.info("importing example mail {}", resource.getFilename());
-                exampleMails.add(mailConverter.convert(resource.getInputStream()));
+                exampleMails.add(conversionService.convert(resource.getInputStream(), Mail.class));
             } catch (Exception exception) {
                 log.warn(exception.getMessage(), exception);
             }
