@@ -15,10 +15,10 @@ import java.io.InputStream;
  * @author Kamill Sokol
  */
 @Component
-class MessageListener implements SimpleMessageListener {
+public class MessageListener implements SimpleMessageListener {
 
-    private final ConversionService conversionService;
-    private final ApplicationEventPublisher publisher;
+    public ConversionService conversionService;
+    public final ApplicationEventPublisher publisher;
 
     MessageListener(@MailsinkConversionService ConversionService conversionService, ApplicationEventPublisher publisher) {
         this.conversionService = conversionService;

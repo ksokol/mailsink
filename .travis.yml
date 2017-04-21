@@ -2,4 +2,21 @@ language: java
 jdk:
   - oraclejdk8
 
-script: mvn clean test jacoco:report coveralls:report
+addons:
+  sonarqube:
+    organization: "ksokol"
+    token:
+      # SONAR_TOKEN
+      secure: "Ybs4svTlf4CyhpAiiNI+dzCMp3bDrNaZpdvhoKZgb+JFa2D4xZkBclpYgdRHa6SgvAukjIXFMtbXkjgjorHcId+9c2WtUlju+02NZdUF2ATAvcHm2kCiieHVGq9SrABFo0OgdQaB6527iJdCaPWi1cn0Ljlt4m8AJ0E006iGHh+uT+hIvp3W4x1QvBFWmastDs7rx6kOhrLOE7TFbBarXzVl35THZDtZ1DZjMFk1mqwt3bxDQTWvgsYYgMquvrbFTrSfy4LekcMp6x1G2cbtLM+/c7+uqnkJV/8dT/wK1QJclW9R4ZqnySeEClA9croHsOi8EyHEy5voZrJeohIIIkoyNhmoqqNisqGciQfXqnqgqcE+T3gS+b29cqjxMED3cMgMpM1EpYWfO+3P7kJI2o+Yn0lQnxuy2HqDopTEzCwYbFCnuG2yENvwhdPspSUQ5Yx8O2/W5ls4W/3qes6BFYwKLOG2SfbKB0Jt0mA33nUmrMmLFAifrhGvCSBQGE2ae895yjteJlrRs7MLj09a4CNZKLZKcVsAEoV6/ii1F+faTtDIm3bb78uBvZdGKDKJvm7jyzTu24RXF6bsBkNZSkrW6gYt33340JeXGHHj9RSa3wmGM5clOZQC8Tp5sLRQ9TkCXjkAl/YSEUblawhl2vbNC76wVcrPb9kA3nkYcTU="
+  branches:
+      - master
+      - sonarqube-integration
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
+
+script:
+    - mvn test
+    - sonar-scanner
