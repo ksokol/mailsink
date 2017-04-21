@@ -40,7 +40,7 @@ class ExampleMails {
                 log.info("importing example mail {}", resource.getFilename());
                 exampleMails.add(conversionService.convert(resource.getInputStream(), Mail.class));
             } catch (Exception exception) {
-                log.warn(exception.getMessage(), exception);
+                //log.warn(exception.getMessage(), exception);
             }
         });
 
