@@ -24,6 +24,9 @@
     <java.version>1.8</java.version>
     <mime4j.version>0.8.0</mime4j.version>
     <angular.version>1.5.8</angular.version>
+    <sonar.host.url>https://sonarqube.com</sonar.host.url>
+    <sonar.sources>src/main</sonar.sources>
+    <sonar.javascript.lcov.reportPath>target/coverage/PhantomJS 2.1.1 (Linux 0.0.0)/lcov.info</sonar.javascript.lcov.reportPath>
   </properties>
 
   <dependencies>
