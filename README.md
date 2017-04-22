@@ -1,4 +1,4 @@
-# Mailsink [![Build Status](https://api.travis-ci.org/ksokol/mailsink.png?branch=master)](https://travis-ci.org/ksokol/mailsink) [![Coverage Status](https://coveralls.io/repos/ksokol/mailsink/badge.png?branch=master)](https://coveralls.io/r/ksokol/mailsink?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae860d680b2f459f973e1386064b260d)](https://www.codacy.com/app/dev_9/mailsink)
+# Mailsink [![Build Status](https://api.travis-ci.org/ksokol/mailsink.png?branch=master)](https://travis-ci.org/ksokol/mailsink) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=com.github.ksokol:mailsink)](https://sonarqube.com/dashboard/index/com.github.ksokol:mailsink) [![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=com.github.ksokol:mailsink&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/com.github.ksokol:mailsink) 
 
 Mailsink is a simple SMTP server based on [SubEtha](https://github.com/voodoodyne/subetha) with a web UI.
 
