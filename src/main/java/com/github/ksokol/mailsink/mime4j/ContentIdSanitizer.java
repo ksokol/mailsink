@@ -35,7 +35,6 @@ public class ContentIdSanitizer {
     private static String sanitizeHtml(String htmlBody, String contentId, UriComponentsBuilder uriComponentsBuilder) {
         String contentUrl = uriComponentsBuilder.pathSegment(contentId).build().toUriString();
         String replacedCid = htmlBody.replaceAll("cid:" + contentId, contentUrl);
-        String replacedMid = replacedCid.replaceAll("mid:" + contentId, contentUrl);
-        return replacedMid;
+        return replacedCid.replaceAll("mid:" + contentId, contentUrl);
     }
 }

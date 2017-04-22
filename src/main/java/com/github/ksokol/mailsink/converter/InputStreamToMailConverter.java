@@ -34,7 +34,7 @@ public class InputStreamToMailConverter implements Converter<InputStream, Mail> 
         }
     }
 
-    private Mail convertInternal(Mime4jMessage source) throws IOException {
+    private Mail convertInternal(Mime4jMessage source) {
         Mail target = new Mail();
 
         target.setMessageId(source.getMessageId());
