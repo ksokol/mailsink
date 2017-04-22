@@ -5,11 +5,31 @@
 
   <groupId>com.github.ksokol</groupId>
   <artifactId>mailsink</artifactId>
+  <name>mailsink</name>
+  <description>Mailsink is a simple SMTP server that consumes all your emails and dislays it in a web ui.</description>
+  <url>https://github.com/ksokol/mailsink</url>
+  <inceptionYear>2016</inceptionYear>
+
   <version>0.5</version>
   <packaging>jar</packaging>
 
-  <name>mailsink</name>
-  <description>Mail sink application</description>
+  <scm>
+    <connection>scm:git:git@github.com:ksokol/mailsink.git</connection>
+    <developerConnection>scm:git:git@github.com:ksokol/mailsink.git</developerConnection>
+    <url>https://github.com/ksokol/mailsink</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/ksokol/mailsink/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/ksokol/mailsink</url>
+    <notifiers />
+  </ciManagement>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
