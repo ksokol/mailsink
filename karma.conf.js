@@ -23,7 +23,7 @@ module.exports = function(config) {
             moduleName: 'htmlTemplates'
         },
         coverageReporter: {
-            type : 'html',
+            type : 'lcov',
             dir : 'target/coverage/'
         },
         frameworks: ['jasmine'],
