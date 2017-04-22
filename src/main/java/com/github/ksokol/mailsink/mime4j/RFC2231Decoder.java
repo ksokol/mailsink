@@ -77,26 +77,22 @@ final class RFC2231Decoder {
     private static RFC2231Value decodeRFC2231Value(String rawValue) {
         String value = rawValue;
         String charset;
-
-        RFC2231Value v = new RFC2231Value();
-        v.encodedValue = value;
-        v.value = value; // in case we fail to decode it
+        String encodedValue = value;
 
         int charsetDelimiter = value.indexOf('\'');
         if (charsetDelimiter <= 0) {
-            return v; // not encoded correctly? return as is.
+            return new RFC2231Value(value, encodedValue); // not encoded correctly? return as is.
         }
 
         charset = value.substring(0, charsetDelimiter);
         int langDelimiter = value.indexOf('\'', charsetDelimiter + 1);
         if (langDelimiter < 0) {
-            return v; // not encoded correctly? return as is.
+            return new RFC2231Value(value, encodedValue, charset); // not encoded correctly? return as is.
         }
 
         value = value.substring(langDelimiter + 1);
-        v.charset = charset;
-        v.value = decodeRFC2231Bytes(value, charset);
-        return v;
+        value = decodeRFC2231Bytes(value, charset);
+        return new RFC2231Value(value, encodedValue, charset);
     }
 
     /**
@@ -164,12 +160,8 @@ final class RFC2231Decoder {
 
             if (key.endsWith("*")) {
                 // encoded value
-                RFC2231Value valObject = new RFC2231Value();
-                valObject.encodedValue = value;
-                valObject.value = value; // default; decoded later
-
                 String segmentName = key.substring(0, key.length() - 1);
-                segmentList.put(segmentName, valObject);
+                segmentList.put(segmentName, new RFC2231Value(value, value));
             } else {
                 // plain value
                 segmentList.put(key, value);
@@ -229,8 +221,19 @@ final class RFC2231Decoder {
      * will return the same value that was set.
      */
     private static class RFC2231Value {
-        public String value;
-        public String charset;
-        public String encodedValue;
+
+        private String value;
+        private String charset;
+        private String encodedValue;
+
+        RFC2231Value(String value, String encodedValue) {
+            this(value, encodedValue, null);
+        }
+
+        RFC2231Value(String value, String encodedValue, String charset) {
+            this.value = value;
+            this.charset = charset;
+            this.encodedValue = encodedValue;
+        }
     }
 }

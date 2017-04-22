@@ -238,6 +238,19 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
     var listeners = [];
     var stompClient;
 
+    var connect = function() {
+        deferred = $q.defer();
+        stompClient =  stompFactory.client(WEB_SOCKET_ENDPOINT);
+        stompClient.debug = function() { /* suppress debug logs */ };
+
+        $log.log('connecting....');
+        stompClient.connect('', '', onConnect, onError);
+
+        angular.forEach(listeners, function(listener) {
+            subscribeInternal(listener);
+        });
+    };
+
     var onConnect = function() {
         $log.log('connected');
         deferred.resolve();
@@ -258,19 +271,6 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
                     }
                 });
             });
-        });
-    };
-
-    var connect = function() {
-        deferred = $q.defer();
-        stompClient =  stompFactory.client(WEB_SOCKET_ENDPOINT);
-        stompClient.debug = function() { /* suppress debug logs */ };
-
-        $log.log('connecting....');
-        stompClient.connect('', '', onConnect, onError);
-
-        angular.forEach(listeners, function(listener) {
-            subscribeInternal(listener);
         });
     };
 
