@@ -80,15 +80,12 @@ final class Mime4jMessageBody {
             BodyPart part = (BodyPart) entity;
             if ("attachment".equalsIgnoreCase(part.getDispositionType())) {
                 attachments.add(part);
-                break;
             }
             if (part.isMultipart()) {
                 attachments.addAll(getBodyPartsFromMultipart((Multipart) part.getBody()));
-                break;
             }
             if("message/rfc822".equals(part.getMimeType())) {
                 attachments.add(part);
-                break;
             }
             if("inline".equals(part.getDispositionType())) {
                 attachments.add(part);

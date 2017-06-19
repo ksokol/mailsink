@@ -10,6 +10,7 @@ import java.io.InputStream;
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -159,6 +160,14 @@ public class Mime4jMessageBodyTest {
         assertThat(body.getHtmlTextPart(), is(""));
         assertThat(body.getPlainTextPart(), is("nested message"));
         assertThat(body.getAttachments(), hasSize(0));
+    }
+
+    @Test
+    public void shouldContainHtmlTextPartAndAttachmentInMultipartMessage() throws Exception {
+        givenMessage("multipart1_html_attachment");
+
+        assertThat(body.getHtmlTextPart(), equalToIgnoringWhiteSpace("<html><body>html body</body></html>"));
+        assertThat(body.getAttachments(), hasSize(1));
     }
 
     private void givenMessage(String fileName) throws Exception {
