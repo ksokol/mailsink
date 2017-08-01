@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.allOf;
@@ -31,6 +32,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -146,6 +149,66 @@ public class MailsinkControllerTest {
                 .andExpect(header().string(CONTENT_TYPE, is("image/png")))
                 .andExpect(header().string(CONTENT_DISPOSITION, is("bg1.png")))
                 .andExpect(content().string("a"));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenQueryIsEmpty() throws Exception {
+        given(mailRepository.findById(1L)).willReturn(Optional.of(new Mail()));
+
+        mvc.perform(post("/mails/1/html/query")
+                .contentType(APPLICATION_JSON)
+                .content("{ \"xpath\": \"\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnEmptyQueryResultWhenHtmlBodyIsNull() throws Exception {
+        given(mailRepository.findById(1L)).willReturn(Optional.of(new Mail()));
+
+        mvc.perform(post("/mails/1/html/query")
+                .contentType(APPLICATION_JSON)
+                .content("{ \"xpath\": \"*\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
+    public void shouldReturnInternalSeverErrorWhenMailIsMalformed() throws Exception {
+        given(mailRepository.findById(1L)).willReturn(Optional.empty());
+
+        mvc.perform(post("/mails/1/html/query")
+                .contentType(APPLICATION_JSON)
+                .content("{ \"xpath\": \"*\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturnWholeHtmlBodyAsJsonWhenQueryingWithWildcard() throws Exception {
+        Mail mail = new Mail();
+        mail.setHtml("<div><p>p inner text");
+        given(mailRepository.findById(1L)).willReturn(Optional.of(mail));
+
+        mvc.perform(post("/mails/1/html/query")
+                .contentType(APPLICATION_JSON)
+                .content("{ \"xpath\": \"*\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(content().json("[{'html':{'children':[{'body':{'children':[{'div':{'children':[{'p':{'children':[{'text':'p inner text'}]}}]}}]}}]}}]"));
+    }
+
+    @Test
+    public void shouldReturnInnerTextOfPTagAccordingToGivenXPathQuery() throws Exception {
+        Mail mail = new Mail();
+        mail.setHtml("<div><p>p inner text");
+        given(mailRepository.findById(1L)).willReturn(Optional.of(mail));
+
+        mvc.perform(post("/mails/1/html/query")
+                .contentType(APPLICATION_JSON)
+                .content("{ \"xpath\": \"//p/text()\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(content().json("[{'text':'p inner text'}]"));
     }
 
     private Mime4jMessage givenMessage(String fileName) throws Exception {

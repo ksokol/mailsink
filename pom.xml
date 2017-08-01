@@ -100,6 +100,21 @@
       <artifactId>logback-ext-spring</artifactId>
       <version>0.1.4</version>
     </dependency>
+    <dependency>
+      <groupId>net.sourceforge.htmlcleaner</groupId>
+      <artifactId>htmlcleaner</artifactId>
+      <version>2.21</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.6</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vavr</groupId>
+      <artifactId>vavr</artifactId>
+      <version>0.9.0</version>
+    </dependency>
 
     <dependency>
       <groupId>org.webjars.bower</groupId>
@@ -146,8 +161,18 @@
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <version>1.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-xml</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-mocks</artifactId>
@@ -232,6 +257,30 @@
             <goals>
               <goal>prepare-agent</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.5</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+            <configuration>
+              <providerSelection>2.0</providerSelection>
+              <sources>
+                <fileset>
+                  <directory>${pom.basedir}/src/test/groovy</directory>
+                  <includes>
+                    <include>**/*.groovy</include>
+                  </includes>
+                </fileset>
+              </sources>
+            </configuration>
           </execution>
         </executions>
       </plugin>
