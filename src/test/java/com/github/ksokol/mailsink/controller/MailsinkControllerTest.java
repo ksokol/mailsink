@@ -174,7 +174,7 @@ public class MailsinkControllerTest {
     }
 
     @Test
-    public void shouldReturnInternalSeverErrorWhenMailIsMalformed() throws Exception {
+    public void shouldReturnNotFoundWhenMailForGivenIdIsNotPresent() throws Exception {
         given(mailRepository.findById(1L)).willReturn(Optional.empty());
 
         mvc.perform(post("/mails/1/html/query")
