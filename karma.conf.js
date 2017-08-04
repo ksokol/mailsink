@@ -10,6 +10,9 @@ module.exports = function(config) {
             'target/dependency/META-INF/resources/webjars/stomp-websocket/**/lib/stomp.js',
             'target/dependency/META-INF/resources/webjars/angular-scroll-glue/**/src/scrollglue.js',
             'target/dependency/META-INF/resources/webjars/CBuffer/**/cbuffer.js',
+            'target/dependency/META-INF/resources/webjars/angular-clipboard/**/angular-clipboard.js',
+            'target/dependency/META-INF/resources/webjars/highlightjs/**/highlight.pack.min.js',
+            'target/dependency/META-INF/resources/webjars/angular-highlightjs/**/build/angular-highlightjs.min.js',
             'src/main/resources/static/app.js',
             'src/test/javascript/*.js',
             'src/main/resources/static/*.html'

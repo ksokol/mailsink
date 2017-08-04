@@ -1,3 +1,32 @@
+/*
+ * https://velesin.io/2016/08/23/unit-testing-angular-1-5-components/
+ */
+function componentMock(name) {
+    function _componentMock($provide) {
+        _componentMock.bindings = {};
+
+        $provide.decorator(name + 'Directive', function($delegate) {
+            var component = $delegate[0];
+            component.template = '';
+            component.templateUrl = '';
+            component.controller = function () {
+                _componentMock.bindings = this;
+            };
+
+            return $delegate;
+        });
+    }
+
+    return _componentMock;
+}
+
+function mock(name) {
+    function _mock($provide) {
+        $provide.value(name, {});
+    }
+    return _mock;
+}
+
 describe('Component: Attachments', function() {
 
     var attachments = [{
@@ -52,8 +81,9 @@ describe('Component: Attachments', function() {
 describe('Component: mailBodyPanel', function() {
 
     var scope, element;
+    var messageHtmlQuery = componentMock('messageHtmlQuery');
 
-    beforeEach(module('mailsinkApp', 'htmlTemplates'));
+    beforeEach(angular.mock.module('mailsinkApp', 'htmlTemplates', messageHtmlQuery));
 
     beforeEach(inject(function($compile, $rootScope, $httpBackend) {
         scope = $rootScope.$new();
@@ -106,6 +136,37 @@ describe('Component: mailBodyPanel', function() {
         expect(element.find('li')[0].classList).toContain('plain');
         expect(element.find('li')[1].classList).toContain('html');
         expect(element.find('li')[2].classList).toContain('attachments');
+    });
+
+    it('should show html body and "Query HTML" button', function () {
+        scope.mail = { html: 'html' };
+        scope.$digest();
+
+        expect(element.find('button').length).toEqual(1);
+        expect(element.find('button')[0].innerText).toEqual('Query HTML');
+        expect(element.find('message-html').length).toEqual(1);
+        expect(element.find('message-html-query').length).toEqual(0);
+    });
+
+    it('should show query panel and "back to HTML" button', function () {
+        scope.mail = { html: 'html' };
+        scope.$digest();
+        element.find('button').triggerHandler('click');
+        scope.$digest();
+
+        expect(element.find('button').length).toEqual(1);
+        expect(element.find('button')[0].innerText).toEqual('back to HTML');
+        expect(element.find('message-html').length).toEqual(0);
+        expect(element.find('message-html-query').length).toEqual(1);
+    });
+
+    it('should pass mail to messageHtmlQuery component', function () {
+        scope.mail = { html: 'html' };
+        scope.$digest();
+        element.find('button').triggerHandler('click');
+        scope.$digest();
+
+        expect(messageHtmlQuery.bindings.mail).toEqual(scope.mail);
     });
 });
 
@@ -279,5 +340,171 @@ describe('Component: smtpLog', function() {
 
     it('should scroll to bottom when new smtp log event received', function() {
         expect(element.find('.smtp-log')[0].hasAttribute('scroll-glue')).toBe(true);
+    });
+});
+
+describe('Component: messageHtmlQuery', function () {
+
+    var scope, element, httpBackend, compile, clipboard, curlConverter;
+
+    var mail = {
+        id: 1,
+        html: 'html body'
+    };
+
+    beforeEach(angular.mock.module('mailsinkApp', 'htmlTemplates', mock('curlConverter')));
+
+    beforeEach(inject(function($compile, $rootScope, $httpBackend, _clipboard_, _curlConverter_) {
+        scope = $rootScope.$new();
+        httpBackend = $httpBackend;
+        compile = $compile;
+        curlConverter = _curlConverter_;
+        clipboard = _clipboard_;
+
+        curlConverter['toCommand'] = jasmine.createSpy('curlConverter.toCommand()');
+        scope.mail = mail;
+    }));
+
+    afterEach(function() {
+        httpBackend.verifyNoOutstandingExpectation();
+        httpBackend.verifyNoOutstandingRequest();
+    });
+
+    describe('failing request on initialization', function () {
+
+        beforeEach(function() {
+            httpBackend.when('POST', 'mails/1/html/query', {xpath: '*'}).respond(502, {message: 'expected error'});
+            element = compile('<message-html-query mail="mail"></message-html-query>')(scope);
+            httpBackend.flush();
+            scope.$digest();
+        });
+
+        it('should show error message', function () {
+            expect(element.children()[2].classList).toContain('alert-danger');
+        });
+    });
+
+    describe('passing request on initialization', function () {
+
+        beforeEach(function() {
+            httpBackend.when('POST', 'mails/1/html/query', {xpath: '*'}).respond(200, {value: 'expected response'});
+            element = compile('<message-html-query mail="mail"></message-html-query>')(scope);
+            httpBackend.flush();
+            scope.$digest();
+        });
+
+        it('should pretty print JSON response with hljs', function (done) {
+            setTimeout(function () {
+                expect(element.find('code')[0].classList[0]).toEqual('hljs');
+                expect(element.find('code')[0].classList[1]).toEqual('json');
+                expect(element.find('code')[0].innerText).toEqual('{\n "value": "expected response"\n}');
+                done()
+            }, 20);
+        });
+
+        it('should pretty print HTML body with hljs when clicked on button', function (done) {
+            element.find('a')[1].click();
+
+            setTimeout(function () {
+                expect(element.find('code')[0].classList[0]).toEqual('hljs');
+                expect(element.find('code')[0].classList[1]).toEqual('stylus');
+                expect(element.find('code')[0].innerText).toEqual('html body');
+                done()
+            }, 20);
+        });
+
+        it('should change label of button when switching to HTML source view', function () {
+            expect(element.find('a')[1].innerText).toEqual('show HTML source');
+            element.find('a')[1].click();
+            expect(element.find('a')[1].innerText).toEqual('show xpath result');
+            element.find('a')[1].click();
+            expect(element.find('a')[1].innerText).toEqual('show HTML source');
+        });
+
+        it('should query html body with given xpath expression when query button pressed', function (done) {
+            httpBackend.when('POST', 'mails/1/html/query', {xpath: '//a'}).respond(200, {value: 'expected response2'});
+
+            element.find('input').val('//a').triggerHandler('input');
+            element.find('button').triggerHandler('click');
+            httpBackend.flush();
+
+            setTimeout(function () {
+                expect(element.find('code')[0].innerText).toEqual('{\n "value": "expected response2"\n}');
+                done();
+            }, 20);
+        });
+
+        it('should query html body with given wildcard xpath expression when query button pressed', function (done) {
+            element.find('input').val('').triggerHandler('input');
+            element.find('button').triggerHandler('click');
+            httpBackend.flush();
+
+            setTimeout(function () {
+                expect(element.find('code')[0].innerText).toEqual('{\n "value": "expected response"\n}');
+                done();
+            }, 20);
+        });
+
+        it('should show warning message when xpath expression is invalid', function () {
+            httpBackend.when('POST', 'mails/1/html/query', {xpath: 'invalid'}).respond(400, {message: 'expected error'});
+            element.find('input').val('invalid').triggerHandler('input');
+            element.find('button').triggerHandler('click');
+            httpBackend.flush();
+
+            expect(element.children()[2].classList).toContain('alert-warning');
+            expect(element.children()[2].innerText).toContain('Warning! expected error');
+        });
+
+        it('should show error message when request failed', function () {
+            httpBackend.when('POST', 'mails/1/html/query', {xpath: 'invalid'}).respond(500, {message: 'expected error'});
+            element.find('input').val('invalid').triggerHandler('input');
+            element.find('button').triggerHandler('click');
+            httpBackend.flush();
+
+            expect(element.children()[2].classList).toContain('alert-danger');
+            expect(element.children()[2].innerText).toContain('Warning! expected error');
+        });
+
+        it('should switch from HTML source view to result view when query request finished', function (done) {
+            element.find('a')[1].click();
+
+            setTimeout(function () {
+                expect(element.find('code')[0].classList[1]).toEqual('stylus');
+
+                element.find('button').triggerHandler('click');
+                httpBackend.flush();
+
+                setTimeout(function () {
+                    expect(element.find('code')[0].classList[1]).toEqual('json');
+                    done();
+                }, 20);
+            }, 20);
+        });
+
+        it('should convert query request to cURL command', function () {
+            spyOn(clipboard, 'copyText');
+
+            element.find('a')[0].click();
+            var url = location.protocol + '//' + location.hostname + ':' + location.port + '/mails/1/html/query';
+
+            expect(curlConverter.toCommand).toHaveBeenCalledWith(url, '{"xpath":"*"}');
+        });
+
+        it('should copy cURL command to clipboard', function () {
+            spyOn(document, 'execCommand').and.returnValue(true);
+            spyOn(clipboard, 'copyText');
+            curlConverter.toCommand.and.returnValue('expected curl command');
+
+            element.find('a')[0].click();
+
+            expect(clipboard.copyText).toHaveBeenCalledWith('expected curl command');
+        });
+
+        it('should open dropdown menu with ui.bootstrap.dropdown', function () {
+            expect(element.find('ul').parent()[0].classList).not.toContain('open');
+
+            element.find('button')[1].click();
+            expect(element.find('ul').parent()[0].classList).toContain('open');
+        });
     });
 });

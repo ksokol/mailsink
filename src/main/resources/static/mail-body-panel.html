@@ -10,7 +10,13 @@
     <uib-tab class="html" index="1" heading="HTML" ng-if="$ctrl.mail.html.length > 0">
         <div class="panel panel-default">
             <div class="panel-body">
-                <message-html id="$ctrl.mail.id"></message-html>
+                <button class="btn btn-default" ng-if="!$ctrl.showHtmlBodyQueryPanel" ng-click="$ctrl.openHtmlBodyQueryPanel()">Query HTML</button>
+                <button class="btn btn-default" ng-if="$ctrl.showHtmlBodyQueryPanel" ng-click="$ctrl.openHtmlBodyQueryPanel()">back to HTML</button>
+
+                <hr>
+
+                <message-html ng-if="!$ctrl.showHtmlBodyQueryPanel" id="$ctrl.mail.id"></message-html>
+                <message-html-query ng-if="$ctrl.showHtmlBodyQueryPanel" mail="$ctrl.mail"></message-html-query>
             </div>
         </div>
     </uib-tab>

@@ -1,6 +1,20 @@
-var app = angular.module('mailsinkApp', ['ngSanitize', 'ui.bootstrap.tpls', 'ui.bootstrap.modal', 'ui.bootstrap.tabs', 'luegg.directives']);
+var app = angular.module('mailsinkApp',
+    [
+        'ngSanitize',
+        'ui.bootstrap.tpls',
+        'ui.bootstrap.modal',
+        'ui.bootstrap.tabs',
+        'ui.bootstrap.dropdown',
+        'luegg.directives',
+        'angular-clipboard',
+        'hljs'
+    ]);
 
 app.constant('TOPIC_PREFIX', '/topic');
+
+app.factory('BASE_URL', function($window) {
+    return $window.location.protocol + '//' + $window.location.hostname + ':' + $window.location.port;
+});
 
 app.factory('WEB_SOCKET_ENDPOINT', function($window) {
     return 'ws://' + $window.location.hostname + ':' + $window.location.port + '/ws/websocket';
@@ -10,27 +24,23 @@ app.factory('stompFactory', function() {
     return Stomp;
 });
 
-app.factory('errorBroadcastingHttpInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
-    return {
-        'responseError': function(rejection) {
-            if(rejection.status >= 500) {
-                if(typeof rejection.data === 'string') {
-                    $rootScope.$broadcast('error', rejection.data);
-                } else {
-                    $rootScope.$broadcast('error', rejection.data.message);
-                }
-            }
-            return $q.reject(rejection);
-        }
-    };
-}]);
-
-app.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push('errorBroadcastingHttpInterceptor');
-}]);
-
 app.config(['$compileProvider', function($compileProvider) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data):/);
+}]);
+
+app.service('alertService', ['$rootScope', function($rootScope) {
+
+    return {
+        alert: function(response) {
+            if(response.status >= 500) {
+                if(typeof response.data === 'string') {
+                    $rootScope.$broadcast('error', response.data);
+                } else {
+                    $rootScope.$broadcast('error', response.data.message);
+                }
+            }
+        }
+    };
 }]);
 
 app.directive('alertMessage', ['$rootScope', function($rootScope) {
@@ -51,7 +61,8 @@ app.directive('alertMessage', ['$rootScope', function($rootScope) {
     };
 }]);
 
-app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$uibModal', 'stompService', function($scope, $rootScope, $http, $modal, stompService) {
+app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$uibModal', 'stompService', 'alertService',
+    function($scope, $rootScope, $http, $modal, stompService, alertService) {
 
     $scope.mails = [];
 
@@ -61,7 +72,7 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$uibModal', 'stomp
             url: 'mails/search/findAllOrderByCreatedAtDesc'
         }).then(function successCallback(response) {
             $scope.mails = response.data._embedded.mails;
-        });
+        }).catch(alertService.alert);
     };
 
     stompService.subscribe('incoming-mail', fetch);
@@ -85,13 +96,13 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$uibModal', 'stomp
     };
 }]);
 
-app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scope, $rootScope, $http) {
+app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', 'alertService', function($scope, $rootScope, $http, alertService) {
 
     $scope.createMail = function() {
         $http({
             method: 'POST',
             url: 'createMail'
-        });
+        }).catch(alertService.alert);
     };
 
     $scope.refresh = function() {
@@ -104,7 +115,7 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', function($scop
             url: 'purge'
         }).then(function successCallback() {
             $rootScope.$emit('refresh');
-        });
+        }).catch(alertService.alert);
     };
 }]);
 
@@ -182,7 +193,14 @@ app.component('mailBodyPanel', {
     bindings: {
         mail: '<'
     },
-    templateUrl: 'mail-body-panel.html'
+    templateUrl: 'mail-body-panel.html',
+    controller: function () {
+        var ctrl = this;
+
+        ctrl.openHtmlBodyQueryPanel = function () {
+            ctrl.showHtmlBodyQueryPanel = !ctrl.showHtmlBodyQueryPanel;
+        }
+    }
 });
 
 app.component('messageHtml', {
@@ -292,7 +310,7 @@ app.service('stompService', function(WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $tim
     };
 });
 
-app.directive('toggleSmtpServer', function($http) {
+app.directive('toggleSmtpServer', ['$http', 'alertService', function($http, alertService) {
     return {
         restrict: 'A',
         link: function ($scope, element) {
@@ -306,11 +324,91 @@ app.directive('toggleSmtpServer', function($http) {
                 }
             };
 
-            $http.get('smtpServer/status').then(toggle);
+            $http.get('smtpServer/status')
+                .then(toggle)
+                .catch(alertService.alert);
 
             element.on('click', function() {
-                $http.post('smtpServer/status/toggle', {}).then(toggle);
+                $http.post('smtpServer/status/toggle', {})
+                    .then(toggle)
+                    .catch(alertService.alert);
             });
         }
     };
+}]);
+
+app.service('curlConverter', function () {
+    var shellescape = function (cmdArray) {
+        var ret = [];
+
+        // https://github.com/xxorax/node-shell-escape
+        cmdArray.forEach(function(cmdPart) {
+            if (/[^A-Za-z0-9_\/:=-]/.test(cmdPart)) {
+                cmdPart = "'"+cmdPart.replace(/'/g,"'\\''") + "'";
+                cmdPart = cmdPart.replace(/^(?:'')+/g, '').replace(/\\'''/g, "\\'" );
+            }
+            ret.push(cmdPart);
+        });
+
+        return ret.join(' ');
+    };
+
+    return {
+        toCommand: function (url, body) {
+            return shellescape([
+                'curl', '-X', 'POST', url,
+                '-H', 'content-type: application/json',
+                '-d', body
+            ]);
+        }
+    }
 });
+
+app.component('messageHtmlQuery', {
+    bindings: {
+        mail: '<'
+    },
+    templateUrl: 'html-body-query.html',
+    controller: function (BASE_URL, $http, clipboard, curlConverter) {
+        var ctrl = this;
+
+        var queryUrl = function () {
+            return 'mails/' + ctrl.mail.id + '/html/query';
+        };
+
+        var xpathQuery = function () {
+            return ctrl.xpath ? ctrl.xpath : '*';
+        };
+
+        var queryHtml = function (xpath) {
+            ctrl.errorMessage = null;
+            ctrl.showHtmlSource = false;
+            $http.post(queryUrl(), {xpath: xpath}).then(function(response) {
+                ctrl.queryResult = JSON.stringify(response.data, null, 1);
+            }).catch(function (error) {
+                ctrl.errorType = error.status >= 500 ? 'danger' : 'warning';
+                ctrl.errorMessage = error.data.message;
+            });
+        };
+
+        ctrl.$onInit = function () {
+            ctrl.onQuery();
+        };
+
+        ctrl.onQuery = function () {
+            queryHtml(xpathQuery());
+        };
+
+        ctrl.copyToClipboardAsCurl = function () {
+            var endpoint = BASE_URL + '/' + queryUrl();
+            var body = JSON.stringify({xpath: xpathQuery()});
+            var cmd = curlConverter.toCommand(endpoint, body);
+            clipboard.copyText(cmd);
+        };
+
+        ctrl.toggleSource = function () {
+            ctrl.showHtmlSource = !ctrl.showHtmlSource;
+        }
+    }
+});
+
