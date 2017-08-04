@@ -3,6 +3,7 @@ package com.github.ksokol.mailsink.repository;
 import com.github.ksokol.mailsink.entity.Mail;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public interface MailRepository extends CrudRepository<Mail, Long> {
 
     @RestResource(exported = false)
     Optional<Mail> findById(Long id);
+
+    @Query("select m from Mail as m where recipient = ?1")
+    List<Mail> findByRecipient(@Param("recipient") String recipient);
 }
