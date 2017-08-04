@@ -9,6 +9,7 @@
     <title>Mailsink</title>
 
     <link rel="stylesheet" type="text/css" media="screen" href="webjars/bootstrap/3.3.7-1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="webjars/highlightjs/9.12.0/styles/tomorrow.css" />
     <style>
         #wrapper {
             min-height: 100%;
@@ -30,11 +31,15 @@
             padding: 0 15px;
             overflow-y: scroll;
         }
-        .nav li a:hover {
+        .nav li a:hover, li a {
             cursor: pointer;
         }
         .hidden {
             display: none !important;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .modal-content {
             width: 900px;
@@ -85,6 +90,9 @@
     <script src="webjars/stomp-websocket/2.3.4/lib/stomp.js"></script>
     <script src="webjars/angular-scroll-glue/2.0.6/src/scrollglue.js"></script>
     <script src="webjars/CBuffer/1.1.1/cbuffer.js"></script>
+    <script src="webjars/angular-clipboard/1.6.0/angular-clipboard.js"></script>
+    <script src="webjars/highlightjs/9.12.0/highlight.pack.min.js"></script>
+    <script src="webjars/angular-highlightjs/0.7.1/build/angular-highlightjs.min.js"></script>
     <script src="app.js"></script>
 </head>
 <body>

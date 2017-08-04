@@ -2,11 +2,14 @@ describe('NavigationCtrl controller', function() {
 
     beforeEach(module('mailsinkApp'));
 
-    var scope, rootScope, httpBackend, modal;
+    var scope, rootScope, httpBackend, modal, alertService;
 
-    beforeEach(inject(function ($rootScope, $controller, _$httpBackend_) {
+    beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, _alertService_) {
         scope = $rootScope.$new();
         httpBackend = _$httpBackend_;
+
+        alertService = _alertService_;
+        spyOn(alertService, 'alert');
 
         rootScope = {
             $emit: jasmine.createSpy('mock')
@@ -45,11 +48,29 @@ describe('NavigationCtrl controller', function() {
 
         expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
     });
+
+    it('should forward error response to alertService when createMail request failed', function () {
+        httpBackend.when('POST', 'createMail').respond(500, 'expected error');
+
+        scope.createMail();
+        httpBackend.flush();
+
+        expect(alertService.alert).toHaveBeenCalledWith(jasmine.objectContaining({status: 500, data: 'expected error'}));
+    });
+
+    it('should forward error response to alertService when purge request failed', function () {
+        httpBackend.when('POST', 'purge').respond(500, 'expected error');
+
+        scope.purge();
+        httpBackend.flush();
+
+        expect(alertService.alert).toHaveBeenCalledWith(jasmine.objectContaining({status: 500, data: 'expected error'}));
+    });
 });
 
 describe('MailCtrl controller', function() {
 
-    var scope, rootScope;
+    var scope, rootScope, alertService;
 
     describe('mail modal', function() {
 
@@ -140,13 +161,16 @@ describe('MailCtrl controller', function() {
 
         beforeEach(module('mailsinkApp'));
 
-        beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, _stompService_) {
+        beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, _stompService_, _alertService_) {
             scope = $rootScope.$new();
             httpBackend = _$httpBackend_;
             rootScope = $rootScope;
 
             stompService = _stompService_;
             spyOn(stompService, 'subscribe');
+
+            alertService = _alertService_;
+            spyOn(alertService, 'alert');
 
             $controller('MailCtrl', {
                 $scope: scope,
@@ -189,6 +213,13 @@ describe('MailCtrl controller', function() {
             httpBackend.flush();
 
             expect(stompService.subscribe).toHaveBeenCalledWith('incoming-mail', jasmine.any(Function));
+        });
+
+        it('should forward error response to alertService', function () {
+            httpCallChain.respond(500, 'expected error');
+            httpBackend.flush();
+
+            expect(alertService.alert).toHaveBeenCalledWith(jasmine.objectContaining({status: 500, data: 'expected error'}));
         });
     });
 });
