@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
@@ -24,6 +25,8 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
@@ -95,8 +98,8 @@ public class MailsinkApplicationTests {
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
         MyStompSessionHandler session = new MyStompSessionHandler(topic, messageCount);
-        stompClient.connect("ws://localhost:" + SERVER_PORT + WEB_SOCKET_PATH, session);
-        Thread.sleep(2000); // wait one second before proceeding
+        ListenableFuture<StompSession> connecting = stompClient.connect("ws://localhost:" + SERVER_PORT + WEB_SOCKET_PATH, session);
+        await().atMost(2, SECONDS).until(connecting::isDone);
         return session;
     }
 
@@ -127,7 +130,7 @@ public class MailsinkApplicationTests {
 
         @Override
         public List<Map<String, String>> getMessages() throws InterruptedException {
-            if (latch.await(5, TimeUnit.SECONDS)) {
+            if (latch.await(5, SECONDS)) {
                 return messages;
             }
             throw new AssertionError("no message received");
