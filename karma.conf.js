@@ -27,7 +27,8 @@ module.exports = function(config) {
         },
         coverageReporter: {
             type : 'lcov',
-            dir : 'target/karma-reports/coverage/'
+            dir : 'target/karma-reports/coverage/',
+            subdir: '.'
         },
         sonarQubeUnitReporter: {
             sonarQubeVersion: 'LATEST',

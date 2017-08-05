@@ -48,7 +48,7 @@
     <sonar.sources>src/main</sonar.sources>
     <sonar.tests>src/test</sonar.tests>
     <sonar.testExecutionReportPaths>target/karma-reports/TEST.xml</sonar.testExecutionReportPaths>
-    <sonar.javascript.lcov.reportPaths>target/karma-reports/coverage/PhantomJS 2.1.1 (Linux 0.0.0)/lcov.info</sonar.javascript.lcov.reportPaths>
+    <sonar.javascript.lcov.reportPaths>target/karma-reports/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
   </properties>
 
   <dependencies>
