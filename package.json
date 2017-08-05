@@ -10,6 +10,7 @@
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs2-launcher": "0.5.0",
     "karma-coverage": "1.1.1",
-    "karma-ng-html2js-preprocessor": "1.0.0"
+    "karma-ng-html2js-preprocessor": "1.0.0",
+    "karma-sonarqube-unit-reporter": "0.0.11"
   }
 }

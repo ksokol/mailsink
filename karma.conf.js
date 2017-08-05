@@ -27,10 +27,15 @@ module.exports = function(config) {
         },
         coverageReporter: {
             type : 'lcov',
-            dir : 'target/coverage/'
+            dir : 'target/karma-reports/coverage/'
+        },
+        sonarQubeUnitReporter: {
+            sonarQubeVersion: 'LATEST',
+            outputFile: 'target/karma-reports/TEST.xml',
+            useBrowserName: false
         },
         frameworks: ['jasmine'],
-        reporters: ['progress', 'coverage'],
+        reporters: ['progress', 'coverage', 'sonarqubeUnit'],
         port: 9876,
         colors: false,
         logLevel: config.LOG_WARN,
