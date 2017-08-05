@@ -1,0 +1,53 @@
+From: Display Name <sender@localhost>
+To: recipient@localhost
+Message-ID: <208544674.1.1477820621771.JavaMail.localhost@localhost>
+Date: Sun, 01 Nov 2016 10:10:10 +0000 (CET)
+Subject: Mixed
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_0_846666437.1501746493321"
+
+------=_Part_0_846666437.1501746493321
+Content-Type: multipart/related; 
+	boundary="----=_Part_1_1727378064.1501746493329"
+
+------=_Part_1_1727378064.1501746493329
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_2_1141251624.1501746493329"
+
+------=_Part_2_1141251624.1501746493329
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+A text message
+------=_Part_2_1141251624.1501746493329
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<img src="cid:1234">
+------=_Part_2_1141251624.1501746493329--
+
+------=_Part_1_1727378064.1501746493329
+Content-Type: image/png; name=favicon.png
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename=favicon.png
+Content-ID: <1234>
+
+YQ==
+------=_Part_1_1727378064.1501746493329--
+
+------=_Part_0_846666437.1501746493321
+Content-Type: image/png; name=image.png
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=image.png
+Content-Description: image.png
+
+YQ==
+------=_Part_0_846666437.1501746493321
+Content-Type: text/plain; charset=us-ascii; name=data.txt
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline; filename=data.txt
+Content-Description: Simple data
+
+a
+------=_Part_0_846666437.1501746493321--

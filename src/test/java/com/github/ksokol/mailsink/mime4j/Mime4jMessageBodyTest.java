@@ -9,6 +9,7 @@ import java.io.InputStream;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.hamcrest.Matchers.hasSize;
@@ -168,6 +169,43 @@ public class Mime4jMessageBodyTest {
 
         assertThat(body.getHtmlTextPart(), equalToIgnoringWhiteSpace("<html><body>html body</body></html>"));
         assertThat(body.getAttachments(), hasSize(1));
+    }
+
+    @Test
+    public void shouldContainMixedContent() throws Exception {
+        givenMessage("mixed1");
+
+        assertThat(body.getPlainTextPart(), is("A text message"));
+        assertThat(body.getHtmlTextPart(), is("<img src=\"cid:1234\">"));
+
+        assertThat(body.getAttachments(), hasSize(1));
+        assertThat(body.getInlineAttachments(), hasSize(2));
+
+        Mime4jAttachment firstInline = body.getInlineAttachments().get(0);
+        assertThat(firstInline.getContentId(), is("1234"));
+        assertThat(firstInline.getMimeType(), is("image/png"));
+        assertThat(firstInline.getFilename(), is("favicon.png"));
+        assertThat(firstInline.getData(), is(BODY));
+
+        Mime4jAttachment secondInline = body.getInlineAttachments().get(1);
+        assertThat(secondInline.getContentId(), nullValue());
+        assertThat(secondInline.getMimeType(), is("text/plain"));
+        assertThat(secondInline.getFilename(), is("data.txt"));
+        assertThat(secondInline.getData(), is(BODY));
+
+        Mime4jAttachment attachment = body.getAttachments().get(0);
+        assertThat(attachment.getContentId(), nullValue());
+        assertThat(attachment.getMimeType(), is("image/png"));
+        assertThat(attachment.getFilename(), is("image.png"));
+        assertThat(attachment.getData(), is(BODY));
+    }
+
+    @Test
+    public void shouldIgnoreAttachmentsWhenFilenameOrContentIdNotPresent() throws Exception {
+        givenMessage("plain3_attachment");
+
+        assertThat(body.getAttachments(), empty());
+        assertThat(body.getInlineAttachments(), empty());
     }
 
     private void givenMessage(String fileName) throws Exception {
