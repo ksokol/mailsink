@@ -22,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -72,29 +71,21 @@ public class MailsinkController {
     }
 
     @GetMapping(value = "mails/{id}/html", produces = TEXT_HTML_VALUE)
-    public ResponseEntity<?> mailsHtml(@PathVariable Long id, UriComponentsBuilder uriComponentsBuilder) {
-        Mail mail = mailRepository.findOne(id);
-        if(mail != null) {
-            return ResponseEntity.ok(contentIdSanitizer.sanitize(mail, uriComponentsBuilder));
-        }
-        return ResponseEntity.notFound().build();
+    public String mailsHtml(@PathVariable Long id, UriComponentsBuilder uriComponentsBuilder) {
+        Mail mail = mailRepository.findById(id).orElseThrow(NotFoundException::new);
+        return contentIdSanitizer.sanitize(mail, uriComponentsBuilder);
     }
 
     @GetMapping(value = "mails/{id}/html/{contentId:.*}")
-    public ResponseEntity<?> mailsHtmlContentId(@PathVariable Long id, @PathVariable String contentId) {
-        Mail mail = mailRepository.findOne(id);
+    public ResponseEntity<byte[]> mailsHtmlContentId(@PathVariable Long id, @PathVariable String contentId) {
+        Mail mail = mailRepository.findById(id).orElseThrow(NotFoundException::new);
         Mime4jMessage mime4jMessage = conversionService.convert(mail, Mime4jMessage.class);
-        Optional<Mime4jAttachment> inlineAttachment = mime4jMessage.getInlineAttachment(contentId);
+        Mime4jAttachment inlineAttachment = mime4jMessage.getInlineAttachment(contentId).orElseThrow(NotFoundException::new);
 
-        if(inlineAttachment.isPresent()) {
-            Mime4jAttachment mime4jAttachment = inlineAttachment.get();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add(CONTENT_TYPE, mime4jAttachment.getMimeType());
-            httpHeaders.add(CONTENT_DISPOSITION, mime4jAttachment.getFilename());
-            return new ResponseEntity<>(mime4jAttachment.getData(), httpHeaders, HttpStatus.OK);
-        }
-
-        return ResponseEntity.notFound().build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(CONTENT_TYPE, inlineAttachment.getMimeType());
+        httpHeaders.add(CONTENT_DISPOSITION, inlineAttachment.getFilename());
+        return new ResponseEntity<>(inlineAttachment.getData(), httpHeaders, HttpStatus.OK);
     }
 
     @PostMapping(value = "mails/{id}/html/query", produces = APPLICATION_JSON_VALUE)
@@ -104,11 +95,7 @@ public class MailsinkController {
     }
 
     @GetMapping(value = "mails/{id}/source", produces = TEXT_PLAIN_VALUE)
-    public ResponseEntity<?> mailsSource(@PathVariable Long id) {
-        Mail mail = mailRepository.findOne(id);
-        if(mail != null) {
-            return ResponseEntity.ok(mail.getSource());
-        }
-        return ResponseEntity.notFound().build();
+    public String mailsSource(@PathVariable Long id) {
+        return mailRepository.findById(id).orElseThrow(NotFoundException::new).getSource();
     }
 }

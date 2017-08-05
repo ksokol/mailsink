@@ -88,7 +88,7 @@ public class MailsinkControllerTest {
 
     @Test
     public void shouldAnswerWith404WhenMailForGivenIdNotFound() throws Exception {
-        given(mailRepository.findOne(1L)).willReturn(null);
+        given(mailRepository.findById(1L)).willReturn(Optional.empty());
 
         mvc.perform(get("/mails/1/html"))
                 .andExpect(status().isNotFound());
@@ -98,7 +98,7 @@ public class MailsinkControllerTest {
     public void shouldAnswerWithHtmlBodyWhenMailForGivenIdFound() throws Exception {
         Mail mail = new Mail();
         mail.setHtml("html");
-        given(mailRepository.findOne(1L)).willReturn(mail);
+        given(mailRepository.findById(1L)).willReturn(Optional.of(mail));
         given(contentIdSanitizer.sanitize(eq(mail), any(UriComponentsBuilder.class))).willReturn("html");
 
         mvc.perform(get("/mails/1/html"))
@@ -109,7 +109,7 @@ public class MailsinkControllerTest {
 
     @Test
     public void shouldAnswerWith404WhenMailSourceForGivenIdNotFound() throws Exception {
-        given(mailRepository.findOne(1L)).willReturn(null);
+        given(mailRepository.findById(1L)).willReturn(Optional.empty());
 
         mvc.perform(get("/mails/1/source"))
                 .andExpect(status().isNotFound());
@@ -119,7 +119,7 @@ public class MailsinkControllerTest {
     public void shouldAnswerWitMailSourceWhenMailForGivenIdFound() throws Exception {
         Mail mail = new Mail();
         mail.setSource("source");
-        given(mailRepository.findOne(1L)).willReturn(mail);
+        given(mailRepository.findById(1L)).willReturn(Optional.of(mail));
 
         mvc.perform(get("/mails/1/source"))
                 .andExpect(status().isOk())
@@ -129,6 +129,7 @@ public class MailsinkControllerTest {
 
     @Test
     public void shouldReturn404WhenContentIdIsUnknown() throws Exception {
+        given(mailRepository.findById(1L)).willReturn(Optional.of(new Mail()));
         given(conversionService.convert(any(), eq(Mime4jMessage.class))).willReturn(givenMessage("alternative1"));
 
         mvc.perform(get("/mails/1/html/1"))
@@ -140,7 +141,7 @@ public class MailsinkControllerTest {
         Mail mail = new Mail();
         mail.setSource("source");
 
-        given(mailRepository.findOne(1L)).willReturn(mail);
+        given(mailRepository.findById(1L)).willReturn(Optional.of(mail));
         given(conversionService.convert(eq(mail), eq(Mime4jMessage.class))).willReturn(givenMessage("alternative1"));
         given(contentIdSanitizer.sanitize(eq(mail), any(UriComponentsBuilder.class))).willReturn("source");
 
