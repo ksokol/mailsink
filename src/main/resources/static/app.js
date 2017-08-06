@@ -39,6 +39,9 @@ app.service('alertService', ['$rootScope', function($rootScope) {
                     $rootScope.$broadcast('error', response.data.message);
                 }
             }
+            if(response.status <= 0) {
+                $rootScope.$broadcast('error', 'Network error');
+            }
         }
     };
 }]);
