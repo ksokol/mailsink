@@ -180,9 +180,10 @@ describe('src/test/javascript/component-tests.js', function () {
 
         beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
             scope = $rootScope.$new();
+            scope.mail = {id: 42};
 
             $httpBackend.whenGET('message-html.html').respond('message-html.html');
-            element = $compile('<message-html id="42"></message-html>')(scope);
+            element = $compile('<message-html mail="mail"></message-html>')(scope);
         }));
 
         it('should build src attribute for iframe', function () {
@@ -217,7 +218,7 @@ describe('src/test/javascript/component-tests.js', function () {
             };
 
             spyOn(el, 'find').and.returnValue(iframe);
-            $componentController('messageHtml', {$element: el}, null);
+            $componentController('messageHtml', {$element: el}, {mail: {}}).$onInit();
 
             expect(el.find).toHaveBeenCalledWith('iframe');
             expect(iframe.on).toHaveBeenCalledWith('load', jasmine.any(Function));
@@ -249,7 +250,7 @@ describe('src/test/javascript/component-tests.js', function () {
                 }
             };
 
-            $componentController('messageHtml', {$element: el}, null);
+            $componentController('messageHtml', {$element: el}, {mail: {}}).$onInit();
             loadCallback();
 
             expect(iframe.css.calls.allArgs()).toEqual([['width', '100%'], ['height', '200px']]);
@@ -265,7 +266,9 @@ describe('src/test/javascript/component-tests.js', function () {
 
         beforeEach(inject(function ($compile, $rootScope) {
             scope = $rootScope.$new();
-            element = $compile('<message-source id="42"></message-source>')(scope);
+            scope.mail = {id: 42};
+
+            element = $compile('<message-source mail="mail"></message-source>')(scope);
             scope.$digest();
         }));
 

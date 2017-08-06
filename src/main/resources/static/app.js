@@ -205,30 +205,38 @@ app.component('mailBodyPanel', {
 
 app.component('messageHtml', {
     bindings: {
-        id: '<'
+        mail: '<'
     },
-    template: '<iframe class="hidden" frameborder="0" ng-src="{{url}}"></iframe>',
-    controller: function($scope, $element) {
-        $scope.url = 'mails/' + this.id + '/html';
+    template: '<iframe class="hidden" frameborder="0" ng-src="{{$ctrl.url}}"></iframe>',
+    controller: function ($element) {
+        var ctrl = this;
 
-        var iframe = $element.find('iframe');
+        this.$onInit = function () {
+            ctrl.url = 'mails/' + ctrl.mail.id + '/html';
 
-        iframe.on('load', function() {
-            var height = iframe[0].contentWindow.document.body.scrollHeight + 'px';
-            iframe.css('width', '100%');
-            iframe.css('height', height);
-            iframe.removeClass('hidden');
-        });
+            var iframe = $element.find('iframe');
+
+            iframe.on('load', function() {
+                var height = iframe[0].contentWindow.document.body.scrollHeight + 'px';
+                iframe.css('width', '100%');
+                iframe.css('height', height);
+                iframe.removeClass('hidden');
+            });
+        }
     }
 });
 
 app.component('messageSource', {
     bindings: {
-        id: '<'
+        mail: '<'
     },
-    template: '<a target="_blank" href="{{url}}">Source</a>',
-    controller: function($scope) {
-        $scope.url = 'mails/' + this.id + '/source';
+    template: '<a target="_blank" href="{{$ctrl.url}}">Source</a>',
+    controller: function() {
+        var ctrl = this;
+
+        ctrl.$onInit = function () {
+            ctrl.url = 'mails/' + ctrl.mail.id + '/source';
+        }
     }
 });
 

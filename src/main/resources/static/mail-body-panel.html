@@ -15,7 +15,7 @@
 
                 <hr>
 
-                <message-html ng-if="!$ctrl.showHtmlBodyQueryPanel" id="$ctrl.mail.id"></message-html>
+                <message-html ng-if="!$ctrl.showHtmlBodyQueryPanel" mail="$ctrl.mail"></message-html>
                 <message-html-query ng-if="$ctrl.showHtmlBodyQueryPanel" mail="$ctrl.mail"></message-html-query>
             </div>
         </div>
