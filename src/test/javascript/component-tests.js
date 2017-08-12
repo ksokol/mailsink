@@ -83,9 +83,10 @@ describe('src/test/javascript/component-tests.js', function () {
     describe('Component: mailBodyPanel', function () {
 
         var scope, element;
+        var messageHtml= componentMock('messageHtml');
         var messageHtmlQuery = componentMock('messageHtmlQuery');
 
-        beforeEach(angular.mock.module('mailsinkApp', 'htmlTemplates', messageHtmlQuery));
+        beforeEach(angular.mock.module('mailsinkApp', 'htmlTemplates', messageHtml, messageHtmlQuery));
 
         beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
             scope = $rootScope.$new();
@@ -162,100 +163,31 @@ describe('src/test/javascript/component-tests.js', function () {
             expect(element.find('message-html-query').length).toEqual(1);
         });
 
-        it('should pass mail to messageHtmlQuery component', function () {
+        it('should pass mail to child components', function () {
             scope.mail = {html: 'html'};
             scope.$digest();
             element.find('button').triggerHandler('click');
             scope.$digest();
 
+            expect(messageHtml.bindings.mail).toEqual(scope.mail);
             expect(messageHtmlQuery.bindings.mail).toEqual(scope.mail);
         });
     });
 
     describe('Component: messageHtml', function () {
 
-        var scope, element;
-
-        beforeEach(module('mailsinkApp', 'htmlTemplates'));
-
-        beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
-            scope = $rootScope.$new();
-            scope.mail = {id: 42};
-
-            $httpBackend.whenGET('message-html.html').respond('message-html.html');
-            element = $compile('<message-html mail="mail"></message-html>')(scope);
-        }));
-
-        it('should build src attribute for iframe', function () {
-            scope.$digest();
-
-            expect(element.find('iframe').attr('src')).toBe('mails/42/html');
-        });
-
-        it('should hide frame border', function () {
-            expect(element.find('iframe').attr('frameborder')).toBe('0');
-        });
-
-    });
-
-    describe('Component: messageHtml', function () {
-
-        var $componentController;
-
         beforeEach(module('mailsinkApp'));
 
-        beforeEach(inject(function (_$componentController_) {
-            $componentController = _$componentController_;
+        it('should add HTML Body into shadow root element', inject(function ($componentController) {
+            var el = jasmine.createSpyObj('element', ['attachShadow']);
+
+            var shadowDOM = {innerHTML: null};
+            el.attachShadow.and.returnValue(shadowDOM);
+            $componentController('messageHtml', {$element: [el]}, {mail: {html: 'expected html body'}}).$onInit();
+
+            expect(el.attachShadow).toHaveBeenCalledWith({mode: 'open'});
+            expect(shadowDOM.innerHTML).toEqual('expected html body');
         }));
-
-        it('should subscribe to load function on iframe', function () {
-            var el = {
-                find: {}
-            };
-
-            var iframe = {
-                on: jasmine.createSpy('iframe on function')
-            };
-
-            spyOn(el, 'find').and.returnValue(iframe);
-            $componentController('messageHtml', {$element: el}, {mail: {}}).$onInit();
-
-            expect(el.find).toHaveBeenCalledWith('iframe');
-            expect(iframe.on).toHaveBeenCalledWith('load', jasmine.any(Function));
-        });
-
-        it('should resize and show iframe after load', function () {
-            var loadCallback;
-
-            var iframe = {
-                on: function (type, fn) {
-                    loadCallback = fn;
-                },
-                0: {
-                    contentWindow: {
-                        document: {
-                            body: {
-                                scrollHeight: 200
-                            }
-                        }
-                    }
-                },
-                css: jasmine.createSpy(),
-                removeClass: jasmine.createSpy()
-            };
-
-            var el = {
-                find: function () {
-                    return iframe;
-                }
-            };
-
-            $componentController('messageHtml', {$element: el}, {mail: {}}).$onInit();
-            loadCallback();
-
-            expect(iframe.css.calls.allArgs()).toEqual([['width', '100%'], ['height', '200px']]);
-            expect(iframe.removeClass).toHaveBeenCalledWith('hidden');
-        });
     });
 
     describe('Component: messageSource', function () {

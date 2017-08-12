@@ -2,7 +2,6 @@ package com.github.ksokol.mailsink.controller;
 
 import com.github.ksokol.mailsink.configuration.MailsinkConversionService;
 import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.mime4j.ContentIdSanitizer;
 import com.github.ksokol.mailsink.mime4j.Mime4jAttachment;
 import com.github.ksokol.mailsink.mime4j.Mime4jMessage;
 import com.github.ksokol.mailsink.repository.MailRepository;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +25,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 /**
@@ -38,16 +35,13 @@ public class MailsinkController {
 
     private final MailRepository mailRepository;
     private final JavaMailSender javaMailSender;
-    private final ContentIdSanitizer contentIdSanitizer;
     private final ConversionService conversionService;
 
     public MailsinkController(MailRepository mailRepository,
                               JavaMailSender javaMailSender,
-                              ContentIdSanitizer contentIdSanitizer,
                               @MailsinkConversionService ConversionService conversionService) {
         this.mailRepository = mailRepository;
         this.javaMailSender = javaMailSender;
-        this.contentIdSanitizer = contentIdSanitizer;
         this.conversionService = conversionService;
     }
 
@@ -68,12 +62,6 @@ public class MailsinkController {
         message.setText("mail body");
 
         javaMailSender.send(message);
-    }
-
-    @GetMapping(value = "mails/{id}/html", produces = TEXT_HTML_VALUE)
-    public String mailsHtml(@PathVariable Long id, UriComponentsBuilder uriComponentsBuilder) {
-        Mail mail = mailRepository.findById(id).orElseThrow(NotFoundException::new);
-        return contentIdSanitizer.sanitize(mail, uriComponentsBuilder);
     }
 
     @GetMapping(value = "mails/{id}/html/{contentId:.*}")

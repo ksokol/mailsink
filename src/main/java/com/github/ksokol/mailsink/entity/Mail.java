@@ -1,7 +1,5 @@
 package com.github.ksokol.mailsink.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
@@ -94,7 +92,6 @@ public class Mail {
         this.html = html;
     }
 
-    @JsonIgnore
     @Lob
     public String getSource() {
         return source;

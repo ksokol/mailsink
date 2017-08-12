@@ -199,21 +199,21 @@ describe('src/test/javascript/controller-tests.js', function () {
             });
 
             it('should refresh mails when event refresh was fired', function () {
-                httpCallChain.respond(200, {_embedded: {mails: 'refreshed mails'}});
+                httpCallChain.respond(200, {_embedded: {mails: [{attr: 'refreshed mails'}]}});
 
                 rootScope.$emit('refresh');
                 httpBackend.flush();
 
-                expect(scope.mails).toBe('refreshed mails');
+                expect(scope.mails).toEqual([{attr: 'refreshed mails'}]);
             });
 
             it('should refresh mails when websocket message received', function () {
-                httpCallChain.respond(200, {_embedded: {mails: 'triggered by websocket message'}});
+                httpCallChain.respond(200, {_embedded: {mails: [{attr: 'triggered by websocket message'}]}});
                 stompService.subscribe.calls.argsFor(0)[1]();
                 scope.$digest();
                 httpBackend.flush();
 
-                expect(scope.mails).toBe('triggered by websocket message');
+                expect(scope.mails).toEqual([{attr: 'triggered by websocket message'}]);
             });
 
             it('should subscribe to proper topic', function () {

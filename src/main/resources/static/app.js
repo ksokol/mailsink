@@ -210,21 +210,11 @@ app.component('messageHtml', {
     bindings: {
         mail: '<'
     },
-    template: '<iframe class="hidden" frameborder="0" ng-src="{{$ctrl.url}}"></iframe>',
+    template: '',
     controller: function ($element) {
-        var ctrl = this;
-
         this.$onInit = function () {
-            ctrl.url = 'mails/' + ctrl.mail.id + '/html';
-
-            var iframe = $element.find('iframe');
-
-            iframe.on('load', function() {
-                var height = iframe[0].contentWindow.document.body.scrollHeight + 'px';
-                iframe.css('width', '100%');
-                iframe.css('height', height);
-                iframe.removeClass('hidden');
-            });
+            var shadowRoot = $element[0].attachShadow({mode: 'open'});
+            shadowRoot.innerHTML = this.mail.html;
         }
     }
 });
