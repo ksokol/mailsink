@@ -1,31 +1,23 @@
 package com.github.ksokol.mailsink.mime4j;
 
-import com.github.ksokol.mailsink.configuration.MailsinkConversionService;
 import com.github.ksokol.mailsink.entity.Mail;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * @author Kamill Sokol
  */
-@Component
-public class ContentIdSanitizer {
+public class ContentIdSanitizer implements java.io.Serializable {
 
-    private final ConversionService conversionService;
-
-    public ContentIdSanitizer(@MailsinkConversionService ConversionService conversionService) {
-        this.conversionService = conversionService;
-    }
+    private static final long serialVersionUID = 1L;
 
     public String sanitize(Mail mail, UriComponentsBuilder uriComponentsBuilder) {
         uriComponentsBuilder.pathSegment("mails", mail.getId().toString(), "html");
-        Mime4jMessage mime4jMessage = conversionService.convert(mail, Mime4jMessage.class);
-        return sanitizeContentId(mail, uriComponentsBuilder, mime4jMessage);
+        Mime4jMessage mime4jMessage = new Mime4jMessage(mail.getSource());
+        return sanitizeContentId(uriComponentsBuilder, mime4jMessage);
     }
 
-    private static String sanitizeContentId(Mail mail, UriComponentsBuilder uriComponentsBuilder, Mime4jMessage mime4jMessage) {
-        String htmlBody = mail.getHtml();
+    private static String sanitizeContentId(UriComponentsBuilder uriComponentsBuilder, Mime4jMessage mime4jMessage) {
+        String htmlBody = mime4jMessage.getHtmlTextPart();
         for (Mime4jAttachment mime4jAttachment : mime4jMessage.getInlineAttachments()) {
             htmlBody = sanitizeHtml(htmlBody, mime4jAttachment.getContentId(), uriComponentsBuilder.cloneBuilder());
         }

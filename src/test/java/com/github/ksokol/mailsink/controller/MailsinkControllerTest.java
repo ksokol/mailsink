@@ -95,19 +95,6 @@ public class MailsinkControllerTest {
     }
 
     @Test
-    public void shouldAnswerWithHtmlBodyWhenMailForGivenIdFound() throws Exception {
-        Mail mail = new Mail();
-        mail.setHtml("html");
-        given(mailRepository.findById(1L)).willReturn(Optional.of(mail));
-        given(contentIdSanitizer.sanitize(eq(mail), any(UriComponentsBuilder.class))).willReturn("html");
-
-        mvc.perform(get("/mails/1/html"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("text/html;charset=UTF-8"))
-                .andExpect(content().string("html"));
-    }
-
-    @Test
     public void shouldAnswerWith404WhenMailSourceForGivenIdNotFound() throws Exception {
         given(mailRepository.findById(1L)).willReturn(Optional.empty());
 

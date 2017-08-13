@@ -3,11 +3,13 @@ package com.github.ksokol.mailsink.resource;
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.entity.MailAttachment;
 import com.github.ksokol.mailsink.repository.MailRepository;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -83,5 +85,19 @@ public class MailResourceTest {
 
         mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
                 .andExpect(jsonPath("_embedded.mails..source", hasSize(0)));
+    }
+
+    @Test
+    public void shouldReplaceCidOrMidInHtmlBodyWithAbsoluteUrl() throws Exception {
+        Mail mail = new Mail();
+        mail.setHtml("<img=\"cid:1234\">");
+        mail.setSource(IOUtils.toString(new ClassPathResource("mime4j/mixed1.eml").getInputStream()));
+
+        mailRepository.save(mail);
+
+        String expectedHtmlBody = String.format("<img src=\"http://localhost/mails/%d/html/1234\">", mail.getId());
+
+        mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
+                .andExpect(jsonPath(String.format("_embedded.mails..content[?(@.id=='%d')].html", mail.getId()), everyItem(is(expectedHtmlBody))));
     }
 }

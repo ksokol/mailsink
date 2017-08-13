@@ -45,7 +45,7 @@
             width: 900px;
             margin-left: -150px;
         }
-        .footer {
+        .app-footer {
             position: fixed;
             bottom: 0;
             padding-left: 0;
@@ -83,12 +83,14 @@
             color: #BABABA;
         }
     </style>
-    <script src="webjars/angular/1.5.8/angular.min.js"></script>
-    <script src="webjars/angular-sanitize/1.5.8/angular-sanitize.js"></script>
-    <script src="webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap-tpls.min.js"></script>
-    <script src="webjars/angular-ui-bootstrap-bower/2.2.0/ui-bootstrap.min.js"></script>
+    <script src="webjars/github-com-webcomponents-shadydom/v1.0.0/shadydom.min.js"></script>
+    <script src="webjars/jquery/1.12.4/jquery.js"></script>
+    <script src="webjars/angular/1.6.5/angular.min.js"></script>
+    <script src="webjars/angular-sanitize/1.6.5/angular-sanitize.js"></script>
+    <script src="webjars/angular-ui-bootstrap-bower/2.5.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="webjars/angular-ui-bootstrap-bower/2.5.0/ui-bootstrap.min.js"></script>
     <script src="webjars/stomp-websocket/2.3.4/lib/stomp.js"></script>
-    <script src="webjars/angular-scroll-glue/2.0.6/src/scrollglue.js"></script>
+    <script src="webjars/angular-scroll-glue/2.2.0/src/scrollglue.js"></script>
     <script src="webjars/CBuffer/1.1.1/cbuffer.js"></script>
     <script src="webjars/angular-clipboard/1.6.0/angular-clipboard.js"></script>
     <script src="webjars/highlightjs/9.12.0/highlight.pack.min.js"></script>
@@ -133,11 +135,11 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="mail in mails" ng-click="click(mail)">
-                                <td class="col-xs-2">{{::mail.sender}}</td>
-                                <td class="col-xs-2">{{::mail.recipient}}</td>
-                                <td class="col-xs-2">{{::mail.subject}}</td>
-                                <td class="col-xs-2">{{::mail.createdAt}}</td>
+                            <tr ng-repeat="mail in mails" ng-click="click(mail.content)">
+                                <td class="col-xs-2">{{::mail.content.sender}}</td>
+                                <td class="col-xs-2">{{::mail.content.recipient}}</td>
+                                <td class="col-xs-2">{{::mail.content.subject}}</td>
+                                <td class="col-xs-2">{{::mail.content.createdAt}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -145,7 +147,7 @@
                 </div>
             </div>
         </div>
-        <footer class="col-xs-12 footer">
+        <footer class="col-xs-12 app-footer">
             <smtp-log></smtp-log>
         </footer>
     </div>

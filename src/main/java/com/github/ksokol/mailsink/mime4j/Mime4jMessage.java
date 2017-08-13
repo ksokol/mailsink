@@ -3,10 +3,16 @@ package com.github.ksokol.mailsink.mime4j;
 import org.apache.james.mime4j.dom.Message;
 import org.apache.james.mime4j.dom.address.Address;
 import org.apache.james.mime4j.dom.address.Mailbox;
+import org.apache.james.mime4j.message.MessageBuilder;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -20,6 +26,17 @@ public class Mime4jMessage {
     public Mime4jMessage(Message message) {
         this.message = message;
         this.body = new Mime4jMessageBody(message);
+    }
+
+    public Mime4jMessage(String source) {
+        Objects.requireNonNull(source, "source is null");
+        try {
+            InputStream inputStream = new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8));
+            this.message = new MessageBuilder().parse(inputStream).build();
+            this.body = new Mime4jMessageBody(message);
+        } catch (IOException exception) {
+            throw new IllegalArgumentException(exception.getMessage(), exception);
+        }
     }
 
     public String getMessageId() {

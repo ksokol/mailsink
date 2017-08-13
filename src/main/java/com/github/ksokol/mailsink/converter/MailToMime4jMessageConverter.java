@@ -12,7 +12,10 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * @author Kamill Sokol
+ *
+ * @deprecated as of 0.5.0, in favor of using {@link Mime4jMessage}
  */
+@Deprecated
 @Component
 public class MailToMime4jMessageConverter implements Converter<Mail, Mime4jMessage> {
 

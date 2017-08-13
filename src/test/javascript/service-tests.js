@@ -188,6 +188,14 @@ describe('src/test/javascript/service-tests.js', function () {
             alertService.alert({status: 400});
             expect(rootScope.$broadcast).not.toHaveBeenCalled();
         });
+
+        it('should broadcast error message when status code is lower than or equal to 0', function () {
+            alertService.alert({status: 0});
+            expect(rootScope.$broadcast).toHaveBeenCalledWith('error', 'Network error');
+
+            alertService.alert({status: -1});
+            expect(rootScope.$broadcast).toHaveBeenCalledWith('error', 'Network error');
+        });
     });
 
     describe('curlConverter', function () {

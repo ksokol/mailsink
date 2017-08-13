@@ -39,6 +39,9 @@ app.service('alertService', ['$rootScope', function($rootScope) {
                     $rootScope.$broadcast('error', response.data.message);
                 }
             }
+            if(response.status <= 0) {
+                $rootScope.$broadcast('error', 'Network error');
+            }
         }
     };
 }]);
@@ -205,30 +208,28 @@ app.component('mailBodyPanel', {
 
 app.component('messageHtml', {
     bindings: {
-        id: '<'
+        mail: '<'
     },
-    template: '<iframe class="hidden" frameborder="0" ng-src="{{url}}"></iframe>',
-    controller: function($scope, $element) {
-        $scope.url = 'mails/' + this.id + '/html';
-
-        var iframe = $element.find('iframe');
-
-        iframe.on('load', function() {
-            var height = iframe[0].contentWindow.document.body.scrollHeight + 'px';
-            iframe.css('width', '100%');
-            iframe.css('height', height);
-            iframe.removeClass('hidden');
-        });
+    template: '',
+    controller: function ($element) {
+        this.$onInit = function () {
+            var shadowRoot = $element[0].attachShadow({mode: 'open'});
+            shadowRoot.innerHTML = this.mail.html;
+        }
     }
 });
 
 app.component('messageSource', {
     bindings: {
-        id: '<'
+        mail: '<'
     },
-    template: '<a target="_blank" href="{{url}}">Source</a>',
-    controller: function($scope) {
-        $scope.url = 'mails/' + this.id + '/source';
+    template: '<a target="_blank" href="{{$ctrl.url}}">Source</a>',
+    controller: function() {
+        var ctrl = this;
+
+        ctrl.$onInit = function () {
+            ctrl.url = 'mails/' + ctrl.mail.id + '/source';
+        }
     }
 });
 
