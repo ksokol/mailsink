@@ -95,7 +95,7 @@ public class MailResourceTest {
 
         mailRepository.save(mail);
 
-        String expectedHtmlBody = String.format("<img=\"http://localhost/mails/%d/html/1234\">", mail.getId());
+        String expectedHtmlBody = String.format("<img src=\"http://localhost/mails/%d/html/1234\">", mail.getId());
 
         mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
                 .andExpect(jsonPath(String.format("_embedded.mails..content[?(@.id=='%d')].html", mail.getId()), everyItem(is(expectedHtmlBody))));

@@ -15,11 +15,9 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class MailsinkSimpleModule extends SimpleModule {
 
-    private final ContentIdSanitizer contentIdSanitizer;
+    private static final long serialVersionUID = 1L;
 
-    public MailsinkSimpleModule(ContentIdSanitizer contentIdSanitizer) {
-        this.contentIdSanitizer = requireNonNull(contentIdSanitizer, "contentIdSanitizer is null");
-    }
+    private final ContentIdSanitizer contentIdSanitizer = new ContentIdSanitizer();
 
     @Override
     public void setupModule(SetupContext context) {

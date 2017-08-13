@@ -1,41 +1,27 @@
 package com.github.ksokol.mailsink.mime4j;
 
 import com.github.ksokol.mailsink.entity.Mail;
-import org.apache.james.mime4j.dom.Message;
-import org.apache.james.mime4j.message.MessageBuilder;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
  */
-@RunWith(MockitoJUnitRunner.class)
 public class ContentIdSanitizerTest {
 
-    @Mock
-    private ConversionService conversionService;
-
-    @InjectMocks
-    private ContentIdSanitizer sanitizer;
+    private ContentIdSanitizer sanitizer = new ContentIdSanitizer();
 
     private UriComponentsBuilder uriComponentsBuilder;
     private Mail mail;
@@ -68,12 +54,9 @@ public class ContentIdSanitizerTest {
     }
 
     private void givenMime4jMessage(String fileName) throws IOException {
-        InputStream inputStream = new ClassPathResource(format("mime4j/%s.eml", fileName)).getInputStream();
-        Message message = new MessageBuilder().parse(inputStream).build();
-        Mime4jMessage mime4jMessage = new Mime4jMessage(message);
+        String source = IOUtils.toString(new ClassPathResource(format("mime4j/%s.eml", fileName)).getInputStream(), UTF_8.name());
         mail = new Mail();
         mail.setId(42L);
-        mail.setHtml(mime4jMessage.getHtmlTextPart());
-        when(conversionService.convert(any(Mail.class), eq(Mime4jMessage.class))).thenReturn(mime4jMessage);
+        mail.setSource(source);
     }
 }

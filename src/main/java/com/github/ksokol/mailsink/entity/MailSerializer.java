@@ -17,7 +17,9 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author Kamill Sokol
  */
-public class MailSerializer extends JsonSerializer<Mail> {
+public class MailSerializer extends JsonSerializer<Mail> implements java.io.Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final ContentIdSanitizer contentIdSanitizer;
 
