@@ -27,6 +27,7 @@ public class MailAttachmentJsonTest {
         attachment.setId(2L);
         attachment.setFilename("expected filename");
         attachment.setMimeType("expected mimeType");
+        attachment.setDispositionType("expected dispositionType");
         attachment.setData(new byte[] {97});
 
         jsonContentAssert = json.write(attachment).assertThat();
@@ -36,6 +37,7 @@ public class MailAttachmentJsonTest {
     public void shouldSerializeFields() throws Exception {
         jsonContentAssert.extractingJsonPathValue("filename").isEqualTo("expected filename");
         jsonContentAssert.extractingJsonPathValue("mimeType").isEqualTo("expected mimeType");
+        jsonContentAssert.extractingJsonPathValue("dispositionType").isEqualTo("expected dispositionType");
     }
 
     @Test

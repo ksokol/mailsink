@@ -121,12 +121,12 @@ public class Mime4jMessageBodyTest {
     }
 
     @Test
-    public void shouldContainPlainTextPartAndHtmlTextPart() throws Exception {
+    public void shouldContainPlainTextPartAndHtmlTextPartAndAllAttachments() throws Exception {
         givenMessage("alternative1");
 
         assertThat(body.getHtmlTextPart(), is("<html><body><p>html mail</p></body></html>"));
         assertThat(body.getPlainTextPart(), is("Mail body"));
-        assertThat(body.getAttachments(), hasSize(0));
+        assertThat(body.getAttachments(), hasSize(3));
     }
 
     @Test
@@ -178,26 +178,43 @@ public class Mime4jMessageBodyTest {
         assertThat(body.getPlainTextPart(), is("A text message"));
         assertThat(body.getHtmlTextPart(), is("<img src=\"cid:1234\">"));
 
-        assertThat(body.getAttachments(), hasSize(1));
+        assertThat(body.getAttachments(), hasSize(3));
         assertThat(body.getInlineAttachments(), hasSize(2));
 
         Mime4jAttachment firstInline = body.getInlineAttachments().get(0);
         assertThat(firstInline.getContentId(), is("1234"));
+        assertThat(firstInline.getDispositionType(), is("inline"));
         assertThat(firstInline.getMimeType(), is("image/png"));
         assertThat(firstInline.getFilename(), is("favicon.png"));
         assertThat(firstInline.getData(), is(BODY));
 
         Mime4jAttachment secondInline = body.getInlineAttachments().get(1);
         assertThat(secondInline.getContentId(), nullValue());
+        assertThat(secondInline.getDispositionType(), is("inline"));
         assertThat(secondInline.getMimeType(), is("text/plain"));
         assertThat(secondInline.getFilename(), is("data.txt"));
         assertThat(secondInline.getData(), is(BODY));
 
-        Mime4jAttachment attachment = body.getAttachments().get(0);
-        assertThat(attachment.getContentId(), nullValue());
-        assertThat(attachment.getMimeType(), is("image/png"));
-        assertThat(attachment.getFilename(), is("image.png"));
-        assertThat(attachment.getData(), is(BODY));
+        Mime4jAttachment firstAttachment = body.getAttachments().get(0);
+        assertThat(firstAttachment.getContentId(), is("1234"));
+        assertThat(firstAttachment.getDispositionType(), is("inline"));
+        assertThat(firstAttachment.getMimeType(), is("image/png"));
+        assertThat(firstAttachment.getFilename(), is("favicon.png"));
+        assertThat(firstAttachment.getData(), is(BODY));
+
+        Mime4jAttachment secondAttachment = body.getAttachments().get(1);
+        assertThat(secondAttachment.getContentId(), nullValue());
+        assertThat(secondAttachment.getDispositionType(), is("attachment"));
+        assertThat(secondAttachment.getMimeType(), is("image/png"));
+        assertThat(secondAttachment.getFilename(), is("image.png"));
+        assertThat(secondAttachment.getData(), is(BODY));
+
+        Mime4jAttachment thirdAttachment = body.getAttachments().get(2);
+        assertThat(thirdAttachment.getContentId(), nullValue());
+        assertThat(thirdAttachment.getDispositionType(), is("inline"));
+        assertThat(thirdAttachment.getMimeType(), is("text/plain"));
+        assertThat(thirdAttachment.getFilename(), is("data.txt"));
+        assertThat(thirdAttachment.getData(), is(BODY));
     }
 
     @Test

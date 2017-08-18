@@ -49,7 +49,7 @@ final class Mime4jMessageBody {
     }
 
     public List<Mime4jAttachment> getAttachments() throws IOException, MimeTypeException {
-        return getAllAttachments(message).stream().filter(Mime4jAttachment::isAttachment).collect(Collectors.toList());
+        return new ArrayList<>(getAllAttachments(message));
     }
 
     private static List<Mime4jAttachment> getAllAttachments(Message message) throws IOException, MimeTypeException {

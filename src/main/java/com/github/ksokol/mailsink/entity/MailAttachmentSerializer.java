@@ -18,6 +18,7 @@ public class MailAttachmentSerializer extends JsonSerializer<MailAttachment> imp
         gen.writeStartObject();
         gen.writeStringField("filename", value.getFilename());
         gen.writeStringField("mimeType", value.getMimeType());
+        gen.writeStringField("dispositionType", value.getDispositionType());
         gen.writeEndObject();
     }
 }
