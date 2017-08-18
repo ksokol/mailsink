@@ -17,6 +17,7 @@ import static java.lang.String.format;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -47,7 +48,7 @@ public class MailAttachmentResourceTest {
     public void setUp() throws Exception {
         mvc = webAppContextSetup(wac)
                 .alwaysExpect(status().isOk())
-                .alwaysExpect(header().string(CONTENT_TYPE, "application/hal+json;charset=UTF-8"))
+                .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE + ";charset=UTF-8"))
                 .build();
 
         Mail mail = new Mail();

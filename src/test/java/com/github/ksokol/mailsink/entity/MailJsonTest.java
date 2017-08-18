@@ -43,7 +43,6 @@ public class MailJsonTest {
 
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         mockHttpServletRequest.setContextPath("mailsink");
-        mockHttpServletRequest.setPathInfo("info");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
     }
 

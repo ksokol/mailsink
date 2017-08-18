@@ -18,7 +18,6 @@ public class MailAttachmentResourceProcessor implements ResourceProcessor<Resour
         MailAttachment attachment = resource.getContent();
 
         resource.add(linkTo(MailAttachmentController.class)
-                .slash("mailAttachments")
                 .slash(attachment.getId())
                 .slash("download")
                 .withRel("download"));
