@@ -1,13 +1,13 @@
 <uib-tabset justified="true">
-    <uib-tab class="plain" index="0" heading="Plain Text" ng-if="$ctrl.mail.text.length > 0">
+    <uib-tab class="plain" index="0" heading="Plain Text" ng-if="$ctrl.mail.content.text.length > 0">
         <div class="panel panel-default">
             <div class="panel-body" >
-                <message-text text="{{$ctrl.mail.text}}"></message-text>
+                <message-text text="{{$ctrl.mail.content.text}}"></message-text>
             </div>
         </div>
     </uib-tab>
 
-    <uib-tab class="html" index="1" heading="HTML" ng-if="$ctrl.mail.html.length > 0">
+    <uib-tab class="html" index="1" heading="HTML" ng-if="$ctrl.mail.content.html.length > 0">
         <div class="panel panel-default">
             <div class="panel-body">
                 <button class="btn btn-default" ng-if="!$ctrl.showHtmlBodyQueryPanel" ng-click="$ctrl.openHtmlBodyQueryPanel()">Query HTML</button>
@@ -21,10 +21,10 @@
         </div>
     </uib-tab>
 
-    <uib-tab class="attachments" index="2" heading="Attachments" ng-if="$ctrl.mail.attachments.length > 0">
+    <uib-tab class="attachments" index="2" heading="Attachments" ng-if="$ctrl.mail.content.attachments">
         <div class="panel panel-default">
             <div class="panel-body">
-                <attachments-panel attachments="$ctrl.mail.attachments"></attachments-panel>
+                <attachments-panel mail="$ctrl.mail"></attachments-panel>
             </div>
         </div>
     </uib-tab>

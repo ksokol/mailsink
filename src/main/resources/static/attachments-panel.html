@@ -1,12 +1,16 @@
-<table class="table table-striped" ng-if="$ctrl.attachments.length > 0">
+<table class="table table-striped" ng-if="!$ctrl.errorMessage">
     <tbody>
     <tr ng-repeat="attachment in $ctrl.attachments track by $index">
         <td>
             <a class="glyphicon glyphicon-download-alt"
                target="_blank"
-               title="{{::attachment.filename}} ({{::attachment.mimeType}})"
-               href="data:{{::attachment.mimeType}};base64,{{::attachment.data}}"> {{::attachment.filename}}</a>
+               title="{{::attachment.content.filename}} ({{::attachment.content.mimeType}})"
+               href="{{::attachment._links.download.href}}"> {{::attachment.content.filename}}</a>
         </td>
     </tr>
     </tbody>
 </table>
+
+<div class="alert alert-dismissible" ng-class="'alert-warning'" ng-if="$ctrl.errorMessage">
+    <strong>Warning!</strong> Could not fetch attachments.
+</div>

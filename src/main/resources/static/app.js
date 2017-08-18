@@ -12,10 +12,6 @@ var app = angular.module('mailsinkApp',
 
 app.constant('TOPIC_PREFIX', '/topic');
 
-app.factory('BASE_URL', function($window) {
-    return $window.location.protocol + '//' + $window.location.hostname + ':' + $window.location.port;
-});
-
 app.factory('WEB_SOCKET_ENDPOINT', function($window) {
     return 'ws://' + $window.location.hostname + ':' + $window.location.port + '/ws/websocket';
 });
@@ -23,10 +19,6 @@ app.factory('WEB_SOCKET_ENDPOINT', function($window) {
 app.factory('stompFactory', function() {
     return Stomp;
 });
-
-app.config(['$compileProvider', function($compileProvider) {
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data):/);
-}]);
 
 app.service('alertService', ['$rootScope', function($rootScope) {
 
@@ -187,9 +179,23 @@ app.filter('urlToLink', ['$sanitize', function($sanitize) {
 
 app.component('attachmentsPanel', {
     bindings: {
-        attachments: '<'
+        mail: '<'
     },
-    templateUrl: 'attachments-panel.html'
+    templateUrl: 'attachments-panel.html',
+    controller: function ($http) {
+        var ctrl = this;
+
+        ctrl.$onInit = function () {
+            $http({
+                method: 'GET',
+                url: ctrl.mail._links.attachments.href
+            }).then(function(response) {
+                ctrl.attachments = response.data._embedded.mailAttachments;
+            }).catch(function() {
+                ctrl.errorMessage = true;
+            });
+        }
+    }
 });
 
 app.component('mailBodyPanel', {
@@ -214,7 +220,7 @@ app.component('messageHtml', {
     controller: function ($element) {
         this.$onInit = function () {
             var shadowRoot = $element[0].attachShadow({mode: 'open'});
-            shadowRoot.innerHTML = this.mail.html;
+            shadowRoot.innerHTML = this.mail.content.html;
         }
     }
 });
@@ -223,14 +229,7 @@ app.component('messageSource', {
     bindings: {
         mail: '<'
     },
-    template: '<a target="_blank" href="{{$ctrl.url}}">Source</a>',
-    controller: function() {
-        var ctrl = this;
-
-        ctrl.$onInit = function () {
-            ctrl.url = 'mails/' + ctrl.mail.id + '/source';
-        }
-    }
+    template: '<a target="_blank" href="{{$ctrl.mail._links.source.href}}">Source</a>'
 });
 
 app.component('smtpLog', {
@@ -370,11 +369,11 @@ app.component('messageHtmlQuery', {
         mail: '<'
     },
     templateUrl: 'html-body-query.html',
-    controller: function (BASE_URL, $http, clipboard, curlConverter) {
+    controller: function ($http, clipboard, curlConverter) {
         var ctrl = this;
 
         var queryUrl = function () {
-            return 'mails/' + ctrl.mail.id + '/html/query';
+            return ctrl.mail._links.query.href;
         };
 
         var xpathQuery = function () {
@@ -401,9 +400,8 @@ app.component('messageHtmlQuery', {
         };
 
         ctrl.copyToClipboardAsCurl = function () {
-            var endpoint = BASE_URL + '/' + queryUrl();
             var body = JSON.stringify({xpath: xpathQuery()});
-            var cmd = curlConverter.toCommand(endpoint, body);
+            var cmd = curlConverter.toCommand(queryUrl(), body);
             clipboard.copyText(cmd);
         };
 

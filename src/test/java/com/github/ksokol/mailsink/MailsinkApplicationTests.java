@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
@@ -31,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
@@ -71,7 +71,7 @@ public class MailsinkApplicationTests {
         WebSocketConnection connection = connectToIncomingLogTopic();
         sendMail();
 
-        assertThat(connection.getMessages(), hasItem(hasEntry("sender", "from")));
+        assertThat(connection.getMessages(), hasItem(hasKey("id")));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class MailsinkApplicationTests {
 
         private List<Map<String, String>> messages = new ArrayList<>();
 
-        public MyStompSessionHandler(String topic, int messageCount) {
+        MyStompSessionHandler(String topic, int messageCount) {
             this.topic = topic;
             this.latch = new CountDownLatch(messageCount);
         }

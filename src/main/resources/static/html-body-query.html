@@ -38,6 +38,6 @@
     <strong>Warning!</strong> {{$ctrl.errorMessage}}
 </div>
 
-<div ng-if="!$ctrl.errorMessage && $ctrl.showHtmlSource" hljs hljs-source="$ctrl.mail.html"></div>
+<div ng-if="!$ctrl.errorMessage && $ctrl.showHtmlSource" hljs hljs-source="$ctrl.mail.content.html"></div>
 
 <div ng-if="!$ctrl.errorMessage && !$ctrl.showHtmlSource" hljs hljs-source="$ctrl.queryResult"></div>
