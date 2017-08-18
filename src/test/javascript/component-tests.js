@@ -37,6 +37,7 @@ describe('src/test/javascript/component-tests.js', function () {
                     content: {
                         filename: 'some-filename1',
                         mimeType: 'some/mimeType1',
+                        dispositionType: 'inline',
                         data: 'some-data1'
                     },
                     _links: {
@@ -48,6 +49,7 @@ describe('src/test/javascript/component-tests.js', function () {
                     content: {
                         filename: 'some-filename2',
                         mimeType: 'some/mimeType2',
+                        dispositionType: 'attachment',
                         data: 'some-data2'
                     },
                     _links: {
@@ -100,12 +102,12 @@ describe('src/test/javascript/component-tests.js', function () {
             expect(attachment1.attr('target')).toBe('_blank');
             expect(attachment1.attr('title')).toBe('some-filename1 (some/mimeType1)');
             expect(attachment1.attr('href')).toBe('http://localhost/mailAttachments/0/download');
-            expect(attachment1.text()).toBe(' some-filename1');
+            expect(attachment1.text()).toBe(' some-filename1 (inline)');
 
             expect(attachment2.attr('target')).toBe('_blank');
             expect(attachment2.attr('title')).toBe('some-filename2 (some/mimeType2)');
             expect(attachment2.attr('href')).toBe('http://localhost/mailAttachments/1/download');
-            expect(attachment2.text()).toBe(' some-filename2');
+            expect(attachment2.text()).toBe(' some-filename2 (attachment)');
         });
 
         it('should show error message when could not fetch attachments', inject(function ($compile) {

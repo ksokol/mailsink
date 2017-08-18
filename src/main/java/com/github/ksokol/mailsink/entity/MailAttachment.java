@@ -18,6 +18,7 @@ public class MailAttachment {
     private Long id;
     private String filename;
     private String mimeType;
+    private String dispositionType;
     private byte[] data;
     private Mail mail;
 
@@ -45,6 +46,14 @@ public class MailAttachment {
 
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
+    }
+
+    public String getDispositionType() {
+        return dispositionType;
+    }
+
+    public void setDispositionType(String dispositionType) {
+        this.dispositionType = dispositionType;
     }
 
     @Lob

@@ -54,4 +54,8 @@ public final class Mime4jAttachment {
     public byte[] getData() {
         return Arrays.copyOf(data, data.length);
     }
+
+    public String getDispositionType() {
+        return dispositionType;
+    }
 }
