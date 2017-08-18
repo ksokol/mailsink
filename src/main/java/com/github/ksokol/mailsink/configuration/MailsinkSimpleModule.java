@@ -3,6 +3,8 @@ package com.github.ksokol.mailsink.configuration;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.entity.MailAttachment;
+import com.github.ksokol.mailsink.entity.MailAttachmentSerializer;
 import com.github.ksokol.mailsink.entity.MailSerializer;
 import com.github.ksokol.mailsink.mime4j.ContentIdSanitizer;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ public class MailsinkSimpleModule extends SimpleModule {
     public void setupModule(SetupContext context) {
         SimpleSerializers serializers = new SimpleSerializers();
         serializers.addSerializer(Mail.class, new MailSerializer(contentIdSanitizer));
+        serializers.addSerializer(MailAttachment.class, new MailAttachmentSerializer());
         context.addSerializers(serializers);
     }
 }

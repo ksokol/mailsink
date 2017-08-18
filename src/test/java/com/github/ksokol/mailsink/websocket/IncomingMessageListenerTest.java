@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import static java.util.Collections.singletonMap;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -38,6 +39,7 @@ public class IncomingMessageListenerTest {
     @Before
     public void setUp() throws Exception {
         mail = new Mail();
+        mail.setId(999L);
         listener.handleIncomingEvent(new IncomingEvent(mail));
     }
 
@@ -48,7 +50,7 @@ public class IncomingMessageListenerTest {
 
     @Test
     public void shouldPublishMail() throws Exception {
-        verify(template).convertAndSend(anyString(), eq(mail));
+        verify(template).convertAndSend(anyString(), eq(singletonMap("id", 999L)));
     }
 
     @Test

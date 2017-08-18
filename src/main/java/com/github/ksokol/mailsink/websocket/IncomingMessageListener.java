@@ -6,6 +6,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+import static java.util.Collections.singletonMap;
+
 /**
  * @author Kamill Sokol
  */
@@ -26,6 +28,6 @@ class IncomingMessageListener {
     public void handleIncomingEvent(IncomingEvent event) {
         Mail incomingMail = event.getIncomingMail();
         mailRepository.save(incomingMail);
-        template.convertAndSend(TOPIC_INCOMING_MAIL, incomingMail);
+        template.convertAndSend(TOPIC_INCOMING_MAIL, singletonMap("id", incomingMail.getId()));
     }
 }

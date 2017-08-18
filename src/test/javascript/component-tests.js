@@ -31,25 +31,53 @@ function mock(name) {
 describe('src/test/javascript/component-tests.js', function () {
     describe('Component: Attachments', function () {
 
-        var attachments = [{
-            'filename': 'some-filename',
-            'mimeType': 'some/mimeType',
-            'data': 'some-data'
-        }];
+        var response = {
+            _embedded: {
+                mailAttachments: [{
+                    content: {
+                        filename: 'some-filename1',
+                        mimeType: 'some/mimeType1',
+                        data: 'some-data1'
+                    },
+                    _links: {
+                        download: {
+                            href: 'http://localhost/mailAttachments/0/download'
+                        }
+                    }
+                }, {
+                    content: {
+                        filename: 'some-filename2',
+                        mimeType: 'some/mimeType2',
+                        data: 'some-data2'
+                    },
+                    _links: {
+                        download: {
+                            href: 'http://localhost/mailAttachments/1/download'
+                        }
+                    }
+                }]
+            }
+        };
 
-        var scope, element;
+        var scope, element, httpBackend;
 
         beforeEach(module('mailsinkApp', 'htmlTemplates'));
 
         beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
             scope = $rootScope.$new();
+            httpBackend = $httpBackend;
 
             scope.mail = {
-                attachments: attachments
+                _links: {
+                    attachments: {
+                        href: 'http://localhost/mailAttachments/42'
+                    }
+                }
             };
 
-            $httpBackend.whenGET('attachments-panel.html').respond('attachments-panel.html');
-            element = $compile('<attachments-panel attachments="mail.attachments"></attachments-panel>')(scope);
+            httpBackend.when('GET', 'http://localhost/mailAttachments/42').respond(200, response);
+            element = $compile('<attachments-panel mail="mail"></attachments-panel>')(scope);
+            httpBackend.flush();
             scope.$digest();
         }));
 
@@ -62,22 +90,41 @@ describe('src/test/javascript/component-tests.js', function () {
             expect(element.find('panel').length).toBe(0);
         });
 
-        it('should show panel when attachment', function () {
-            var a = element.find('a');
-            expect(a.attr('target')).toBe('_blank');
-            expect(a.attr('title')).toBe('some-filename (some/mimeType)');
-            expect(a.attr('href')).toBe('data:some/mimeType;base64,some-data');
-            expect(a.text()).toBe(' some-filename');
+        it('should show panel with attachments when initialized', function () {
+            var aTags = element.find('a');
+            expect(aTags.length).toBe(2);
+
+            var attachment1 = angular.element(element.find('a')[0]);
+            var attachment2 = angular.element(element.find('a')[1]);
+
+            expect(attachment1.attr('target')).toBe('_blank');
+            expect(attachment1.attr('title')).toBe('some-filename1 (some/mimeType1)');
+            expect(attachment1.attr('href')).toBe('http://localhost/mailAttachments/0/download');
+            expect(attachment1.text()).toBe(' some-filename1');
+
+            expect(attachment2.attr('target')).toBe('_blank');
+            expect(attachment2.attr('title')).toBe('some-filename2 (some/mimeType2)');
+            expect(attachment2.attr('href')).toBe('http://localhost/mailAttachments/1/download');
+            expect(attachment2.text()).toBe(' some-filename2');
         });
 
-        it('should show panel with to attachments when attachments available', function () {
+        it('should show error message when could not fetch attachments', inject(function ($compile) {
             scope.mail = {
-                attachments: [{}, {}]
+                _links: {
+                    attachments: {
+                        href: 'irrelevant'
+                    }
+                }
             };
-            scope.$apply();
 
-            expect(element.find('a').length).toBe(2);
-        });
+            httpBackend.when('GET', 'irrelevant').respond(500, {});
+            element = $compile('<attachments-panel mail="mail"></attachments-panel>')(scope);
+            httpBackend.flush();
+            scope.$digest();
+
+            expect(element.find('table')[0]).toBeUndefined();
+            expect(element.find('div').text()).toContain('Warning! Could not fetch attachments.');
+        }));
     });
 
     describe('Component: mailBodyPanel', function () {
@@ -102,7 +149,9 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have text content', function () {
             scope.mail = {
-                text: 'text'
+                content: {
+                    text: 'text'
+                }
             };
             scope.$digest();
 
@@ -111,7 +160,14 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have attachments', function () {
             scope.mail = {
-                attachments: [{}]
+                content: {
+                    attachments: true
+                },
+                _links: {
+                    attachments: {
+                        href: ''
+                    }
+                }
             };
             scope.$digest();
 
@@ -120,7 +176,9 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have html content', function () {
             scope.mail = {
-                html: 'html'
+                content: {
+                    html: 'html'
+                }
             };
             scope.$digest();
 
@@ -129,9 +187,16 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have text content, html content and attachments', function () {
             scope.mail = {
-                text: 'text',
-                html: 'html',
-                attachments: [{}]
+                content: {
+                    text: 'text',
+                    html: 'html',
+                    attachments: true
+                },
+                _links: {
+                    attachments: {
+                        href: ''
+                    }
+                }
             };
             scope.$digest();
 
@@ -142,7 +207,7 @@ describe('src/test/javascript/component-tests.js', function () {
         });
 
         it('should show html body and "Query HTML" button', function () {
-            scope.mail = {html: 'html'};
+            scope.mail = {content: {html: 'html'}};
             scope.$digest();
 
             expect(element.find('button').length).toEqual(1);
@@ -152,7 +217,7 @@ describe('src/test/javascript/component-tests.js', function () {
         });
 
         it('should show query panel and "back to HTML" button', function () {
-            scope.mail = {html: 'html'};
+            scope.mail = {content: {html: 'html'}};
             scope.$digest();
             element.find('button').triggerHandler('click');
             scope.$digest();
@@ -164,7 +229,7 @@ describe('src/test/javascript/component-tests.js', function () {
         });
 
         it('should pass mail to child components', function () {
-            scope.mail = {html: 'html'};
+            scope.mail = {content: {html: 'html'}};
             scope.$digest();
             element.find('button').triggerHandler('click');
             scope.$digest();
@@ -183,7 +248,7 @@ describe('src/test/javascript/component-tests.js', function () {
 
             var shadowDOM = {innerHTML: null};
             el.attachShadow.and.returnValue(shadowDOM);
-            $componentController('messageHtml', {$element: [el]}, {mail: {html: 'expected html body'}}).$onInit();
+            $componentController('messageHtml', {$element: [el]}, {mail: {content: {html: 'expected html body'}}}).$onInit();
 
             expect(el.attachShadow).toHaveBeenCalledWith({mode: 'open'});
             expect(shadowDOM.innerHTML).toEqual('expected html body');
@@ -198,14 +263,14 @@ describe('src/test/javascript/component-tests.js', function () {
 
         beforeEach(inject(function ($compile, $rootScope) {
             scope = $rootScope.$new();
-            scope.mail = {id: 42};
+            scope.mail = {_links: {source: {href: 'http://localhost/mails/42/source'}}};
 
             element = $compile('<message-source mail="mail"></message-source>')(scope);
             scope.$digest();
         }));
 
         it('should build href attribute for mail source', function () {
-            expect(element.find('a').attr('href')).toBe('mails/42/source');
+            expect(element.find('a').attr('href')).toBe('http://localhost/mails/42/source');
         });
 
         it('should open mail source in new tab', function () {
@@ -285,8 +350,15 @@ describe('src/test/javascript/component-tests.js', function () {
         var scope, element, httpBackend, compile, clipboard, curlConverter;
 
         var mail = {
-            id: 1,
-            html: 'html body'
+            content: {
+                id: 1,
+                html: 'html body'
+            },
+            _links: {
+                query: {
+                    href: 'http://localhost/mails/1/html/query'
+                }
+            }
         };
 
         beforeEach(angular.mock.module('mailsinkApp', 'htmlTemplates', mock('curlConverter')));
@@ -310,7 +382,7 @@ describe('src/test/javascript/component-tests.js', function () {
         describe('failing request on initialization', function () {
 
             beforeEach(function () {
-                httpBackend.when('POST', 'mails/1/html/query', {xpath: '*'}).respond(502, {message: 'expected error'});
+                httpBackend.when('POST', 'http://localhost/mails/1/html/query', {xpath: '*'}).respond(502, {message: 'expected error'});
                 element = compile('<message-html-query mail="mail"></message-html-query>')(scope);
                 httpBackend.flush();
                 scope.$digest();
@@ -324,7 +396,7 @@ describe('src/test/javascript/component-tests.js', function () {
         describe('passing request on initialization', function () {
 
             beforeEach(function () {
-                httpBackend.when('POST', 'mails/1/html/query', {xpath: '*'}).respond(200, {value: 'expected response'});
+                httpBackend.when('POST', 'http://localhost/mails/1/html/query', {xpath: '*'}).respond(200, {value: 'expected response'});
                 element = compile('<message-html-query mail="mail"></message-html-query>')(scope);
                 httpBackend.flush();
                 scope.$digest();
@@ -359,7 +431,7 @@ describe('src/test/javascript/component-tests.js', function () {
             });
 
             it('should query html body with given xpath expression when query button pressed', function (done) {
-                httpBackend.when('POST', 'mails/1/html/query', {xpath: '//a'}).respond(200, {value: 'expected response2'});
+                httpBackend.when('POST', 'http://localhost/mails/1/html/query', {xpath: '//a'}).respond(200, {value: 'expected response2'});
 
                 element.find('input').val('//a').triggerHandler('input');
                 element.find('button').triggerHandler('click');
@@ -383,7 +455,7 @@ describe('src/test/javascript/component-tests.js', function () {
             });
 
             it('should show warning message when xpath expression is invalid', function () {
-                httpBackend.when('POST', 'mails/1/html/query', {xpath: 'invalid'}).respond(400, {message: 'expected error'});
+                httpBackend.when('POST', 'http://localhost/mails/1/html/query', {xpath: 'invalid'}).respond(400, {message: 'expected error'});
                 element.find('input').val('invalid').triggerHandler('input');
                 element.find('button').triggerHandler('click');
                 httpBackend.flush();
@@ -393,7 +465,7 @@ describe('src/test/javascript/component-tests.js', function () {
             });
 
             it('should show error message when request failed', function () {
-                httpBackend.when('POST', 'mails/1/html/query', {xpath: 'invalid'}).respond(500, {message: 'expected error'});
+                httpBackend.when('POST', 'http://localhost/mails/1/html/query', {xpath: 'invalid'}).respond(500, {message: 'expected error'});
                 element.find('input').val('invalid').triggerHandler('input');
                 element.find('button').triggerHandler('click');
                 httpBackend.flush();
@@ -422,7 +494,7 @@ describe('src/test/javascript/component-tests.js', function () {
                 spyOn(clipboard, 'copyText');
 
                 element.find('a')[0].click();
-                var url = location.protocol + '//' + location.hostname + ':' + location.port + '/mails/1/html/query';
+                var url = 'http://localhost/mails/1/html/query';
 
                 expect(curlConverter.toCommand).toHaveBeenCalledWith(url, '{"xpath":"*"}');
             });
