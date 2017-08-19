@@ -4,6 +4,7 @@ import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.entity.MailAttachment;
 import com.github.ksokol.mailsink.repository.MailAttachmentRepository;
 import com.github.ksokol.mailsink.repository.MailRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,12 @@ public class MailAttachmentResourceTest {
 
     private MockMvc mvc;
     private MailAttachment mailAttachment;
+
+    @Before
+    @After
+    public void cleanUp() throws Exception {
+        mailRepository.deleteAll();
+    }
 
     @Before
     public void setUp() throws Exception {

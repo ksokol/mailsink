@@ -2,6 +2,8 @@ package com.github.ksokol.mailsink.repository;
 
 import com.github.ksokol.mailsink.entity.Mail;
 import com.github.ksokol.mailsink.entity.MailAttachment;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,12 @@ public class MailRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
+    @Before
+    @After
+    public void cleanUp() throws Exception {
+        mailRepository.deleteAll();
+    }
+
     @Test
     public void shouldPersistMail() throws Exception {
         Date cratedAt = toDate(EPOCH_UTC);
@@ -49,6 +57,7 @@ public class MailRepositoryTest {
         mail.setRecipient("recipient");
         mail.setText("plain");
         mail.setHtml("html");
+        mail.setSource("source");
         mail.setCreatedAt(cratedAt);
 
         mail = em.persist(mail);
@@ -61,6 +70,7 @@ public class MailRepositoryTest {
         assertThat(expected.getSubject(), is("subject"));
         assertThat(expected.getText(), is("plain"));
         assertThat(expected.getHtml(), is("html"));
+        assertThat(expected.getSource(), is("source"));
         assertThat(expected.getCreatedAt(), is(cratedAt));
     }
 
