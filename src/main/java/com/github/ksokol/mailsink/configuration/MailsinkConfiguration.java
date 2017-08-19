@@ -1,7 +1,6 @@
 package com.github.ksokol.mailsink.configuration;
 
 import com.github.ksokol.mailsink.converter.InputStreamToMailConverter;
-import com.github.ksokol.mailsink.converter.MailToMime4jMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -22,7 +21,6 @@ public class MailsinkConfiguration {
         ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
 
         Set<Converter<?, ?>> converter = new HashSet<>();
-        converter.add(new MailToMime4jMessageConverter());
         converter.add(new InputStreamToMailConverter());
 
         bean.setConverters(converter);
