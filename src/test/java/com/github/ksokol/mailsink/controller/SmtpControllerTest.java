@@ -17,7 +17,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.List;
 
-import static com.github.ksokol.mailsink.controller.SmtpServerControllerTest.SMTP_PORT;
+import static com.github.ksokol.mailsink.controller.SmtpControllerTest.SMTP_PORT;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.TWO_SECONDS;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.mail.port = " + SMTP_PORT})
-public class SmtpServerControllerTest {
+public class SmtpControllerTest {
 
     static final int SMTP_PORT = 12501;
 
@@ -50,7 +50,7 @@ public class SmtpServerControllerTest {
 
     @Test
     public void shouldConnectToSmtpServerWhenRunningIsTrue() throws Exception {
-        mvc.perform(get("/smtpServer/status"))
+        mvc.perform(get("/smtp/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("isRunning", is(true)));
 
@@ -59,7 +59,7 @@ public class SmtpServerControllerTest {
 
     @Test(expected = ConnectException.class)
     public void shouldNotConnectToSmtpServerWhenRunningIsFalse() throws Exception {
-        mvc.perform(post("/smtpServer/status/toggle"))
+        mvc.perform(post("/smtp/status/toggle"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("isRunning", is(false)));
 
@@ -68,11 +68,11 @@ public class SmtpServerControllerTest {
 
     @Test
     public void shouldConnectToSmtpServerAgainWhenRunningIsTrue() throws Exception {
-        mvc.perform(post("/smtpServer/status/toggle"))
+        mvc.perform(post("/smtp/status/toggle"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("isRunning", is(false)));
 
-        mvc.perform(post("/smtpServer/status/toggle"))
+        mvc.perform(post("/smtp/status/toggle"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("isRunning", is(true)));
 
@@ -81,7 +81,7 @@ public class SmtpServerControllerTest {
 
     @Test
     public void shouldCreateAndSendDemoMail() throws Exception {
-        mvc.perform(post("/smtpServer/createMail"))
+        mvc.perform(post("/smtp/createMail"))
                 .andExpect(status().isNoContent());
 
         await().atMost(TWO_SECONDS).until(() -> mailRepository.findByRecipient("root@localhost") != null);

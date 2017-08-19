@@ -19,13 +19,13 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
  * @author Kamill Sokol
  */
 @RestController
-@RequestMapping("smtpServer")
-public class SmtpServerController {
+@RequestMapping("smtp")
+public class SmtpController {
 
     private final SmtpServerWrapper smtpServerWrapper;
     private final JavaMailSender javaMailSender;
 
-    public SmtpServerController(SmtpServerWrapper smtpServerWrapper, JavaMailSender javaMailSender) {
+    public SmtpController(SmtpServerWrapper smtpServerWrapper, JavaMailSender javaMailSender) {
         this.smtpServerWrapper = requireNonNull(smtpServerWrapper, "smtpServerWrapper is null");
         this.javaMailSender = requireNonNull(javaMailSender, "javaMailSender is null");
     }

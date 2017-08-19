@@ -115,7 +115,7 @@ describe('src/test/javascript/directive-tests.js', function () {
         }));
 
         it('should show play button', inject(function ($compile) {
-            httpBackend.whenGET('smtpServer/status').respond({isRunning: true});
+            httpBackend.whenGET('smtp/status').respond({isRunning: true});
             var element = $compile('<a toggle-smtp-server></a>')(scope);
             httpBackend.flush();
             scope.$digest();
@@ -125,7 +125,7 @@ describe('src/test/javascript/directive-tests.js', function () {
         }));
 
         it('should show stop button', inject(function ($compile) {
-            httpBackend.whenGET('smtpServer/status').respond({isRunning: false});
+            httpBackend.whenGET('smtp/status').respond({isRunning: false});
             var element = $compile('<a toggle-smtp-server></a>')(scope);
             httpBackend.flush();
             scope.$digest();
@@ -135,12 +135,12 @@ describe('src/test/javascript/directive-tests.js', function () {
         }));
 
         it('should show stop button when play pressed', inject(function ($compile) {
-            httpBackend.whenGET('smtpServer/status').respond({isRunning: true});
+            httpBackend.whenGET('smtp/status').respond({isRunning: true});
             var element = $compile('<a toggle-smtp-server></a>')(scope);
             httpBackend.flush();
             scope.$digest();
 
-            httpBackend.whenPOST('smtpServer/status/toggle').respond({isRunning: false});
+            httpBackend.whenPOST('smtp/status/toggle').respond({isRunning: false});
             element.click();
             httpBackend.flush();
             scope.$digest();
@@ -149,12 +149,12 @@ describe('src/test/javascript/directive-tests.js', function () {
         }));
 
         it('should show play button when stop pressed', inject(function ($compile) {
-            httpBackend.whenGET('smtpServer/status').respond({isRunning: false});
+            httpBackend.whenGET('smtp/status').respond({isRunning: false});
             var element = $compile('<a toggle-smtp-server></a>')(scope);
             httpBackend.flush();
             scope.$digest();
 
-            httpBackend.whenPOST('smtpServer/status/toggle').respond({isRunning: true});
+            httpBackend.whenPOST('smtp/status/toggle').respond({isRunning: true});
             element.click();
             httpBackend.flush();
             scope.$digest();
@@ -163,7 +163,7 @@ describe('src/test/javascript/directive-tests.js', function () {
         }));
 
         it('should forward error response to alertService when toggle request failed', inject(function ($compile) {
-            httpBackend.whenGET('smtpServer/status').respond(500, 'expected error');
+            httpBackend.whenGET('smtp/status').respond(500, 'expected error');
             $compile('<a toggle-smtp-server></a>')(scope);
             httpBackend.flush();
 
@@ -174,10 +174,10 @@ describe('src/test/javascript/directive-tests.js', function () {
         }));
 
         it('should forward error response to alertService when toggle status request failed', inject(function ($compile) {
-            httpBackend.whenGET('smtpServer/status').respond({isRunning: false});
+            httpBackend.whenGET('smtp/status').respond({isRunning: false});
             var element = $compile('<a toggle-smtp-server></a>')(scope);
 
-            httpBackend.whenPOST('smtpServer/status/toggle').respond(500, 'expected error');
+            httpBackend.whenPOST('smtp/status/toggle').respond(500, 'expected error');
             element.click();
             httpBackend.flush();
 

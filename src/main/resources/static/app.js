@@ -96,7 +96,7 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', 'alertService'
     $scope.createMail = function() {
         $http({
             method: 'POST',
-            url: 'smtpServer/createMail'
+            url: 'smtp/createMail'
         }).catch(alertService.alert);
     };
 
@@ -324,12 +324,12 @@ app.directive('toggleSmtpServer', ['$http', 'alertService', function($http, aler
                 }
             };
 
-            $http.get('smtpServer/status')
+            $http.get('smtp/status')
                 .then(toggle)
                 .catch(alertService.alert);
 
             element.on('click', function() {
-                $http.post('smtpServer/status/toggle', {})
+                $http.post('smtp/status/toggle', {})
                     .then(toggle)
                     .catch(alertService.alert);
             });
