@@ -107,7 +107,7 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', 'alertService'
     $scope.purge = function() {
         $http({
             method: 'POST',
-            url: 'purge'
+            url: 'mails/purge'
         }).then(function successCallback() {
             $rootScope.$emit('refresh');
         }).catch(alertService.alert);

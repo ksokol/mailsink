@@ -42,7 +42,7 @@ describe('src/test/javascript/controller-tests.js', function () {
         });
 
         it('should emit refresh event when purge was successful', function () {
-            httpBackend.when('POST', 'purge').respond(204);
+            httpBackend.when('POST', 'mails/purge').respond(204);
 
             scope.purge();
             httpBackend.flush();
@@ -63,7 +63,7 @@ describe('src/test/javascript/controller-tests.js', function () {
         });
 
         it('should forward error response to alertService when purge request failed', function () {
-            httpBackend.when('POST', 'purge').respond(500, 'expected error');
+            httpBackend.when('POST', 'mails/purge').respond(500, 'expected error');
 
             scope.purge();
             httpBackend.flush();

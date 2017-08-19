@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -161,6 +162,14 @@ public class MailControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(content().json("[{'text':'p inner text'}]"));
+    }
+
+    @Test
+    public void shouldDeleteAllMailsFromMailRepository() throws Exception {
+        mvc.perform(post("/mails/purge"))
+                .andExpect(status().isNoContent());
+
+        verify(mailRepository).deleteAll();
     }
 
     private Mime4jMessage mail() throws Exception {
