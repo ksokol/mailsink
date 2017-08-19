@@ -4,7 +4,6 @@ import groovy.xml.DOMBuilder
 import org.junit.Test
 import org.w3c.dom.NodeList
 
-import javax.xml.xpath.XPathExpression
 import javax.xml.xpath.XPathFactory
 
 import static javax.xml.xpath.XPathConstants.NODESET
@@ -28,35 +27,6 @@ class XmlEntitiesTest {
                     </tbody>
                 </table>'''
 
-    def expected =
-            [[table:
-                  [children: [
-                      [tbody: [
-                          children: [
-                              [tr: [
-                                  children: [
-                                      [td: [
-                                          children: [[text: 'text']]
-                                      ]],
-                                      [td: [
-                                          children: [
-                                              [a:
-                                                 [href    : '#',
-                                                  children: [[text: 'link']]
-                                                 ]
-                                              ]]
-                                      ]],
-                                      [td: [
-                                          class   : 'value',
-                                          children: []
-                                      ]]
-                                  ]
-                              ]]
-                          ]
-                      ]]
-                 ]]
-             ]]
-
     @Test
     void shouldConvertNodeListToListMap() {
         def document = DOMBuilder.newInstance().parseText(html)
@@ -64,7 +34,33 @@ class XmlEntitiesTest {
 
         def actual = new XmlEntities(nodeList).toListMap()
 
-        assert actual == expected
+        assert actual == [[table:
+                           [children: [
+                               [tbody: [
+                                   children: [
+                                       [tr: [
+                                           children: [
+                                               [td: [
+                                                       children: [[text: 'text']]
+                                               ]],
+                                               [td: [
+                                                   children: [
+                                                       [a:
+                                                            [href    : '#',
+                                                             children: [[text: 'link']]
+                                                            ]
+                                                       ]]
+                                               ]],
+                                               [td: [
+                                                   class   : 'value',
+                                                   children: []
+                                               ]]
+                                           ]
+                                       ]]
+                                   ]
+                               ]]
+                           ]]
+                      ]]
     }
 
     @Test
@@ -83,9 +79,9 @@ class XmlEntitiesTest {
         assert actual == [[text: 'text value']]
     }
 
-    private static NodeList extractFromHtml(String html, String xpath) {
+    static def extractFromHtml(String html, String xpath) {
         def document = DOMBuilder.newInstance().parseText(html)
-        XPathExpression xpathExpression = XPathFactory.newInstance().newXPath().compile(xpath)
-        return (NodeList) xpathExpression.evaluate(document, NODESET)
+        def xpathExpression = XPathFactory.newInstance().newXPath().compile(xpath)
+        return xpathExpression.evaluate(document, NODESET) as NodeList
     }
 }
