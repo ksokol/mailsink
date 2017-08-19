@@ -8,9 +8,21 @@ import java.io.IOException;
 /**
  * @author Kamill Sokol
  */
-public class TestMails {
+public final class TestMails {
+
+    TestMails() {
+        // prevent instantiation
+    }
 
     public static String mixed1() throws IOException {
-        return IOUtils.toString(new ClassPathResource("mime4j/mixed1.eml").getInputStream());
+        return eml("mixed1");
+    }
+
+    public static String alternative1() throws IOException {
+        return eml("alternative1");
+    }
+
+    private static String eml(String filename) throws IOException {
+        return IOUtils.toString(new ClassPathResource(String.format("mime4j/%s.eml", filename)).getInputStream());
     }
 }

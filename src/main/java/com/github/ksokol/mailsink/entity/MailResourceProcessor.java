@@ -1,6 +1,6 @@
 package com.github.ksokol.mailsink.entity;
 
-import com.github.ksokol.mailsink.controller.MailsinkController;
+import com.github.ksokol.mailsink.controller.MailController;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
@@ -18,15 +18,13 @@ public class MailResourceProcessor implements ResourceProcessor<Resource<Mail>> 
     public Resource<Mail> process(Resource<Mail> resource) {
         Mail mail = resource.getContent();
 
-        resource.add(linkTo(MailsinkController.class)
-                .slash("mails")
+        resource.add(linkTo(MailController.class)
                 .slash(mail.getId())
                 .slash("source")
                 .withRel("source"));
 
         if (StringUtils.isNotBlank(mail.getHtml())) {
-            resource.add(linkTo(MailsinkController.class)
-                    .slash("mails")
+            resource.add(linkTo(MailController.class)
                     .slash(mail.getId())
                     .slash("html")
                     .slash("query")
