@@ -96,7 +96,7 @@ app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', 'alertService'
     $scope.createMail = function() {
         $http({
             method: 'POST',
-            url: 'createMail'
+            url: 'smtpServer/createMail'
         }).catch(alertService.alert);
     };
 

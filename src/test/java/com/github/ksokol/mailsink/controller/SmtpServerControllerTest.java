@@ -1,5 +1,7 @@
 package com.github.ksokol.mailsink.controller;
 
+import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.repository.MailRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.List;
 
 import static com.github.ksokol.mailsink.controller.SmtpServerControllerTest.SMTP_PORT;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Duration.TWO_SECONDS;
+import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,16 +36,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(properties = {
-        "spring.mail.port = " + SMTP_PORT
-})
+@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
+@TestPropertySource(properties = {"spring.mail.port = " + SMTP_PORT})
 public class SmtpServerControllerTest {
 
-    protected static final int SMTP_PORT = 12501;
+    static final int SMTP_PORT = 12501;
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private MailRepository mailRepository;
 
     @Test
     public void shouldConnectToSmtpServerWhenRunningIsTrue() throws Exception {
@@ -67,6 +77,23 @@ public class SmtpServerControllerTest {
                 .andExpect(jsonPath("isRunning", is(true)));
 
         probeSmtpConnection();
+    }
+
+    @Test
+    public void shouldCreateAndSendDemoMail() throws Exception {
+        mvc.perform(post("/smtpServer/createMail"))
+                .andExpect(status().isNoContent());
+
+        await().atMost(TWO_SECONDS).until(() -> mailRepository.findByRecipient("root@localhost") != null);
+
+        List<Mail> mails = mailRepository.findByRecipient("root@localhost");
+        assertThat(mails, hasSize(1));
+
+        Mail mail = mails.get(0);
+        assertThat(mail.getSender(), is("root@localhost"));
+        assertThat(mail.getRecipient(), is("root@localhost"));
+        assertThat(mail.getSubject(), is("Subject"));
+        assertThat(mail.getText(), equalToIgnoringWhiteSpace("mail body"));
     }
 
     public void probeSmtpConnection() throws IOException {

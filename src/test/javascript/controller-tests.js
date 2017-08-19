@@ -29,7 +29,7 @@ describe('src/test/javascript/controller-tests.js', function () {
         });
 
         it('should create new mail', function () {
-            httpBackend.when('POST', 'createMail').respond(204);
+            httpBackend.when('POST', 'smtpServer/createMail').respond(204);
 
             scope.createMail();
             httpBackend.flush();
@@ -51,7 +51,7 @@ describe('src/test/javascript/controller-tests.js', function () {
         });
 
         it('should forward error response to alertService when createMail request failed', function () {
-            httpBackend.when('POST', 'createMail').respond(500, 'expected error');
+            httpBackend.when('POST', 'smtpServer/createMail').respond(500, 'expected error');
 
             scope.createMail();
             httpBackend.flush();
