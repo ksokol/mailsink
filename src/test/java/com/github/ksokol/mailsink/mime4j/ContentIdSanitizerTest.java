@@ -1,16 +1,13 @@
 package com.github.ksokol.mailsink.mime4j;
 
 import com.github.ksokol.mailsink.entity.Mail;
-import org.apache.commons.io.IOUtils;
+import com.github.ksokol.mailsink.entity.MailAttachment;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
+import java.util.Arrays;
 
-import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -24,7 +21,6 @@ public class ContentIdSanitizerTest {
     private ContentIdSanitizer sanitizer = new ContentIdSanitizer();
 
     private UriComponentsBuilder uriComponentsBuilder;
-    private Mail mail;
 
     @Before
     public void setUp() throws Exception {
@@ -33,30 +29,33 @@ public class ContentIdSanitizerTest {
 
     @Test
     public void shouldNotSanitizeHtmlWithoutInlineAttachments() throws Exception {
-        givenMime4jMessage("html1");
+        Mail mail = new Mail();
+        mail.setHtml("<img src=\"cid:1234\">");
 
         String actualHtmlBody = sanitizer.sanitize(mail, uriComponentsBuilder);
 
-        assertThat(actualHtmlBody, is(format("<html>%n<body>%n<p>html mail</p>%n</body>%n</html>%n")));
+        assertThat(actualHtmlBody, is("<img src=\"cid:1234\">"));
     }
 
     @Test
     public void shouldSetAbsoluteUrlWithContentIdInHtml() throws Exception {
-        givenMime4jMessage("alternative2");
+        MailAttachment inline1 = new MailAttachment();
+        inline1.setId(100L);
+        inline1.setContentId("1");
+
+        MailAttachment inline2 = new MailAttachment();
+        inline2.setId(102L);
+        inline2.setContentId("2");
+
+        Mail mail = new Mail();
+        mail.setHtml("<img src=\"cid:1\"><link href=\"mid:2\"></link>");
+        mail.setAttachments(Arrays.asList(inline1, inline2));
 
         String actualHtmlBody = sanitizer.sanitize(mail, uriComponentsBuilder);
 
         assertThat(actualHtmlBody, allOf(
-                containsString("http://localhost:8080/mails/42/html/1367760625.51865ef16e3f6@swift.generated"),
-                containsString("http://localhost:8080/mails/42/html/1367760625.51865ef16cc8c@swift.generated"),
-                containsString("http://localhost:8080/mails/42/html/1367760625.51865ef16f798@swift.generated)")
+                containsString("<img src=\"http://localhost:8080/mailAttachments/100/data\">"),
+                containsString("<link href=\"http://localhost:8080/mailAttachments/102/data\"></link>")
         ));
-    }
-
-    private void givenMime4jMessage(String fileName) throws IOException {
-        String source = IOUtils.toString(new ClassPathResource(format("mime4j/%s.eml", fileName)).getInputStream(), UTF_8.name());
-        mail = new Mail();
-        mail.setId(42L);
-        mail.setSource(source);
     }
 }

@@ -2,6 +2,7 @@ package com.github.ksokol.mailsink.controller;
 
 import com.github.ksokol.mailsink.entity.MailAttachment;
 import com.github.ksokol.mailsink.repository.MailAttachmentRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,20 +34,40 @@ public class MailAttachmentControllerTest {
     @MockBean
     private MailAttachmentRepository mailAttachmentRepository;
 
-    @Test
-    public void shouldDownloadAttachment() throws Exception {
-        MailAttachment mailAttachment = new MailAttachment();
+    private MailAttachment mailAttachment;
+
+    @Before
+    public void setUp() throws Exception {
+        mailAttachment = new MailAttachment();
         mailAttachment.setId(999L);
         mailAttachment.setMimeType("text/plain");
         mailAttachment.setData(new byte[] {97});
         mailAttachment.setFilename("file.txt");
+    }
+
+    @Test
+    public void shouldReturnAttachmentDataWithContentDispositionAttachment() throws Exception {
+        mailAttachment.setDispositionType("attachment");
 
         given(mailAttachmentRepository.findById(999L)).willReturn(Optional.of(mailAttachment));
 
-        mvc.perform(get("/mailAttachments/999/download"))
+        mvc.perform(get("/mailAttachments/999/data"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(CONTENT_TYPE, "text/plain"))
                 .andExpect(header().string(CONTENT_DISPOSITION, "attachment; filename=\"file.txt\""))
+                .andExpect(content().string("a"));
+    }
+
+    @Test
+    public void shouldReturnAttachmentDataWithContentDispositionInline() throws Exception {
+        mailAttachment.setDispositionType("inline");
+
+        given(mailAttachmentRepository.findById(999L)).willReturn(Optional.of(mailAttachment));
+
+        mvc.perform(get("/mailAttachments/999/data"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(CONTENT_TYPE, "text/plain"))
+                .andExpect(header().string(CONTENT_DISPOSITION, "inline; filename=\"file.txt\""))
                 .andExpect(content().string("a"));
     }
 }

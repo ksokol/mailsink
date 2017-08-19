@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 public class MailAttachment {
 
     private Long id;
+    private String contentId;
     private String filename;
     private String mimeType;
     private String dispositionType;
@@ -30,6 +31,14 @@ public class MailAttachment {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getContentId() {
+        return contentId;
+    }
+
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
     }
 
     public String getFilename() {

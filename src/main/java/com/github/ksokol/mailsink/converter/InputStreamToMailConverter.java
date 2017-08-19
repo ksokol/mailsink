@@ -56,6 +56,7 @@ public class InputStreamToMailConverter implements Converter<InputStream, Mail> 
         for (Mime4jAttachment attachment : mime4jAttachments) {
             MailAttachment mailAttachment = new MailAttachment();
             mailAttachment.setFilename(attachment.getFilename());
+            mailAttachment.setContentId(attachment.getContentId());
             mailAttachment.setMimeType(attachment.getMimeType());
             mailAttachment.setDispositionType(attachment.getDispositionType());
             mailAttachment.setData(attachment.getData());

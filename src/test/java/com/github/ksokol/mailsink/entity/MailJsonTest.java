@@ -1,6 +1,5 @@
 package com.github.ksokol.mailsink.entity;
 
-import com.github.ksokol.mailsink.TestMails;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,7 +74,10 @@ public class MailJsonTest {
 
     @Test
     public void shouldSerializeAttachmentsWithTrueValueWhenAttachmentsAvailable() throws Exception {
-        mail.setAttachments(Collections.singletonList(new MailAttachment()));
+        MailAttachment mailAttachment = new MailAttachment();
+        mailAttachment.setId(0L);
+        mailAttachment.setContentId("irrelevant");
+        mail.setAttachments(Collections.singletonList(mailAttachment));
         JsonContentAssert jsonContentAssert = json.write(mail).assertThat();
 
         jsonContentAssert.extractingJsonPathValue("attachments").isEqualTo(true);
@@ -83,13 +85,18 @@ public class MailJsonTest {
 
     @Test
     public void shouldSerializeHtmlBodyWithFullQualifiedUrls() throws Exception {
+        MailAttachment mailAttachment = new MailAttachment();
+        mailAttachment.setId(888L);
+        mailAttachment.setContentId("1234");
+
         mail = new Mail();
-        mail.setSource(TestMails.mixed1());
+        mail.setHtml("<img src=\"cid:1234\">");
         mail.setId(4L);
+        mail.setAttachments(Collections.singletonList(mailAttachment));
 
         JsonContentAssert jsonContentAssert = json.write(mail).assertThat();
 
         jsonContentAssert.extractingJsonPathValue("html")
-                .isEqualTo("<img src=\"http://localhost/mailsink/mails/4/html/1234\">");
+                .isEqualTo("<img src=\"http://localhost/mailsink/mailAttachments/888/data\">");
     }
 }

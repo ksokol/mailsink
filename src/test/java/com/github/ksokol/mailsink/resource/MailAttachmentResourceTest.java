@@ -75,6 +75,6 @@ public class MailAttachmentResourceTest {
     @Test
     public void shouldAddCustomLinks() throws Exception {
         mvc.perform(get("/mailAttachments/{id}", mailAttachment.getId()))
-                .andExpect(jsonPath("_links.download.href", is(format("http://localhost/mailAttachments/%d/download", mailAttachment.getId()))));
+                .andExpect(jsonPath("_links.data.href", is(format("http://localhost/mailAttachments/%d/data", mailAttachment.getId()))));
     }
 }

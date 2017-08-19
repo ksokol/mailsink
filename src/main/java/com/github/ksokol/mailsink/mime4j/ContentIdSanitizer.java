@@ -1,6 +1,9 @@
 package com.github.ksokol.mailsink.mime4j;
 
 import com.github.ksokol.mailsink.entity.Mail;
+import com.github.ksokol.mailsink.entity.MailAttachment;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -11,22 +14,24 @@ public class ContentIdSanitizer implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
     public String sanitize(Mail mail, UriComponentsBuilder uriComponentsBuilder) {
-        uriComponentsBuilder.pathSegment("mails", mail.getId().toString(), "html");
-        Mime4jMessage mime4jMessage = new Mime4jMessage(mail.getSource());
-        return sanitizeContentId(uriComponentsBuilder, mime4jMessage);
+        uriComponentsBuilder.pathSegment("mailAttachments");
+        return sanitizeContentId(uriComponentsBuilder, mail);
     }
 
-    private static String sanitizeContentId(UriComponentsBuilder uriComponentsBuilder, Mime4jMessage mime4jMessage) {
-        String htmlBody = mime4jMessage.getHtmlTextPart();
-        for (Mime4jAttachment mime4jAttachment : mime4jMessage.getInlineAttachments()) {
-            htmlBody = sanitizeHtml(htmlBody, mime4jAttachment.getContentId(), uriComponentsBuilder.cloneBuilder());
+    private static String sanitizeContentId(UriComponentsBuilder uriComponentsBuilder, Mail mail) {
+        String htmlBody = StringUtils.defaultString(mail.getHtml());
+        if(CollectionUtils.isEmpty(mail.getAttachments())) {
+            return htmlBody;
+        }
+        for (MailAttachment attachment : mail.getAttachments()) {
+            htmlBody = sanitizeHtml(htmlBody, attachment, uriComponentsBuilder.cloneBuilder());
         }
         return htmlBody;
     }
 
-    private static String sanitizeHtml(String htmlBody, String contentId, UriComponentsBuilder uriComponentsBuilder) {
-        String contentUrl = uriComponentsBuilder.pathSegment(contentId).build().toUriString();
-        String replacedCid = htmlBody.replaceAll("cid:" + contentId, contentUrl);
-        return replacedCid.replaceAll("mid:" + contentId, contentUrl);
+    private static String sanitizeHtml(String htmlBody, MailAttachment attachment, UriComponentsBuilder uriComponentsBuilder) {
+        String contentUrl = uriComponentsBuilder.pathSegment(attachment.getId().toString()).pathSegment("data").build().toUriString();
+        String replacedCid = htmlBody.replaceAll("cid:" + attachment.getContentId(), contentUrl);
+        return replacedCid.replaceAll("mid:" + attachment.getContentId(), contentUrl);
     }
 }

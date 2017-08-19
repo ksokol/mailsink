@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
 
@@ -19,7 +18,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -37,11 +35,8 @@ public class InputStreamToMailConverterTest {
 
     @Test
     public void shouldConvertIOExceptionToRuntimeException() throws Exception {
-        InputStream body = mock(InputStream.class, new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                throw new IOException("expected exception");
-            }
+        InputStream body = mock(InputStream.class, (Answer) invocation -> {
+            throw new IOException("expected exception");
         });
 
         expectedException.expect(RuntimeException.class);
@@ -126,15 +121,16 @@ public class InputStreamToMailConverterTest {
 
     @Test
     public void shouldExtractAttachments() throws Exception {
-        givenMail("plain1_attachment");
+        givenMail("mixed1");
 
         List<MailAttachment> attachments = mail.getAttachments();
 
-        assertThat(attachments, hasSize(1));
-        assertThat(attachments.get(0).getFilename(), is("example.pdf"));
-        assertThat(attachments.get(0).getMimeType(), is("application/pdf"));
+        assertThat(attachments, hasSize(3));
+        assertThat(attachments.get(0).getFilename(), is("favicon.png"));
+        assertThat(attachments.get(0).getMimeType(), is("image/png"));
+        assertThat(attachments.get(0).getDispositionType(), is("inline"));
+        assertThat(attachments.get(0).getContentId(), is("1234"));
         assertThat(attachments.get(0).getData(), is(new byte[] {97}));
-        assertThat(attachments.get(0).getMimeType(), notNullValue());
     }
 
     private void givenMail(String name) throws IOException {
