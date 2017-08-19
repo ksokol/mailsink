@@ -8,7 +8,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.james.mime4j.dom.Message;
 import org.apache.james.mime4j.message.MessageBuilder;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -21,9 +20,8 @@ import java.util.List;
  * @author Kamill Sokol
  */
 @Component
-public class InputStreamToMailConverter implements Converter<InputStream, Mail> {
+public final class InputStreamToMailConverter {
 
-    @Override
     public Mail convert(InputStream source) {
         try {
             InputStream inputStream = buffer(source);
