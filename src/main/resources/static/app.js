@@ -217,10 +217,11 @@ app.component('messageHtml', {
         mail: '<'
     },
     template: '',
-    controller: function ($element) {
+    controller: function ($window, $element) {
         this.$onInit = function () {
             var shadowRoot = $element[0].attachShadow({mode: 'open'});
             shadowRoot.innerHTML = this.mail.content.html;
+            angular.element(shadowRoot).find('a').attr('target', '_blank');
         }
     }
 });
