@@ -140,7 +140,7 @@ describe('src/test/javascript/directive-tests.js', function () {
             httpBackend.flush();
             scope.$digest();
 
-            httpBackend.whenPOST('smtp/status/toggle').respond({isRunning: false});
+            httpBackend.whenPOST('smtp/status').respond({isRunning: false});
             element.click();
             httpBackend.flush();
             scope.$digest();
@@ -154,7 +154,7 @@ describe('src/test/javascript/directive-tests.js', function () {
             httpBackend.flush();
             scope.$digest();
 
-            httpBackend.whenPOST('smtp/status/toggle').respond({isRunning: true});
+            httpBackend.whenPOST('smtp/status').respond({isRunning: true});
             element.click();
             httpBackend.flush();
             scope.$digest();
@@ -177,7 +177,7 @@ describe('src/test/javascript/directive-tests.js', function () {
             httpBackend.whenGET('smtp/status').respond({isRunning: false});
             var element = $compile('<a toggle-smtp-server></a>')(scope);
 
-            httpBackend.whenPOST('smtp/status/toggle').respond(500, 'expected error');
+            httpBackend.whenPOST('smtp/status').respond(500, 'expected error');
             element.click();
             httpBackend.flush();
 

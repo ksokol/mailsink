@@ -59,7 +59,7 @@ public class SmtpControllerTest {
 
     @Test(expected = ConnectException.class)
     public void shouldNotConnectToSmtpServerWhenRunningIsFalse() throws Exception {
-        mvc.perform(post("/smtp/status/toggle"))
+        mvc.perform(post("/smtp/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("isRunning", is(false)));
 
@@ -68,11 +68,11 @@ public class SmtpControllerTest {
 
     @Test
     public void shouldConnectToSmtpServerAgainWhenRunningIsTrue() throws Exception {
-        mvc.perform(post("/smtp/status/toggle"))
+        mvc.perform(post("/smtp/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("isRunning", is(false)));
 
-        mvc.perform(post("/smtp/status/toggle"))
+        mvc.perform(post("/smtp/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("isRunning", is(true)));
 

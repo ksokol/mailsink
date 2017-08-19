@@ -31,12 +31,12 @@ public class SmtpController {
     }
 
     @GetMapping("status")
-    public Map<String, Object> status() {
+    public Map<String, Object> statusGet() {
         return statusResponse();
     }
 
-    @PostMapping("status/toggle")
-    public Map<String, Object> toggle() {
+    @PostMapping("status")
+    public Map<String, Object> statusPost() {
         if(smtpServerWrapper.isRunning()) {
             smtpServerWrapper.stop();
         } else {

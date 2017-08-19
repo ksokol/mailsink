@@ -330,7 +330,7 @@ app.directive('toggleSmtpServer', ['$http', 'alertService', function($http, aler
                 .catch(alertService.alert);
 
             element.on('click', function() {
-                $http.post('smtp/status/toggle', {})
+                $http.post('smtp/status', {})
                     .then(toggle)
                     .catch(alertService.alert);
             });
