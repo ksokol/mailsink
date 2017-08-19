@@ -81,7 +81,7 @@ public class SmtpControllerTest {
 
     @Test
     public void shouldCreateAndSendDemoMail() throws Exception {
-        mvc.perform(post("/smtp/createMail"))
+        mvc.perform(post("/smtp"))
                 .andExpect(status().isNoContent());
 
         await().atMost(TWO_SECONDS).until(() -> mailRepository.findByRecipient("root@localhost") != null);

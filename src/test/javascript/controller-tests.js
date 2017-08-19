@@ -29,7 +29,7 @@ describe('src/test/javascript/controller-tests.js', function () {
         });
 
         it('should create new mail', function () {
-            httpBackend.when('POST', 'smtp/createMail').respond(204);
+            httpBackend.when('POST', 'smtp').respond(204);
 
             scope.createMail();
             httpBackend.flush();
@@ -50,8 +50,8 @@ describe('src/test/javascript/controller-tests.js', function () {
             expect(rootScope.$emit).toHaveBeenCalledWith('refresh');
         });
 
-        it('should forward error response to alertService when createMail request failed', function () {
-            httpBackend.when('POST', 'smtp/createMail').respond(500, 'expected error');
+        it('should forward error response to alertService when mail submission failed', function () {
+            httpBackend.when('POST', 'smtp').respond(500, 'expected error');
 
             scope.createMail();
             httpBackend.flush();

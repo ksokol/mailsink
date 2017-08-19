@@ -46,8 +46,8 @@ public class SmtpController {
     }
 
     @ResponseStatus(NO_CONTENT)
-    @PostMapping("createMail")
-    public void createMail() {
+    @PostMapping
+    public void smtpPost() {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom("root@localhost");
