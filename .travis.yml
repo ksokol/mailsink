@@ -17,4 +17,4 @@ cache:
     - '$HOME/mailsink/node_modules'
 
 script:
-    - mvn verify sonar:sonar
+    - ./mvnw verify sonar:sonar
