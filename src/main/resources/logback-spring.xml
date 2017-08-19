@@ -8,4 +8,8 @@
     <appender-ref ref="websocketAppender"/>
   </logger>
 
+  <logger name="org.subethamail.smtp.server.ServerThread" level="INFO">
+    <appender-ref ref="websocketAppender"/>
+  </logger>
+
 </configuration>

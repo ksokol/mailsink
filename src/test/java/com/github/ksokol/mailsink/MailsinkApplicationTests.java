@@ -22,10 +22,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
+import static org.awaitility.Duration.TEN_SECONDS;
+import static org.awaitility.Duration.TWO_SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
@@ -68,16 +70,24 @@ public class MailsinkApplicationTests {
 
     @Test
     public void shouldSendIncomingMailThroughWebSocketWhenMailReceived() throws Exception {
-        WebSocketConnection connection = connectToIncomingLogTopic();
+        Handler connection = connectToWebSocket(TOPIC_INCOMING_MAIL);
         sendMail();
+
+        await().atMost(TWO_SECONDS)
+                .pollDelay(ONE_HUNDRED_MILLISECONDS)
+                .until(() -> connection.getMessages().size() > 0);
 
         assertThat(connection.getMessages(), hasItem(hasKey("id")));
     }
 
     @Test
     public void shouldSendSmtpLogThroughWebSocketWhenMailReceived() throws Exception {
-        WebSocketConnection connection = connectToSmtpLogTopic();
+        Handler connection = connectToWebSocket(TOPIC_SMTP_LOG);
         sendMail();
+
+        await().atMost(TEN_SECONDS)
+                .pollDelay(ONE_HUNDRED_MILLISECONDS)
+                .until(() -> connection.getMessages().size() > 12);
 
         assertThat(connection.getMessages(), hasItem(allOf(
                 hasEntry(is("line"), is("Server: 250 Ok")),
@@ -85,19 +95,11 @@ public class MailsinkApplicationTests {
         )));
     }
 
-    private WebSocketConnection connectToIncomingLogTopic() throws InterruptedException {
-        return connectToWebSocket(TOPIC_INCOMING_MAIL, 1);
-    }
-
-    private WebSocketConnection connectToSmtpLogTopic() throws InterruptedException {
-        return connectToWebSocket(TOPIC_SMTP_LOG, 13);
-    }
-
-    private WebSocketConnection connectToWebSocket(String topic, int messageCount) throws InterruptedException {
+    private Handler connectToWebSocket(String topic) throws InterruptedException {
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-        MyStompSessionHandler session = new MyStompSessionHandler(topic, messageCount);
+        Handler session = new Handler(topic);
         ListenableFuture<StompSession> connecting = stompClient.connect("ws://localhost:" + SERVER_PORT + WEB_SOCKET_PATH, session);
         await().atMost(2, SECONDS).until(connecting::isDone);
         return session;
@@ -116,24 +118,18 @@ public class MailsinkApplicationTests {
         mailSender.send(message);
     }
 
-    private static class MyStompSessionHandler extends StompSessionHandlerAdapter implements WebSocketConnection {
+    private static class Handler extends StompSessionHandlerAdapter {
 
-        private final CountDownLatch latch;
         private final String topic;
 
         private List<Map<String, String>> messages = new ArrayList<>();
 
-        MyStompSessionHandler(String topic, int messageCount) {
+        Handler(String topic) {
             this.topic = topic;
-            this.latch = new CountDownLatch(messageCount);
         }
 
-        @Override
-        public List<Map<String, String>> getMessages() throws InterruptedException {
-            if (latch.await(5, SECONDS)) {
-                return messages;
-            }
-            throw new AssertionError("no message received");
+        List<Map<String, String>> getMessages() throws InterruptedException {
+            return messages;
         }
 
         @Override
@@ -146,13 +142,8 @@ public class MailsinkApplicationTests {
                 @Override
                 public void handleFrame(StompHeaders headers, Object payload) {
                     messages.add((Map<String, String>) payload);
-                    latch.countDown();
                 }
             });
         }
-    }
-
-    private interface WebSocketConnection {
-        List<Map<String, String>> getMessages() throws InterruptedException;
     }
 }
