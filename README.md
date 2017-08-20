@@ -1,23 +1,28 @@
 # Mailsink [![Build Status](https://api.travis-ci.org/ksokol/mailsink.png?branch=master)](https://travis-ci.org/ksokol/mailsink) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=com.github.ksokol:mailsink)](https://sonarqube.com/dashboard/index/com.github.ksokol:mailsink) [![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=com.github.ksokol:mailsink&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/com.github.ksokol:mailsink) 
 
-Mailsink is a simple SMTP server based on [SubEtha](https://github.com/voodoodyne/subetha) with a web UI.
+Mailsink is a simple SMTP server based on [SubEtha](https://github.com/voodoodyne/subetha).
 
-## Installation
+## Features
 
-### Prerequisite
+- capture and persist every incoming email in memory
+- browse emails in a web based ui
+- stop/start SMTP server
+- extract html body fragments with XPath
+- HTTP based api for e2e tests
 
-- Java 8
+### Ports
+
+- 2500 SMTP
+- 2525 HTTP (api and ui)
+
+## Developer notes
 
 ### Build and package
 
 - run `mvnw package`
-- You will find a fat jar (Spring Boot application) under `target`
 - run `java -jar target/mailsink.jar`
 
-Mailsink listens on port `2500` for SMTP connections. The web UI is available on port `2525`.
+## Docker
 
-### Docker
-
-Build your own Docker image with the provided `Dockerfile` or pull the image from the Docker Hub registry [`ksokol/mailsink`](https://hub.docker.com/r/ksokol/mailsink/tags/) .
-Inside Docker Mailsink listens on port `2500` for SMTP connections. The web UI is available on port `2525`.
-Run on local machine with `docker run -p 2500:2500 -p 2525:2525 -t ksokol/mailsink`
+Available on Docker Hub [`ksokol/mailsink`](https://hub.docker.com/r/ksokol/mailsink/tags/).
+Start Mailsink in a container with `docker run -p 2500:2500 -p 2525:2525 -t ksokol/mailsink`.
