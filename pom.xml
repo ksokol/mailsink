@@ -6,7 +6,7 @@
   <groupId>com.github.ksokol</groupId>
   <artifactId>mailsink</artifactId>
   <name>mailsink</name>
-  <description>Mailsink is a simple SMTP server that consumes all your emails and dislays it in a web ui.</description>
+  <description>Mailsink is a simple SMTP server that consumes all your emails and displays it in a web ui.</description>
   <url>https://github.com/ksokol/mailsink</url>
   <inceptionYear>2016</inceptionYear>
 
