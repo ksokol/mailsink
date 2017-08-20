@@ -317,6 +317,16 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>1.0-m5.1</version>
+        <configuration>
+          <pushFeatures>true</pushFeatures>
+          <pushReleases>true</pushReleases>
+          <noReleaseBuild>true</noReleaseBuild>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
