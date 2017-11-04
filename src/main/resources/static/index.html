@@ -11,25 +11,23 @@
     <link rel="stylesheet" type="text/css" media="screen" href="webjars/bootstrap/3.3.7-1/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="webjars/highlightjs/9.12.0/styles/tomorrow.css" />
     <style>
-        #wrapper {
-            min-height: 100%;
-            height: 100%;
+        html, body {
             width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: inline-block;
-        }
-        #main-wrapper {
             height: 100%;
-            overflow-y: auto;
-            padding: 50px 0 140px 0;
         }
-        #main {
-            position: relative;
+        .app-container {
+            width: 100%;
             height: 100%;
-            padding: 0 15px;
-            overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            align-content: stretch;
+        }
+        .app-content {
+            flex: 1;
+            overflow: auto;
+            margin-top: 50px;
         }
         .nav li a:hover, li a {
             cursor: pointer;
@@ -46,8 +44,6 @@
             margin-left: -150px;
         }
         .app-footer {
-            position: fixed;
-            bottom: 0;
             padding-left: 0;
             padding-right: 0;
         }
@@ -88,6 +84,10 @@
         .glyphicon-play {
             color: green !important;
         }
+        .no-gutters {
+            margin-right: 0;
+            margin-left: 0;
+        }
     </style>
     <script src="webjars/github-com-webcomponents-shadydom/v1.0.0/shadydom.min.js"></script>
     <script src="webjars/jquery/1.12.4/jquery.js"></script>
@@ -104,58 +104,54 @@
     <script src="app.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavigationCtrl">
+    <div class="navbar navbar-default navbar-fixed-top" ng-controller="NavigationCtrl">
         <div class="container-fluid">
-            <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a class="glyphicon" toggle-smtp-server></a></li>
-                    <li><a class="glyphicon glyphicon-envelope" ng-click="createMail()"></a></li>
-                    <li><a class="glyphicon glyphicon-refresh" ng-click="refresh()"></a></li>
-                    <li><a class="glyphicon glyphicon-trash" ng-click="purge()"></a></li>
-                </ul>
-            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a class="glyphicon" toggle-smtp-server></a></li>
+                <li><a class="glyphicon glyphicon-envelope" ng-click="createMail()"></a></li>
+                <li><a class="glyphicon glyphicon-refresh" ng-click="refresh()"></a></li>
+                <li><a class="glyphicon glyphicon-trash" ng-click="purge()"></a></li>
+            </ul>
         </div>
-    </nav>
+    </div>
 
-    <div id="wrapper">
-        <div id="main-wrapper" class="col-md-12">
-            <div id="main">
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
-                        <alert-message class="hidden">
-                            <div class="alert alert-warning alert-dismissible" role="alert">
-                                <button type="button" class="close" data-dismiss="alert" ng-click="close()">
-                                    <span>&times;</span>
-                                </button>
-                                <strong>Warning!</strong> {{message}}
-                            </div>
-                        </alert-message>
+    <div class="app-container">
+        <div class="app-content">
+            <div class="row no-gutters">
+                <div class="col-md-8 col-md-offset-2">
+                    <alert-message class="hidden">
+                        <div class="alert alert-warning alert-dismissible">
+                            <button type="button" class="close" ng-click="close()">
+                                <span>&times;</span>
+                            </button>
+                            <strong>Warning!</strong> {{message}}
+                        </div>
+                    </alert-message>
 
-                        <table class="table table-hover" ng-controller="MailCtrl">
-                            <thead ng-if="mails.length > 0">
-                            <tr>
-                                <th class="col-xs-2">Sender</th>
-                                <th class="col-xs-2">Recipient</th>
-                                <th class="col-xs-2">Subject</th>
-                                <th class="col-xs-2">Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="mail in mails" ng-click="click(mail)">
-                                <td class="col-xs-2">{{::mail.content.sender}}</td>
-                                <td class="col-xs-2">{{::mail.content.recipient}}</td>
-                                <td class="col-xs-2">{{::mail.content.subject}}</td>
-                                <td class="col-xs-2">{{::mail.content.createdAt}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table table-hover" ng-controller="MailCtrl">
+                        <thead ng-if="mails.length > 0">
+                        <tr>
+                            <th class="col-xs-2">Sender</th>
+                            <th class="col-xs-2">Recipient</th>
+                            <th class="col-xs-2">Subject</th>
+                            <th class="col-xs-2">Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="mail in mails" ng-click="click(mail)">
+                            <td class="col-xs-2">{{::mail.content.sender}}</td>
+                            <td class="col-xs-2">{{::mail.content.recipient}}</td>
+                            <td class="col-xs-2">{{::mail.content.subject}}</td>
+                            <td class="col-xs-2">{{::mail.content.createdAt}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <footer class="col-xs-12 app-footer">
+        <div class="app-footer">
             <smtp-log></smtp-log>
-        </footer>
+        </div>
     </div>
 </body>
 </html>
