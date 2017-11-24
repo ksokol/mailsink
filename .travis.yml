@@ -17,4 +17,5 @@ cache:
     - '$HOME/mailsink/node_modules'
 
 script:
+    - git fetch --unshallow # necessary for SonarQube blame information
     - ./mvnw verify sonar:sonar
