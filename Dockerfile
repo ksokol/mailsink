@@ -1,4 +1,4 @@
-FROM java:openjdk-8-alpine
+FROM openjdk:8-jre-alpine
 
 ADD target/mailsink.jar /opt/mailsink.jar
 
