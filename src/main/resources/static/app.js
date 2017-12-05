@@ -89,6 +89,16 @@ app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$uibModal', 'stomp
             }
         });
     };
+
+    $scope.removeMail = function(event, mail) {
+        event.stopPropagation();
+        $http({
+            method: 'DELETE',
+            url: mail._links.self.href
+        }).then(function() {
+            $scope.mails.splice($scope.mails.indexOf(mail), 1);
+        }).catch(alertService.alert);
+    }
 }]);
 
 app.controller('NavigationCtrl', ['$scope', '$rootScope','$http', 'alertService', function($scope, $rootScope, $http, alertService) {

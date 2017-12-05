@@ -142,22 +142,29 @@ describe('src/test/javascript/controller-tests.js', function () {
             var stompService = {};
 
             var aMail = {
-                'messageId': '<68508964.31.1477845062277@localhost>',
-                'sender': 'root@localhost',
-                'recipient': 'root@localhost',
-                'subject': 'Subject',
-                'text': 'mail body',
-                'attachments': [{
-                    'filename': 'example.pdf',
-                    'mimeType': 'application/pdf',
-                    'data': 'data',
-                    '_links': {
-                        'mail': {
-                            'href': 'http://localhost:2525/mails/2'
+                'content': {
+                    'messageId': '<68508964.31.1477845062277@localhost>',
+                    'sender': 'root@localhost',
+                    'recipient': 'root@localhost',
+                    'subject': 'Subject',
+                    'text': 'mail body',
+                    'attachments': [{
+                        'filename': 'example.pdf',
+                        'mimeType': 'application/pdf',
+                        'data': 'data',
+                        '_links': {
+                            'mail': {
+                                'href': 'http://localhost:2525/mails/2'
+                            }
                         }
+                    }],
+                    'createdAt': '2016-10-30T16:31:02.000+0000'
+                },
+                '_links' : {
+                    'self' : {
+                        'href' : 'http://localhost:2525/mails/1'
                     }
-                }],
-                'createdAt': '2016-10-30T16:31:02.000+0000'
+                }
             };
 
             var aResponse = {
@@ -229,6 +236,26 @@ describe('src/test/javascript/controller-tests.js', function () {
                 expect(alertService.alert).toHaveBeenCalledWith(jasmine.objectContaining({
                     status: 500,
                     data: 'expected error'
+                }));
+            });
+
+            it('should delete mail', function () {
+                httpBackend.flush();
+
+                scope.removeMail(jasmine.createSpyObj('', ['stopPropagation']), aMail);
+
+                httpBackend.expectDELETE('http://localhost:2525/mails/1')
+            });
+
+            it('should forward error response to alertService when delete failed', function () {
+                httpCallChain.respond(500, 'expected delete error');
+                httpBackend.flush();
+
+                scope.removeMail(jasmine.createSpyObj('', ['stopPropagation']), aMail);
+
+                expect(alertService.alert).toHaveBeenCalledWith(jasmine.objectContaining({
+                    status: 500,
+                    data: 'expected delete error'
                 }));
             });
         });
