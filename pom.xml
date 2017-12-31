@@ -252,8 +252,8 @@
             </goals>
             <phase>validate</phase>
             <configuration>
-              <nodeVersion>v4.4.5</nodeVersion>
-              <npmVersion>3.9.5</npmVersion>
+              <nodeVersion>v8.9.3</nodeVersion>
+              <npmVersion>5.6.0</npmVersion>
             </configuration>
           </execution>
           <execution>
