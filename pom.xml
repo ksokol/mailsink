@@ -325,6 +325,9 @@
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-maven</artifactId>
         <version>3.0.2</version>
+        <configuration>
+          <suppressionFile>owasp/cve_false_positives.xml</suppressionFile>
+        </configuration>
         <executions>
           <execution>
             <goals>
