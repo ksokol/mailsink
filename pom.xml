@@ -326,6 +326,7 @@
         <artifactId>dependency-check-maven</artifactId>
         <version>3.0.2</version>
         <configuration>
+          <failBuildOnCVSS>7</failBuildOnCVSS>
           <suppressionFile>owasp/cve_suppress.xml</suppressionFile>
         </configuration>
         <executions>
