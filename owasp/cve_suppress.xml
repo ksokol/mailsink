@@ -7,4 +7,11 @@
     <gav regex="true">^org\.webjars\.npm:CBuffer:.*$</gav>
     <cpe>cpe:/a:npm:npm</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-annotations-api-8.5.23.jar
+   ]]></notes>
+    <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+    <cpe>cpe:/a:apache:tomcat</cpe>
+  </suppress>
 </suppressions>
