@@ -33,7 +33,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.9.RELEASE</version>
+    <version>1.5.22.RELEASE</version>
     <relativePath />
   </parent>
 
@@ -49,6 +49,7 @@
     <sonar.tests>src/test</sonar.tests>
     <sonar.testExecutionReportPaths>target/karma-reports/TEST.xml</sonar.testExecutionReportPaths>
     <sonar.javascript.lcov.reportPaths>target/karma-reports/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
+    <jackson.version>2.10.1</jackson.version> <!-- override Spring Boot 1.5.22 -->
   </properties>
 
   <dependencies>
@@ -86,7 +87,7 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
-      <version>1.14</version>
+      <version>1.23</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -325,7 +326,7 @@
       <plugin>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-maven</artifactId>
-        <version>3.0.2</version>
+        <version>5.2.4</version>
         <configuration>
           <failBuildOnCVSS>7</failBuildOnCVSS>
           <suppressionFile>owasp/cve_suppress.xml</suppressionFile>
