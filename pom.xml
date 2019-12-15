@@ -44,6 +44,7 @@
     <mime4j.version>0.8.0</mime4j.version>
     <angular.version>1.6.5</angular.version>
     <sonar.host.url>https://sonarqube.com</sonar.host.url>
+    <sonar.organization>ksokol-github</sonar.organization>
     <sonar.sources>src/main</sonar.sources>
     <sonar.tests>src/test</sonar.tests>
     <sonar.testExecutionReportPaths>target/karma-reports/TEST.xml</sonar.testExecutionReportPaths>
