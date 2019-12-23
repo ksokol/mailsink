@@ -81,14 +81,22 @@ describe('src/test/javascript/service-tests.js', function () {
         });
 
         it('should propagate message to subscribers', function (done) {
+            var calls = 0;
+            var triggerDone = function () {
+                calls += 1;
+                if (calls === 2) {
+                    done();
+                }
+            }
+
             stompService.subscribe('firstTopic', function (data) {
                 expect(data).toEqual(['expected firstTopic message']);
-                done();
+                triggerDone();
             });
 
             stompService.subscribe('secondTopic', function (data) {
                 expect(data).toEqual(['expected secondTopic message']);
-                done();
+                triggerDone();
             });
 
             stompMock.onConnect();
@@ -100,22 +108,6 @@ describe('src/test/javascript/service-tests.js', function () {
                 },
                 body: '["expected firstTopic message"]'
             });
-
-            stompMock.listener['/topic/secondTopic']({
-                headers: {
-                    destination: '/topic/secondTopic'
-                },
-                body: '["expected secondTopic message"]'
-            });
-        });
-
-        it('should not propagate message to unrelated topic', function () {
-            stompService.subscribe('firstTopic', function () {
-                fail('unexpected message');
-            });
-
-            stompMock.onConnect();
-            rootScope.$digest();
 
             stompMock.listener['/topic/secondTopic']({
                 headers: {
