@@ -56,7 +56,7 @@ public class MailJsonTest {
         jsonContentAssert.extractingJsonPathValue("sender").isEqualTo("expected sender");
         jsonContentAssert.extractingJsonPathValue("subject").isEqualTo("expected subject");
         jsonContentAssert.extractingJsonPathValue("text").isEqualTo("expected text");
-        jsonContentAssert.extractingJsonPathValue("createdAt").isEqualTo("1970-01-01T00:00:01.000+0000");
+        jsonContentAssert.extractingJsonPathValue("createdAt").isEqualTo("1970-01-01T00:00:01.000+00:00");
     }
 
     @Test
