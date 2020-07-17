@@ -1,8 +1,6 @@
 package com.github.ksokol.mailsink.controller;
 
-import com.github.ksokol.mailsink.TestMails;
 import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.mime4j.Mime4jMessage;
 import com.github.ksokol.mailsink.repository.MailRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +15,7 @@ import java.util.Optional;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -74,7 +72,7 @@ public class MailControllerTest {
                 .contentType(APPLICATION_JSON)
                 .content("{ \"xpath\": \"*\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(content().json("[]"));
     }
 
@@ -98,7 +96,7 @@ public class MailControllerTest {
                 .contentType(APPLICATION_JSON)
                 .content("{ \"xpath\": \"*\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(content().json("[{'html':{'children':[{'body':{'children':[{'div':{'children':[{'p':{'children':[{'text':'p inner text'}]}}]}}]}}]}}]"));
     }
 
@@ -112,7 +110,7 @@ public class MailControllerTest {
                 .contentType(APPLICATION_JSON)
                 .content("{ \"xpath\": \"//p/text()\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(content().json("[{'text':'p inner text'}]"));
     }
 
@@ -122,9 +120,5 @@ public class MailControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(mailRepository).deleteAll();
-    }
-
-    private Mime4jMessage mail() throws Exception {
-        return new Mime4jMessage(TestMails.alternative1());
     }
 }

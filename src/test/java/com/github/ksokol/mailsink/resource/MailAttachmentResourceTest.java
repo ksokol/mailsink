@@ -55,7 +55,7 @@ public class MailAttachmentResourceTest {
     public void setUp() {
         mvc = webAppContextSetup(wac)
                 .alwaysExpect(status().isOk())
-                .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE + ";charset=UTF-8"))
+                .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
                 .build();
 
         Mail mail = new Mail();

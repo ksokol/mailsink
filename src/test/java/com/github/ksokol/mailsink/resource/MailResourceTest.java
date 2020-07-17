@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -20,6 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,6 +33,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@DirtiesContext(classMode = BEFORE_CLASS)
 public class MailResourceTest {
 
     @Autowired
@@ -43,15 +46,15 @@ public class MailResourceTest {
 
     @Before
     @After
-    public void cleanUp() throws Exception {
+    public void cleanUp() {
         mailRepository.deleteAll();
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mvc = webAppContextSetup(wac)
                 .alwaysExpect(status().isOk())
-                .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE + ";charset=UTF-8"))
+                .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
                 .build();
     }
 
