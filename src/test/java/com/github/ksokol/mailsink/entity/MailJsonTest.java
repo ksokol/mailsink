@@ -15,6 +15,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Collections;
 import java.util.Date;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author Kamill Sokol
  */
@@ -28,7 +30,7 @@ public class MailJsonTest {
     private Mail mail;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mail = new Mail();
         mail.setId(1L);
         mail.setSource("expected source");
@@ -47,19 +49,19 @@ public class MailJsonTest {
 
     @Test
     public void shouldSerializeFields() throws Exception {
-        JsonContentAssert jsonContentAssert = json.write(mail).assertThat();
+        JsonContentAssert jsonContentAssert = assertThat(json.write(mail));
 
         jsonContentAssert.extractingJsonPathValue("messageId").isEqualTo("expected messageId");
         jsonContentAssert.extractingJsonPathValue("recipient").isEqualTo("expected recipient");
         jsonContentAssert.extractingJsonPathValue("sender").isEqualTo("expected sender");
         jsonContentAssert.extractingJsonPathValue("subject").isEqualTo("expected subject");
         jsonContentAssert.extractingJsonPathValue("text").isEqualTo("expected text");
-        jsonContentAssert.extractingJsonPathNumberValue("createdAt").isEqualTo(1000);
+        jsonContentAssert.extractingJsonPathValue("createdAt").isEqualTo("1970-01-01T00:00:01.000+0000");
     }
 
     @Test
     public void shouldNotSerializeFields() throws Exception {
-        JsonContentAssert jsonContentAssert = json.write(mail).assertThat();
+        JsonContentAssert jsonContentAssert = assertThat(json.write(mail));
 
         jsonContentAssert.doesNotHaveJsonPathValue("id");
         jsonContentAssert.doesNotHaveJsonPathValue("source");
@@ -67,7 +69,7 @@ public class MailJsonTest {
 
     @Test
     public void shouldSerializeAttachmentsWithFalseValueWhenNoAttachmentsAvailable() throws Exception {
-        JsonContentAssert jsonContentAssert = json.write(mail).assertThat();
+        JsonContentAssert jsonContentAssert = assertThat(json.write(mail));
 
         jsonContentAssert.extractingJsonPathValue("attachments").isEqualTo(false);
     }
@@ -78,7 +80,7 @@ public class MailJsonTest {
         mailAttachment.setId(0L);
         mailAttachment.setContentId("irrelevant");
         mail.setAttachments(Collections.singletonList(mailAttachment));
-        JsonContentAssert jsonContentAssert = json.write(mail).assertThat();
+        JsonContentAssert jsonContentAssert = assertThat(json.write(mail));
 
         jsonContentAssert.extractingJsonPathValue("attachments").isEqualTo(true);
     }
@@ -94,7 +96,7 @@ public class MailJsonTest {
         mail.setId(4L);
         mail.setAttachments(Collections.singletonList(mailAttachment));
 
-        JsonContentAssert jsonContentAssert = json.write(mail).assertThat();
+        JsonContentAssert jsonContentAssert = assertThat(json.write(mail));
 
         jsonContentAssert.extractingJsonPathValue("html")
                 .isEqualTo("<img src=\"http://localhost/mailsink/mailAttachments/888/data\">");

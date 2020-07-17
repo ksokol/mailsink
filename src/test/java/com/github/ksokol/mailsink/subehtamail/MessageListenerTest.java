@@ -3,18 +3,17 @@ package com.github.ksokol.mailsink.subehtamail;
 import com.github.ksokol.mailsink.websocket.IncomingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static com.github.ksokol.mailsink.TestMails.emlAsStream;
 import static com.github.ksokol.mailsink.TestMails.mixed1;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.argThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -29,22 +28,27 @@ public class MessageListenerTest {
     @Mock
     private ApplicationEventPublisher publisher;
 
+    @Captor
+    private ArgumentCaptor<ApplicationEvent> captor;
+
     @Test
-    public void shouldAcceptEveryMessage() throws Exception {
-        assertThat(messageListener.accept("irrelevant", "irrelevant"), is(true));
+    public void shouldAcceptEveryMessage() {
+        assertThat(messageListener.accept("irrelevant", "irrelevant")).isTrue();
     }
 
     @Test
     public void shouldPublishIncomingMail() throws Exception {
         messageListener.deliver("irrelevant", "irrelevant", emlAsStream("mixed1"));
 
-        verify(publisher).publishEvent(argThat(hasProperty("source", hasProperty("source", is(mixed1())))));
+        verify(publisher).publishEvent(captor.capture());
+        assertThat(captor.getValue().getSource()).hasFieldOrPropertyWithValue("source", mixed1());
     }
 
     @Test
     public void shouldPublishIncomingEvent() throws Exception {
         messageListener.deliver("irrelevant", "irrelevant", emlAsStream("mixed1"));
 
-        verify(publisher).publishEvent(argThat(instanceOf(IncomingEvent.class)));
+        verify(publisher).publishEvent(captor.capture());
+        assertThat(captor.getValue()).isInstanceOf(IncomingEvent.class);
     }
 }

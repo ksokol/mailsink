@@ -47,12 +47,12 @@ public class MailAttachmentResourceTest {
 
     @Before
     @After
-    public void cleanUp() throws Exception {
+    public void cleanUp() {
         mailRepository.deleteAll();
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mvc = webAppContextSetup(wac)
                 .alwaysExpect(status().isOk())
                 .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE + ";charset=UTF-8"))

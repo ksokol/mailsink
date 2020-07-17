@@ -20,9 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,7 +43,7 @@ public class StaticResourceTest {
     private MockMvc mvc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
@@ -60,7 +58,7 @@ public class StaticResourceTest {
     public void shouldHaveAtLeastOneJavascriptResourceFile() throws Exception {
         Elements scriptTags = indexHtml().head().getElementsByTag("script");
 
-        assertThat(scriptTags, hasSize(greaterThan(0)));
+        assertThat(scriptTags).size().isGreaterThan(0);
     }
 
     @Test
@@ -74,7 +72,7 @@ public class StaticResourceTest {
                 .header(ACCEPT, TEXT_HTML))
                 .andDo(result -> log.info(String.format("asserting %s exists", srcAttribute)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/javascript"));
+                .andExpect(content().contentType("application/javascript"));
         }
     }
 
@@ -82,7 +80,7 @@ public class StaticResourceTest {
     public void shouldHaveAtLeastOneCssResourceFile() throws Exception {
         Elements linkTags = indexHtml().head().select("link[rel=\"stylesheet\"]");
 
-        assertThat(linkTags, hasSize(greaterThan(0)));
+        assertThat(linkTags).size().isGreaterThan(0);
     }
 
     @Test
