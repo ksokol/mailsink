@@ -164,16 +164,6 @@
       <artifactId>angular-highlightjs</artifactId>
       <version>0.7.1</version>
     </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>github-com-webcomponents-shadydom</artifactId>
-      <version>v1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery</artifactId>
-      <version>1.12.4</version>
-    </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>

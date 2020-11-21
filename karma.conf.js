@@ -1,7 +1,6 @@
 module.exports = function(config) {
     config.set({
         files: [
-            'target/dependency/META-INF/resources/webjars/jquery/**/jquery.js',
             'target/dependency/META-INF/resources/webjars/angular/**/angular.js',
             'target/dependency/META-INF/resources/webjars/angular-sanitize/**/angular-sanitize.js',
             'target/dependency/META-INF/resources/webjars/angular-mocks/**/angular-mocks.js',
