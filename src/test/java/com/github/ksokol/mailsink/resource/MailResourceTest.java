@@ -1,115 +1,100 @@
 package com.github.ksokol.mailsink.resource;
 
-import com.github.ksokol.mailsink.TestMails;
-import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.repository.MailRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
-import static java.lang.String.format;
-import static org.hamcrest.Matchers.emptyArray;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc
 @SpringBootTest
-@DirtiesContext(classMode = BEFORE_CLASS)
-public class MailResourceTest {
+class MailResourceTest {
 
-    @Autowired
-    private WebApplicationContext wac;
+  @Autowired
+  private MockMvc mvc;
 
-    @Autowired
-    private MailRepository mailRepository;
+  @Test
+  void shouldContainExpectedCollectionResponse() throws Exception {
+    mvc.perform(get("/mails"))
+      .andExpect(status().isOk())
+      .andExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
+      .andExpect(jsonPath("_embedded.mails.length()").value(2))
+      .andExpect(jsonPath("_embedded.mails[0].id").doesNotExist())
+      .andExpect(jsonPath("_embedded.mails[0].source").doesNotExist())
+      .andExpect(jsonPath("_embedded.mails[0].messageId").value("<208544674.1.1477820621771.JavaMail.localhost@localhost>"))
+      .andExpect(jsonPath("_embedded.mails[0].recipient").value("recipient@localhost"))
+      .andExpect(jsonPath("_embedded.mails[0].sender").value("Display Name <sender@localhost>"))
+      .andExpect(jsonPath("_embedded.mails[0].subject").value("mail1"))
+      .andExpect(jsonPath("_embedded.mails[0].text").value("Mail body\n new line\n another line\n"))
+      .andExpect(jsonPath("_embedded.mails[0].attachments").value(false))
+      .andExpect(jsonPath("_embedded.mails[0].html").isEmpty())
+      .andExpect(jsonPath("_embedded.mails[0].createdAt").value("2016-10-30T10:10:10.000+00:00"))
+      .andExpect(jsonPath("_embedded.mails[0]._links.source.href").value("http://localhost/mails/0/source"))
+      .andExpect(jsonPath("_embedded.mails[0]._links.attachments.href").value("http://localhost/mails/0/attachments"))
+      .andExpect(jsonPath("_embedded.mails[0]._links.query").doesNotExist())
+      .andExpect(jsonPath("_embedded.mails[1].id").doesNotExist())
+      .andExpect(jsonPath("_embedded.mails[1].source").doesNotExist())
+      .andExpect(jsonPath("_embedded.mails[1].messageId").value("<208544674.1.1477820621771.JavaMail.localhost@localhost>"))
+      .andExpect(jsonPath("_embedded.mails[1].recipient").value("recipient1@localhost"))
+      .andExpect(jsonPath("_embedded.mails[1].sender").value("sender@localhost"))
+      .andExpect(jsonPath("_embedded.mails[1].subject").value("mail2"))
+      .andExpect(jsonPath("_embedded.mails[1].text").value(""))
+      .andExpect(jsonPath("_embedded.mails[1].attachments").value(true))
+      .andExpect(jsonPath("_embedded.mails[1].html").value("inline image <img src=\"http://localhost/mailAttachments/0/data\">\n"))
+      .andExpect(jsonPath("_embedded.mails[1].createdAt").value("2017-10-30T10:10:10.000+00:00"))
+      .andExpect(jsonPath("_embedded.mails[1]._links.source.href").value("http://localhost/mails/1/source"))
+      .andExpect(jsonPath("_embedded.mails[1]._links.attachments.href").value("http://localhost/mails/1/attachments"))
+      .andExpect(jsonPath("_embedded.mails[1]._links.query.href").value("http://localhost/mails/1/html/query"));
+  }
 
-    private MockMvc mvc;
+  @Test
+  void shouldContainExpectedResourceResponse() throws Exception {
+    mvc.perform(get("/mails/1"))
+      .andExpect(status().isOk())
+      .andExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
+      .andExpect(jsonPath("id").doesNotExist())
+      .andExpect(jsonPath("source").doesNotExist())
+      .andExpect(jsonPath("messageId").value("<208544674.1.1477820621771.JavaMail.localhost@localhost>"))
+      .andExpect(jsonPath("recipient").value("recipient1@localhost"))
+      .andExpect(jsonPath("sender").value("sender@localhost"))
+      .andExpect(jsonPath("subject").value("mail2"))
+      .andExpect(jsonPath("text").value(""))
+      .andExpect(jsonPath("attachments").value(true))
+      .andExpect(jsonPath("html").value("inline image <img src=\"http://localhost/mailAttachments/0/data\">\n"))
+      .andExpect(jsonPath("createdAt").value("2017-10-30T10:10:10.000+00:00"))
+      .andExpect(jsonPath("_links.source.href").value("http://localhost/mails/1/source"))
+      .andExpect(jsonPath("_links.attachments.href").value("http://localhost/mails/1/attachments"))
+      .andExpect(jsonPath("_links.query.href").value("http://localhost/mails/1/html/query"));
+  }
 
-    @Before
-    @After
-    public void cleanUp() {
-        mailRepository.deleteAll();
-    }
+  @Test
+  void shouldReturnMailsFromCustomFinderMethodFindByRecipient() throws Exception {
+    var expectedRecipient = "recipient1@localhost";
 
-    @Before
-    public void setUp() {
-        mvc = webAppContextSetup(wac)
-                .alwaysExpect(status().isOk())
-                .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
-                .build();
-    }
+    mvc.perform(get("/mails/search/findByRecipient?recipient={recipient}", expectedRecipient))
+      .andExpect(status().isOk())
+      .andExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
+      .andExpect(jsonPath("_embedded.mails.length()").value(1))
+      .andExpect(jsonPath("_embedded.mails..recipient").value(expectedRecipient));
+  }
 
-    @Test
-    public void shouldEncloseMailWithContentProperty() throws Exception {
-        Mail mail = new Mail();
-        mail.setSource(TestMails.mixed1());
-        mailRepository.save(mail);
-
-        mvc.perform(get("/mails"))
-                .andExpect(jsonPath("_embedded.mails..content", not(emptyArray())));
-    }
-
-    @Test
-    public void shouldAddCustomLinks() throws Exception {
-        Mail mail = new Mail();
-        mail.setSource(TestMails.mixed1());
-        Mail saved = mailRepository.save(mail);
-
-        mvc.perform(get("/mails/{id}", saved.getId()))
-                .andExpect(jsonPath("_links.source.href", is(format("http://localhost/mails/%d/source", saved.getId()))))
-                .andExpect(jsonPath("_links.attachments.href", is(format("http://localhost/mails/%d/attachments", saved.getId()))))
-                .andExpect(jsonPath("_links.query").doesNotExist());
-    }
-
-    @Test
-    public void shouldAddCustomLinkQueryWhenHtmlBodyAvailable() throws Exception {
-        Mail mail = new Mail();
-        mail.setHtml("html");
-        mail.setSource(TestMails.mixed1());
-        Mail saved = mailRepository.save(mail);
-
-        mvc.perform(get("/mails/{id}", saved.getId()))
-                .andExpect(jsonPath("_links.query.href", is(format("http://localhost/mails/%d/html/query", saved.getId()))));
-    }
-
-    @Test
-    public void shouldReturnMailsFromCustomFinderMethodFindByRecipient() throws Exception {
-        String expectedRecipient = "recipient@localhost";
-        Mail mail = new Mail();
-        mail.setRecipient(expectedRecipient);
-        mail.setSource(TestMails.mixed1());
-        mailRepository.save(mail);
-
-        mvc.perform(get("/mails/search/findByRecipient?recipient={recipient}", expectedRecipient))
-                .andExpect(jsonPath("_embedded.mails..recipient", everyItem(is(expectedRecipient))));
-    }
-
-    @Test
-    public void shouldReturnMailsFromCustomFinderMethodFindAllOrderByCreatedAtDesc() throws Exception {
-        Mail mail = new Mail();
-        mail.setSource(TestMails.mixed1());
-        mailRepository.save(mail);
-
-        mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
-                .andExpect(jsonPath("_embedded.mails", not(emptyArray())));
-    }
+  @Test
+  void shouldReturnMailsFromCustomFinderMethodFindAllOrderByCreatedAtDesc() throws Exception {
+    mvc.perform(get("/mails/search/findAllOrderByCreatedAtDesc"))
+      .andExpect(status().isOk())
+      .andExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
+      .andExpect(jsonPath("_embedded.mails.length()").value(2))
+      .andExpect(jsonPath("_embedded.mails[0].createdAt").value("2017-10-30T10:10:10.000+00:00"))
+      .andExpect(jsonPath("_embedded.mails[1].createdAt").value("2016-10-30T10:10:10.000+00:00"));
+  }
 }

@@ -34,24 +34,20 @@ describe('src/test/javascript/component-tests.js', function () {
         var response = {
             _embedded: {
                 mailAttachments: [{
-                    content: {
-                        filename: 'some-filename1',
-                        mimeType: 'some/mimeType1',
-                        dispositionType: 'inline',
-                        data: 'some-data1'
-                    },
+                    filename: 'some-filename1',
+                    mimeType: 'some/mimeType1',
+                    dispositionType: 'inline',
+                    data: 'some-data1',
                     _links: {
                         data: {
                             href: 'http://localhost/mailAttachments/0/data'
                         }
                     }
                 }, {
-                    content: {
-                        filename: 'some-filename2',
-                        mimeType: 'some/mimeType2',
-                        dispositionType: 'attachment',
-                        data: 'some-data2'
-                    },
+                    filename: 'some-filename2',
+                    mimeType: 'some/mimeType2',
+                    dispositionType: 'attachment',
+                    data: 'some-data2',
                     _links: {
                         data: {
                             href: 'http://localhost/mailAttachments/1/data'
@@ -151,9 +147,7 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have text content', function () {
             scope.mail = {
-                content: {
-                    text: 'text'
-                }
+                text: 'text',
             };
             scope.$digest();
 
@@ -162,9 +156,7 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have attachments', function () {
             scope.mail = {
-                content: {
-                    attachments: true
-                },
+                attachments: true,
                 _links: {
                     attachments: {
                         href: ''
@@ -178,9 +170,7 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have html content', function () {
             scope.mail = {
-                content: {
-                    html: 'html'
-                }
+                html: 'html',
             };
             scope.$digest();
 
@@ -189,11 +179,9 @@ describe('src/test/javascript/component-tests.js', function () {
 
         it('should have text content, html content and attachments', function () {
             scope.mail = {
-                content: {
-                    text: 'text',
-                    html: 'html',
-                    attachments: true
-                },
+                text: 'text',
+                html: 'html',
+                attachments: true,
                 _links: {
                     attachments: {
                         href: ''
@@ -209,7 +197,7 @@ describe('src/test/javascript/component-tests.js', function () {
         });
 
         it('should show html body and "Query HTML" button', function () {
-            scope.mail = {content: {html: 'html'}};
+            scope.mail = {html: 'html'};
             scope.$digest();
 
             expect(element.find('button').length).toEqual(1);
@@ -219,7 +207,7 @@ describe('src/test/javascript/component-tests.js', function () {
         });
 
         it('should show query panel and "back to HTML" button', function () {
-            scope.mail = {content: {html: 'html'}};
+            scope.mail = {html: 'html'};
             scope.$digest();
             element.find('button').triggerHandler('click');
             scope.$digest();
@@ -231,7 +219,7 @@ describe('src/test/javascript/component-tests.js', function () {
         });
 
         it('should pass mail to child components', function () {
-            scope.mail = {content: {html: 'html'}};
+            scope.mail = {html: 'html'};
             scope.$digest();
             element.find('button').triggerHandler('click');
             scope.$digest();
@@ -250,7 +238,7 @@ describe('src/test/javascript/component-tests.js', function () {
 
             var shadowDOM = {innerHTML: null};
             el.attachShadow.and.returnValue(shadowDOM);
-            $componentController('messageHtml', {$element: [el]}, {mail: {content: {html: 'expected html body'}}}).$onInit();
+            $componentController('messageHtml', {$element: [el]}, {mail: {html: 'expected html body'}}).$onInit();
 
             expect(el.attachShadow).toHaveBeenCalledWith({mode: 'open'});
             expect(shadowDOM.innerHTML).toEqual('expected html body');
@@ -352,10 +340,8 @@ describe('src/test/javascript/component-tests.js', function () {
         var scope, element, httpBackend, compile, clipboard, curlConverter;
 
         var mail = {
-            content: {
-                id: 1,
-                html: 'html body'
-            },
+            id: 1,
+            html: 'html body',
             _links: {
                 query: {
                     href: 'http://localhost/mails/1/html/query'

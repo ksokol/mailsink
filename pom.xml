@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.ksokol</groupId>
@@ -27,14 +28,13 @@
   <ciManagement>
     <system>Gitub Actions</system>
     <url>https://github.com/ksokol/mailsink/actions</url>
-    <notifiers />
+    <notifiers/>
   </ciManagement>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.1.RELEASE</version>
-    <relativePath />
+    <version>2.4.0</version>
   </parent>
 
   <properties>
@@ -50,7 +50,6 @@
     <sonar.tests>src/test</sonar.tests>
     <sonar.testExecutionReportPaths>target/karma-reports/TEST.xml</sonar.testExecutionReportPaths>
     <sonar.javascript.lcov.reportPaths>target/karma-reports/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
-    <jackson.version>2.10.1</jackson.version> <!-- override Spring Boot 1.5.22 -->
   </properties>
 
   <dependencies>
@@ -202,6 +201,17 @@
       <version>3.0.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <dependency>
       <groupId>org.webjars.bower</groupId>
@@ -304,7 +314,7 @@
               <providerSelection>2.0</providerSelection>
               <sources>
                 <fileset>
-                  <directory>${pom.basedir}/src/test/groovy</directory>
+                  <directory>${project.basedir}/src/test/groovy</directory>
                   <includes>
                     <include>**/*.groovy</include>
                   </includes>

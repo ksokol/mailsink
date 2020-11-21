@@ -1,161 +1,179 @@
 <!DOCTYPE html>
 <html ng-app="mailsinkApp">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-    <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="shortcut icon" href="favicon.ico"/>
 
-    <title>Mailsink</title>
+  <title>Mailsink</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="webjars/bootstrap/3.3.7-1/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="webjars/highlightjs/9.12.0/styles/tomorrow.css" />
-    <style>
-        html, body {
-            width: 100%;
-            height: 100%;
-        }
-        .app-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: stretch;
-            align-content: stretch;
-        }
-        .app-content {
-            flex: 1;
-            overflow: auto;
-            margin-top: 50px;
-        }
-        .nav li a:hover, li a {
-            cursor: pointer;
-        }
-        .hidden {
-            display: none !important;
-        }
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .modal-content {
-            width: 900px;
-            margin-left: -150px;
-        }
-        .app-footer {
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .smtp-log {
-            background: linear-gradient(90deg, #313335 70px, #2B2B2B 70px);
-            width: 100%;
-            height: 140px;
-            overflow-y: scroll;
-        }
-        .smtp-log-row {
-            margin-right: 0;
-            margin-left: 0;
-        }
-        .smtp-log-line > span:first-child {
-            padding-right: 5px;
-        }
-        .intellij-default-background {
-            padding-left: 10px;
-            width: calc(100% - 70px);
-        }
-        .intellij-default-background-line-number {
-            width: 70px;
-            padding-right: 5px;
-            text-align: right;
-        }
-        .intellij-default-line-number-text {
-            color: #606366;
-        }
-        .intellij-default-todo-text {
-            color: #A8C023;
-        }
-        .intellij-default-text {
-            color: #BABABA;
-        }
-        .glyphicon-stop {
-            color: red !important;
-        }
-        .glyphicon-play {
-            color: green !important;
-        }
-        .no-gutters {
-            margin-right: 0;
-            margin-left: 0;
-        }
-    </style>
-    <script src="webjars/github-com-webcomponents-shadydom/v1.0.0/shadydom.min.js"></script>
-    <script src="webjars/jquery/1.12.4/jquery.js"></script>
-    <script src="webjars/angular/1.6.5/angular.min.js"></script>
-    <script src="webjars/angular-sanitize/1.6.5/angular-sanitize.js"></script>
-    <script src="webjars/angular-ui-bootstrap-bower/2.5.0/ui-bootstrap-tpls.min.js"></script>
-    <script src="webjars/angular-ui-bootstrap-bower/2.5.0/ui-bootstrap.min.js"></script>
-    <script src="webjars/stomp-websocket/2.3.4/lib/stomp.js"></script>
-    <script src="webjars/angular-scroll-glue/2.2.0/src/scrollglue.js"></script>
-    <script src="webjars/CBuffer/1.1.1/cbuffer.js"></script>
-    <script src="webjars/angular-clipboard/1.6.0/angular-clipboard.js"></script>
-    <script src="webjars/highlightjs/9.12.0/highlight.pack.min.js"></script>
-    <script src="webjars/angular-highlightjs/0.7.1/build/angular-highlightjs.min.js"></script>
-    <script src="app.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="webjars/bootstrap/3.3.7-1/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="webjars/highlightjs/9.12.0/styles/tomorrow.css"/>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    .app-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      align-content: stretch;
+    }
+
+    .app-content {
+      flex: 1;
+      overflow: auto;
+      margin-top: 50px;
+    }
+
+    .nav li a:hover, li a {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .modal-content {
+      width: 900px;
+      margin-left: -150px;
+    }
+
+    .app-footer {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .smtp-log {
+      background: linear-gradient(90deg, #313335 70px, #2B2B2B 70px);
+      width: 100%;
+      height: 140px;
+      overflow-y: scroll;
+    }
+
+    .smtp-log-row {
+      margin-right: 0;
+      margin-left: 0;
+    }
+
+    .smtp-log-line > span:first-child {
+      padding-right: 5px;
+    }
+
+    .intellij-default-background {
+      padding-left: 10px;
+      width: calc(100% - 70px);
+    }
+
+    .intellij-default-background-line-number {
+      width: 70px;
+      padding-right: 5px;
+      text-align: right;
+    }
+
+    .intellij-default-line-number-text {
+      color: #606366;
+    }
+
+    .intellij-default-todo-text {
+      color: #A8C023;
+    }
+
+    .intellij-default-text {
+      color: #BABABA;
+    }
+
+    .glyphicon-stop {
+      color: red !important;
+    }
+
+    .glyphicon-play {
+      color: green !important;
+    }
+
+    .no-gutters {
+      margin-right: 0;
+      margin-left: 0;
+    }
+  </style>
+  <script src="webjars/github-com-webcomponents-shadydom/v1.0.0/shadydom.min.js"></script>
+  <script src="webjars/jquery/1.12.4/jquery.js"></script>
+  <script src="webjars/angular/1.6.5/angular.min.js"></script>
+  <script src="webjars/angular-sanitize/1.6.5/angular-sanitize.js"></script>
+  <script src="webjars/angular-ui-bootstrap-bower/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="webjars/angular-ui-bootstrap-bower/2.5.0/ui-bootstrap.min.js"></script>
+  <script src="webjars/stomp-websocket/2.3.4/lib/stomp.js"></script>
+  <script src="webjars/angular-scroll-glue/2.2.0/src/scrollglue.js"></script>
+  <script src="webjars/CBuffer/1.1.1/cbuffer.js"></script>
+  <script src="webjars/angular-clipboard/1.6.0/angular-clipboard.js"></script>
+  <script src="webjars/highlightjs/9.12.0/highlight.pack.min.js"></script>
+  <script src="webjars/angular-highlightjs/0.7.1/build/angular-highlightjs.min.js"></script>
+  <script src="app.js"></script>
 </head>
 <body>
-    <div class="navbar navbar-default navbar-fixed-top" ng-controller="NavigationCtrl">
-        <div class="container-fluid">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a class="glyphicon" toggle-smtp-server></a></li>
-                <li><a class="glyphicon glyphicon-envelope" ng-click="createMail()"></a></li>
-                <li><a class="glyphicon glyphicon-refresh" ng-click="refresh()"></a></li>
-                <li><a class="glyphicon glyphicon-trash" ng-click="purge()"></a></li>
-            </ul>
-        </div>
-    </div>
+<div class="navbar navbar-default navbar-fixed-top" ng-controller="NavigationCtrl">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav navbar-right">
+      <li><a class="glyphicon" toggle-smtp-server></a></li>
+      <li><a class="glyphicon glyphicon-envelope" ng-click="createMail()"></a></li>
+      <li><a class="glyphicon glyphicon-refresh" ng-click="refresh()"></a></li>
+      <li><a class="glyphicon glyphicon-trash" ng-click="purge()"></a></li>
+    </ul>
+  </div>
+</div>
 
-    <div class="app-container">
-        <div class="app-content">
-            <div class="row no-gutters">
-                <div class="col-md-8 col-md-offset-2">
-                    <alert-message class="hidden">
-                        <div class="alert alert-warning alert-dismissible">
-                            <button type="button" class="close" ng-click="close()">
-                                <span>&times;</span>
-                            </button>
-                            <strong>Warning!</strong> {{message}}
-                        </div>
-                    </alert-message>
+<div class="app-container">
+  <div class="app-content">
+    <div class="row no-gutters">
+      <div class="col-md-8 col-md-offset-2">
+        <alert-message class="hidden">
+          <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="close" ng-click="close()">
+              <span>&times;</span>
+            </button>
+            <strong>Warning!</strong> {{message}}
+          </div>
+        </alert-message>
 
-                    <table class="table table-hover" ng-controller="MailCtrl">
-                        <thead ng-if="mails.length > 0">
-                        <tr>
-                            <th>Sender</th>
-                            <th>Recipient</th>
-                            <th>Subject</th>
-                            <th>Date</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="mail in mails" ng-click="click(mail)">
-                            <td>{{::mail.content.sender}}</td>
-                            <td>{{::mail.content.recipient}}</td>
-                            <td>{{::mail.content.subject}}</td>
-                            <td>{{::mail.content.createdAt}}</td>
-                            <td ng-click="removeMail($event, mail)">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="app-footer">
-            <smtp-log></smtp-log>
-        </div>
+        <table class="table table-hover" ng-controller="MailCtrl">
+          <thead ng-if="mails.length > 0">
+          <tr>
+            <th>Sender</th>
+            <th>Recipient</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="mail in mails" ng-click="click(mail)">
+            <td>{{::mail.sender}}</td>
+            <td>{{::mail.recipient}}</td>
+            <td>{{::mail.subject}}</td>
+            <td>{{::mail.createdAt}}</td>
+            <td ng-click="removeMail($event, mail)">
+              <span class="glyphicon glyphicon-trash"></span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
+  <div class="app-footer">
+    <smtp-log></smtp-log>
+  </div>
+</div>
 </body>
 </html>

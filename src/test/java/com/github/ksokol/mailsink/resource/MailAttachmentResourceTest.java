@@ -1,80 +1,56 @@
 package com.github.ksokol.mailsink.resource;
 
-import com.github.ksokol.mailsink.entity.Mail;
-import com.github.ksokol.mailsink.entity.MailAttachment;
-import com.github.ksokol.mailsink.repository.MailAttachmentRepository;
-import com.github.ksokol.mailsink.repository.MailRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
-import static java.lang.String.format;
-import static org.hamcrest.Matchers.emptyArray;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-/**
- * @author Kamill Sokol
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc
 @SpringBootTest
-public class MailAttachmentResourceTest {
+class MailAttachmentResourceTest {
 
-    @Autowired
-    private WebApplicationContext wac;
+  @Autowired
+  private MockMvc mvc;
 
-    @Autowired
-    private MailRepository mailRepository;
+  @Test
+  void shouldContainExpectedCollectionResponse() throws Exception {
+    mvc.perform(get("/mailAttachments"))
+      .andExpect(status().isOk())
+      .andExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
+      .andExpect(jsonPath("_embedded.mailAttachments.length()").value(1))
+      .andExpect(jsonPath("_embedded.mailAttachments[0].id").doesNotExist())
+      .andExpect(jsonPath("_embedded.mailAttachments[0].mail").doesNotExist())
+      .andExpect(jsonPath("_embedded.mailAttachments[0].data").doesNotExist())
+      .andExpect(jsonPath("_embedded.mailAttachments[0].contentId").doesNotExist())
+      .andExpect(jsonPath("_embedded.mailAttachments[0].filename").value("expectedFilename.jpg"))
+      .andExpect(jsonPath("_embedded.mailAttachments[0].mimeType").value("image/jpeg"))
+      .andExpect(jsonPath("_embedded.mailAttachments[0].dispositionType").value("inline"))
+      .andExpect(jsonPath("_embedded.mailAttachments[0]._links.data.href").value("http://localhost/mailAttachments/0/data"));
+  }
 
-    @Autowired
-    private MailAttachmentRepository mailAttachmentRepository;
-
-    private MockMvc mvc;
-    private MailAttachment mailAttachment;
-
-    @Before
-    @After
-    public void cleanUp() {
-        mailRepository.deleteAll();
-    }
-
-    @Before
-    public void setUp() {
-        mvc = webAppContextSetup(wac)
-                .alwaysExpect(status().isOk())
-                .alwaysExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
-                .build();
-
-        Mail mail = new Mail();
-        mailRepository.save(mail);
-
-        mailAttachment = new MailAttachment();
-        mailAttachment.setMail(mail);
-        mailAttachment = mailAttachmentRepository.save(mailAttachment);
-    }
-
-    @Test
-    public void shouldEncloseMailAttachmentWithContentProperty() throws Exception {
-        mvc.perform(get("/mailAttachments"))
-                .andExpect(jsonPath("_embedded.mailAttachments..content", not(emptyArray())));
-    }
-
-    @Test
-    public void shouldAddCustomLinks() throws Exception {
-        mvc.perform(get("/mailAttachments/{id}", mailAttachment.getId()))
-                .andExpect(jsonPath("_links.data.href", is(format("http://localhost/mailAttachments/%d/data", mailAttachment.getId()))));
-    }
+  @Test
+  void shouldContainExpectedResourceResponse() throws Exception {
+    mvc.perform(get("/mailAttachments/0"))
+      .andExpect(status().isOk())
+      .andExpect(header().string(CONTENT_TYPE, HAL_JSON_VALUE))
+      .andExpect(jsonPath("_embedded.mailAttachments[0].id").doesNotExist())
+      .andExpect(jsonPath("_embedded.mailAttachments[0].mail").doesNotExist())
+      .andExpect(jsonPath("_embedded.mailAttachments[0].data").doesNotExist())
+      .andExpect(jsonPath("_embedded.mailAttachments[0].contentId").doesNotExist())
+      .andExpect(jsonPath("filename").value("expectedFilename.jpg"))
+      .andExpect(jsonPath("mimeType").value("image/jpeg"))
+      .andExpect(jsonPath("dispositionType").value("inline"))
+      .andExpect(jsonPath("_links.data.href").value("http://localhost/mailAttachments/0/data"));
+  }
 }
