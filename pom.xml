@@ -7,27 +7,31 @@
   <artifactId>mailsink</artifactId>
   <name>mailsink</name>
   <description>Mailsink is a simple SMTP server that consumes all your emails and displays it in a web ui.</description>
-  <url>https://github.com/ksokol/mailsink</url>
+  <url>https://github.com/${project.organization.name}/mailsink</url>
   <inceptionYear>2016</inceptionYear>
 
   <version>0.6.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <organization>
+    <name>ksokol</name>
+  </organization>
+
   <scm>
-    <connection>scm:git:git@github.com:ksokol/mailsink.git</connection>
-    <developerConnection>scm:git:git@github.com:ksokol/mailsink.git</developerConnection>
-    <url>https://github.com/ksokol/mailsink</url>
+    <connection>scm:git:git@github.com:${project.organization.name}/mailsink.git</connection>
+    <developerConnection>scm:git:git@github.com:${project.organization.name}/mailsink.git</developerConnection>
+    <url>https://github.com/${project.organization.name}/mailsink</url>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
     <system>github</system>
-    <url>https://github.com/ksokol/mailsink/issues</url>
+    <url>https://github.com/${project.organization.name}/mailsink/issues</url>
   </issueManagement>
 
   <ciManagement>
     <system>Gitub Actions</system>
-    <url>https://github.com/ksokol/mailsink/actions</url>
+    <url>https://github.com/${project.organization.name}/mailsink/actions</url>
     <notifiers/>
   </ciManagement>
 
@@ -45,7 +49,7 @@
     <mime4j.version>0.8.0</mime4j.version>
     <angular.version>1.6.5</angular.version>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    <sonar.organization>ksokol-github</sonar.organization>
+    <sonar.organization>${project.organization.name}-github</sonar.organization>
     <sonar.sources>src/main</sonar.sources>
     <sonar.tests>src/test</sonar.tests>
     <sonar.testExecutionReportPaths>target/karma-reports/TEST.xml</sonar.testExecutionReportPaths>
@@ -217,7 +221,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <finalName>mailsink</finalName>
+          <finalName>${project.artifactId}</finalName>
           <executable>true</executable>
           <addResources>true</addResources>
         </configuration>
