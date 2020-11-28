@@ -1,9 +1,11 @@
 name: CI
 
-on: [push]
+on: push
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  REGISTRY: ghcr.io
+  NAME: mailsink
 
 jobs:
   build:
@@ -38,6 +40,44 @@ jobs:
           key: sonar
 
       - name: Check Project
+        if: contains(github.event.ref, 'refs/tags/') != true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw verify jacoco:report sonar:sonar
+        run: ./mvnw verify -Dorganization.name=${{ github.repository_owner }}
+
+      - name: Build jar
+        if: contains(github.event.ref, 'refs/tags/') || contains(github.event.ref, 'develop')
+        run: ./mvnw package -DskipTests -Dorganization.name=${{ github.repository_owner }}
+
+      - name: Build container image
+        if: contains(github.event.ref, 'refs/tags/') || contains(github.event.ref, 'develop')
+        run: ./mvnw package jib:dockerBuild -DskipTests -Dorganization.name=${{ github.repository_owner }}
+
+      - name: Login to Registry
+        if: contains(github.event.ref, 'refs/tags/') || contains(github.event.ref, 'develop')
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Release Project
+        if: contains(github.event.ref, 'refs/tags/')
+        uses: ksokol/github-release-action@v2
+        with:
+          tag_name: ${{ github.event.ref }}
+          release_name: ${{ github.event.ref }}
+          asset_glob: target/$NAME.jar
+
+      - name: Push latest image to registry
+        if: contains(github.event.ref, 'develop')
+        run: |
+          docker tag ${{ github.repository_owner }}/$NAME $REGISTRY/${{ github.repository_owner }}/$NAME:latest
+          docker push $REGISTRY/${{ github.repository_owner }}/$NAME:latest
+
+      - name: Push tagged image to registry
+        if: contains(github.event.ref, 'refs/tags/')
+        run: |
+          VERSION=$(./mvnw -B help:evaluate -Dexpression=project.version -q -DforceStdout | tail -n 1)
+          docker tag ${{ github.repository_owner }}/$NAME $REGISTRY/${{ github.repository_owner }}/$NAME:${VERSION}
+          docker push $REGISTRY/${{ github.repository_owner }}/$NAME:${VERSION}

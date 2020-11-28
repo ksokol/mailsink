@@ -332,6 +332,26 @@
           <suppressionFile>owasp/cve_suppress.xml</suppressionFile>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>2.6.0</version>
+        <configuration>
+          <from>
+            <image>openjdk:11-jre-slim</image>
+          </from>
+          <to>
+            <image>${project.organization.name}/${project.artifactId}</image>
+          </to>
+          <container>
+            <ports>
+              <port>2500</port>
+              <port>2525</port>
+            </ports>
+            <format>OCI</format>
+          </container>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
