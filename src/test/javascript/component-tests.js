@@ -130,8 +130,9 @@ describe('src/test/javascript/component-tests.js', function () {
     var scope, element;
     var messageHtml = componentMock('messageHtml');
     var messageHtmlQuery = componentMock('messageHtmlQuery');
+    var attachmentsPanel = componentMock('attachmentsPanel');
 
-    beforeEach(angular.mock.module('mailsinkApp', 'htmlTemplates', messageHtml, messageHtmlQuery));
+    beforeEach(angular.mock.module('mailsinkApp', 'htmlTemplates', messageHtml, messageHtmlQuery, attachmentsPanel));
 
     beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
       scope = $rootScope.$new();

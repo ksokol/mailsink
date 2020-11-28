@@ -47,7 +47,7 @@
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
     <mime4j.version>0.8.0</mime4j.version>
-    <angular.version>1.6.5</angular.version>
+    <angular.version>1.8.0</angular.version>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>${project.organization.name}-github</sonar.organization>
     <sonar.sources>src/main</sonar.sources>
@@ -120,11 +120,6 @@
 
     <dependency>
       <groupId>org.webjars.bower</groupId>
-      <artifactId>angular</artifactId>
-      <version>${angular.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
       <artifactId>angular-sanitize</artifactId>
       <version>${angular.version}</version>
     </dependency>
@@ -137,6 +132,12 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-ui-bootstrap-bower</artifactId>
       <version>2.5.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.webjars.bower</groupId>
+          <artifactId>angular</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
@@ -157,6 +158,12 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-clipboard</artifactId>
       <version>1.6.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.webjars.bower</groupId>
+          <artifactId>angular</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
@@ -167,6 +174,12 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-highlightjs</artifactId>
       <version>0.7.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.webjars.bower</groupId>
+          <artifactId>angular</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -208,7 +221,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-mocks</artifactId>
       <version>${angular.version}</version>
       <scope>test</scope>
