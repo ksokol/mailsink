@@ -139,8 +139,6 @@ describe('src/test/javascript/controller-tests.js', function () {
 
       var httpBackend, httpCallChain;
 
-      var stompService = {};
-
       var aMail = {
         'content': {
           'messageId': '<68508964.31.1477845062277@localhost>',
@@ -173,15 +171,26 @@ describe('src/test/javascript/controller-tests.js', function () {
         }
       };
 
+      var sourceUrl;
+      var sourceInstance;
+
+      beforeEach(function () {
+        sourceInstance = {
+          onmessage: null
+        };
+
+        window.ReconnectingEventSource = function (url) {
+          sourceUrl = url;
+          return sourceInstance;
+        }
+      });
+
       beforeEach(module('mailsinkApp'));
 
-      beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, _stompService_, _alertService_) {
+      beforeEach(inject(function ($rootScope, $controller, _$httpBackend_, _alertService_) {
         scope = $rootScope.$new();
         httpBackend = _$httpBackend_;
         rootScope = $rootScope;
-
-        stompService = _stompService_;
-        spyOn(stompService, 'subscribe');
 
         alertService = _alertService_;
         spyOn(alertService, 'alert');
@@ -209,19 +218,20 @@ describe('src/test/javascript/controller-tests.js', function () {
         expect(scope.mails).toEqual([{attr: 'refreshed mails'}]);
       });
 
-      it('should refresh mails when websocket message received', function () {
+      it('should refresh mails when message arrived', function () {
         httpCallChain.respond(200, {_embedded: {mails: [{attr: 'triggered by websocket message'}]}});
-        stompService.subscribe.calls.argsFor(0)[1]();
+        sourceInstance.onmessage();
+
         scope.$digest();
         httpBackend.flush();
 
         expect(scope.mails).toEqual([{attr: 'triggered by websocket message'}]);
       });
 
-      it('should subscribe to proper topic', function () {
+      it('should subscribe to proper stream url', function () {
         httpBackend.flush();
 
-        expect(stompService.subscribe).toHaveBeenCalledWith('incoming-mail', jasmine.any(Function));
+        expect(sourceUrl).toEqual('mails/stream');
       });
 
       it('should forward error response to alertService', function () {

@@ -5,20 +5,9 @@ var app = angular.module('mailsinkApp',
     'ui.bootstrap.modal',
     'ui.bootstrap.tabs',
     'ui.bootstrap.dropdown',
-    'luegg.directives',
     'angular-clipboard',
     'hljs'
   ]);
-
-app.constant('TOPIC_PREFIX', '/topic');
-
-app.factory('WEB_SOCKET_ENDPOINT', function ($window) {
-  return 'ws://' + $window.location.hostname + ':' + $window.location.port + '/ws/websocket';
-});
-
-app.factory('stompFactory', function () {
-  return Stomp;
-});
 
 app.service('alertService', ['$rootScope', function ($rootScope) {
 
@@ -56,50 +45,48 @@ app.directive('alertMessage', ['$rootScope', function ($rootScope) {
   };
 }]);
 
-app.controller('MailCtrl', ['$scope', '$rootScope', '$http', '$uibModal', 'stompService', 'alertService',
-  function ($scope, $rootScope, $http, $modal, stompService, alertService) {
+app.controller('MailCtrl', function($scope, $rootScope, $http, $uibModal, alertService) {
 
-    $scope.mails = [];
+  $scope.mails = [];
 
-    var fetch = function () {
-      $http({
-        method: 'GET',
-        url: 'mails/search/findAllOrderByCreatedAtDesc'
-      }).then(function successCallback(response) {
-        $scope.mails = response.data._embedded.mails;
-      }).catch(alertService.alert);
-    };
+  const fetch = function() {
+    $http({
+      method: 'GET',
+      url: 'mails/search/findAllOrderByCreatedAtDesc'
+    }).then(function(response) {
+      $scope.mails = response.data._embedded.mails;
+    }).catch(alertService.alert);
+  };
 
-    stompService.subscribe('incoming-mail', fetch);
+  const eventSource = new ReconnectingEventSource('mails/stream');
+  eventSource.onmessage = fetch;
 
-    fetch();
+  fetch();
 
-    $rootScope.$on('refresh', function () {
-      fetch();
+  $rootScope.$on('refresh', fetch);
+
+  $scope.click = function(mail) {
+    const modalInstance = $uibModal.open({
+      templateUrl: 'mail-modal.html',
+      controller: function($scope) {
+        $scope.mail = mail;
+        $scope.close = function() {
+          modalInstance.close();
+        };
+      }
     });
+  };
 
-    $scope.click = function (mail) {
-      var modalInstance = $modal.open({
-        templateUrl: 'mail-modal.html',
-        controller: function ($scope) {
-          $scope.mail = mail;
-          $scope.close = function () {
-            modalInstance.close();
-          };
-        }
-      });
-    };
-
-    $scope.removeMail = function (event, mail) {
-      event.stopPropagation();
-      $http({
-        method: 'DELETE',
-        url: mail._links.self.href
-      }).then(function () {
-        $scope.mails.splice($scope.mails.indexOf(mail), 1);
-      }).catch(alertService.alert);
-    }
-  }]);
+  $scope.removeMail = function(event, mail) {
+    event.stopPropagation();
+    $http({
+      method: 'DELETE',
+      url: mail._links.self.href
+    }).then(function() {
+      $scope.mails.splice($scope.mails.indexOf(mail), 1);
+    }).catch(alertService.alert);
+  }
+});
 
 app.controller('NavigationCtrl', ['$scope', '$rootScope', '$http', 'alertService', function ($scope, $rootScope, $http, alertService) {
 
@@ -245,81 +232,17 @@ app.component('messageSource', {
 
 app.component('smtpLog', {
   templateUrl: 'smtp-log.html',
-  controller: function ($scope, $element, stompService) {
-    var buffer = new CBuffer(50);
+  controller: function($scope) {
+    const eventSource = new ReconnectingEventSource('smtp/stream');
+    const buffer = new CBuffer(50);
+    $scope.logs = [];
 
-    stompService.subscribe('smtp-log', function (logLine) {
-      buffer.push(logLine);
-    });
-
-    $scope.emptyLogs = function () {
-      return buffer.toArray().length === 0;
-    };
-
-    $scope.logs = function () {
-      return buffer.toArray();
+    eventSource.onmessage = function(event) {
+      buffer.push(JSON.parse(event.data));
+      $scope.logs = buffer.toArray().reverse();
+      $scope.$digest();
     };
   }
-});
-
-app.service('stompService', function (WEB_SOCKET_ENDPOINT, TOPIC_PREFIX, $q, $timeout, $log, stompFactory) {
-  var deferred = $q.defer();
-  var listeners = [];
-  var stompClient;
-
-  var connect = function () {
-    deferred = $q.defer();
-    stompClient = stompFactory.client(WEB_SOCKET_ENDPOINT);
-    stompClient.debug = function () { /* suppress debug logs */
-    };
-
-    $log.log('connecting....');
-    stompClient.connect('', '', onConnect, onError);
-
-    angular.forEach(listeners, function (listener) {
-      subscribeInternal(listener);
-    });
-  };
-
-  var onConnect = function () {
-    $log.log('connected');
-    deferred.resolve();
-  };
-
-  var onError = function () {
-    var timeout = 1000;
-    $log.log('connection lost. Trying to reconnect in ' + timeout + ' milliseconds');
-    $timeout(connect, timeout, false);
-  };
-
-  var subscribeInternal = function (listener) {
-    deferred.promise.then(function () {
-      stompClient.subscribe(listener.destination, function (msg) {
-        angular.forEach(listeners, function (listener) {
-          if (listener.destination === msg.headers.destination) {
-            listener.listenFunction(JSON.parse(msg.body));
-          }
-        });
-      });
-    });
-  };
-
-  var addListener = function (topicName, fn) {
-    var listener = {
-      destination: TOPIC_PREFIX + '/' + topicName,
-      listenFunction: fn
-    };
-    listeners.push(listener);
-    return listener;
-  };
-
-  connect();
-
-  return {
-    subscribe: function (topicName, fn) {
-      subscribeInternal(addListener(topicName, fn));
-    }
-  };
 });
 
 app.directive('toggleSmtpServer', ['$http', 'alertService', function ($http, alertService) {

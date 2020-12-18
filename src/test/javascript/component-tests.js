@@ -29,6 +29,21 @@ function mock(name) {
 }
 
 describe('src/test/javascript/component-tests.js', function () {
+
+  var sourceUrl;
+  var sourceInstance;
+
+  beforeEach(function () {
+    sourceInstance = {
+      onmessage: null
+    };
+
+    window.ReconnectingEventSource = function (url) {
+      sourceUrl = url;
+      return sourceInstance;
+    }
+  });
+
   describe('Component: Attachments', function () {
 
     var response = {
@@ -272,20 +287,12 @@ describe('src/test/javascript/component-tests.js', function () {
   describe('Component: smtpLog', function () {
 
     var scope, element, httpBackend;
-    var stompService = {};
-
-    var push = function (data) {
-      stompService.subscribe.calls.argsFor(0)[1](data);
-    };
 
     beforeEach(module('mailsinkApp', 'htmlTemplates'));
 
-    beforeEach(inject(function ($compile, $rootScope, $httpBackend, _stompService_) {
+    beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
       scope = $rootScope.$new();
       httpBackend = $httpBackend;
-
-      stompService = _stompService_;
-      spyOn(stompService, 'subscribe');
 
       httpBackend.whenGET('smtp-log.html').respond('smtp-log.html');
       element = $compile('<smtp-log></smtp-log>')(scope);
@@ -293,12 +300,11 @@ describe('src/test/javascript/component-tests.js', function () {
     }));
 
     it('should initialize empty buffer', function () {
-      expect(element.isolateScope().emptyLogs()).toEqual(true);
-      expect(element.isolateScope().logs()).toEqual([]);
+      expect(element.isolateScope().logs).toEqual([]);
     });
 
     it('should show smtp log event', function () {
-      push({number: 1, line: 'line1', time: 'time1'});
+      sourceInstance.onmessage({data: JSON.stringify({number: 1, line: 'line1', time: 'time1'})});
       scope.$digest();
 
       expect(element[0].querySelector('.intellij-default-line-number-text').innerText).toEqual('1');
@@ -307,16 +313,15 @@ describe('src/test/javascript/component-tests.js', function () {
     });
 
     it('should show multiple log events', function () {
-      push('expected data1');
-      push('expected data2');
+      sourceInstance.onmessage({data: JSON.stringify('expected data1')});
+      sourceInstance.onmessage({data: JSON.stringify('expected data2')});
 
-      expect(element.isolateScope().emptyLogs()).toEqual(false);
-      expect(element.isolateScope().logs()).toEqual(['expected data1', 'expected data2']);
+      expect(element.isolateScope().logs).toEqual(['expected data2', 'expected data1']);
     });
 
     it('should recycle buffer when more than fifty log events received', function () {
       for (var i = 0; i <= 51; i++) {
-        push(i);
+        sourceInstance.onmessage({data: JSON.stringify(i)});
       }
 
       var expected = [];
@@ -324,15 +329,11 @@ describe('src/test/javascript/component-tests.js', function () {
         expected.push(j);
       }
 
-      expect(element.isolateScope().logs()).toEqual(expected);
+      expect(element.isolateScope().logs).toEqual(expected.reverse());
     });
 
-    it('should connect to proper broker and subscribe to proper topic', function () {
-      expect(stompService.subscribe).toHaveBeenCalledWith('smtp-log', jasmine.any(Function));
-    });
-
-    it('should scroll to bottom when new smtp log event received', function () {
-      expect(element[0].querySelector('.smtp-log').hasAttribute('scroll-glue')).toBe(true);
+    it('should connect to proper smtp log stream', function () {
+      expect(sourceUrl).toEqual('smtp/stream');
     });
   });
 
