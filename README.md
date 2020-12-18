@@ -24,5 +24,7 @@ Mailsink is a simple SMTP server based on [SubEtha](https://github.com/voodoodyn
 
 ## Docker
 
-Available on Docker Hub [`ksokol/mailsink`](https://hub.docker.com/r/ksokol/mailsink/tags/).
-Start Mailsink in a container with `docker run -p 2500:2500 -p 2525:2525 -t ksokol/mailsink`.
+Available on Github Container Registry [`ghcr.io/ksokol/mailsink`](https://github.com/users/ksokol/packages/container/package/mailsink).
+
+Start Mailsink with `docker run -p 2500:2500 -p 2525:2525 -t ghcr.io/ksokol/mailsink` or 
+`docker run -p 2525:2525 -e MAILSINK_EXAMPLE_MAILS=false -t ghcr.io/ksokol/mailsink` if you want to skip example mails loaded on application startup.
