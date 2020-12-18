@@ -2,20 +2,20 @@ package com.github.ksokol.mailsink.entity;
 
 import com.github.ksokol.mailsink.controller.MailController;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * @author Kamill Sokol
  */
 @Component
-public class MailResourceProcessor implements ResourceProcessor<Resource<Mail>> {
+public class MailResourceProcessor implements RepresentationModelProcessor<EntityModel<Mail>> {
 
     @Override
-    public Resource<Mail> process(Resource<Mail> resource) {
+    public EntityModel<Mail> process(EntityModel<Mail> resource) {
         Mail mail = resource.getContent();
 
         resource.add(linkTo(MailController.class)

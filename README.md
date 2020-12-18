@@ -1,4 +1,4 @@
-# Mailsink [![Build Status](https://api.travis-ci.org/ksokol/mailsink.png?branch=master)](https://travis-ci.org/ksokol/mailsink) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=com.github.ksokol:mailsink)](https://sonarqube.com/dashboard/index/com.github.ksokol:mailsink) [![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=com.github.ksokol:mailsink&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/com.github.ksokol:mailsink) 
+# Mailsink [![Build Status](https://github.com/ksokol/mailsink/workflows/CI/badge.svg)](https://github.com/ksokol/mailsink) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.github.ksokol%3Amailsink&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.github.ksokol%3Amailsink)
 
 Mailsink is a simple SMTP server based on [SubEtha](https://github.com/voodoodyne/subetha).
 
@@ -24,5 +24,7 @@ Mailsink is a simple SMTP server based on [SubEtha](https://github.com/voodoodyn
 
 ## Docker
 
-Available on Docker Hub [`ksokol/mailsink`](https://hub.docker.com/r/ksokol/mailsink/tags/).
-Start Mailsink in a container with `docker run -p 2500:2500 -p 2525:2525 -t ksokol/mailsink`.
+Available on Github Container Registry [`ghcr.io/ksokol/mailsink`](https://github.com/users/ksokol/packages/container/package/mailsink).
+
+Start Mailsink with `docker run -p 2500:2500 -p 2525:2525 -t ghcr.io/ksokol/mailsink` or 
+`docker run -p 2525:2525 -e MAILSINK_EXAMPLE_MAILS=false -t ghcr.io/ksokol/mailsink` if you want to skip example mails loaded on application startup.

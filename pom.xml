@@ -1,49 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.ksokol</groupId>
   <artifactId>mailsink</artifactId>
   <name>mailsink</name>
   <description>Mailsink is a simple SMTP server that consumes all your emails and displays it in a web ui.</description>
-  <url>https://github.com/ksokol/mailsink</url>
+  <url>https://github.com/${project.organization.name}/mailsink</url>
   <inceptionYear>2016</inceptionYear>
 
-  <version>0.5.0</version>
+  <version>0.6.0</version>
   <packaging>jar</packaging>
 
+  <organization>
+    <name>ksokol</name>
+  </organization>
+
   <scm>
-    <connection>scm:git:git@github.com:ksokol/mailsink.git</connection>
-    <developerConnection>scm:git:git@github.com:ksokol/mailsink.git</developerConnection>
-    <url>https://github.com/ksokol/mailsink</url>
+    <connection>scm:git:git@github.com:${project.organization.name}/mailsink.git</connection>
+    <developerConnection>scm:git:git@github.com:${project.organization.name}/mailsink.git</developerConnection>
+    <url>https://github.com/${project.organization.name}/mailsink</url>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
     <system>github</system>
-    <url>https://github.com/ksokol/mailsink/issues</url>
+    <url>https://github.com/${project.organization.name}/mailsink/issues</url>
   </issueManagement>
 
   <ciManagement>
-    <system>Travis</system>
-    <url>https://travis-ci.org/ksokol/mailsink</url>
-    <notifiers />
+    <system>Gitub Actions</system>
+    <url>https://github.com/${project.organization.name}/mailsink/actions</url>
+    <notifiers/>
   </ciManagement>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.4.1.RELEASE</version>
-    <relativePath />
+    <version>2.4.0</version>
   </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
     <mime4j.version>0.8.0</mime4j.version>
-    <angular.version>1.6.5</angular.version>
-    <sonar.host.url>https://sonarqube.com</sonar.host.url>
+    <angular.version>1.8.0</angular.version>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>${project.organization.name}-github</sonar.organization>
     <sonar.sources>src/main</sonar.sources>
     <sonar.tests>src/test</sonar.tests>
     <sonar.testExecutionReportPaths>target/karma-reports/TEST.xml</sonar.testExecutionReportPaths>
@@ -53,7 +59,7 @@
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-websocket</artifactId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -85,7 +91,7 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
-      <version>1.14</version>
+      <version>1.23</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -95,11 +101,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.logback-extensions</groupId>
-      <artifactId>logback-ext-spring</artifactId>
-      <version>0.1.4</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.htmlcleaner</groupId>
@@ -118,10 +119,12 @@
     </dependency>
 
     <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>angular</artifactId>
-      <version>${angular.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
+
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-sanitize</artifactId>
@@ -136,16 +139,12 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-ui-bootstrap-bower</artifactId>
       <version>2.5.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>stomp-websocket</artifactId>
-      <version>2.3.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>angular-scroll-glue</artifactId>
-      <version>2.2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.webjars.bower</groupId>
+          <artifactId>angular</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.webjars.npm</groupId>
@@ -156,6 +155,12 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-clipboard</artifactId>
       <version>1.6.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.webjars.bower</groupId>
+          <artifactId>angular</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
@@ -166,21 +171,27 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-highlightjs</artifactId>
       <version>0.7.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.webjars.bower</groupId>
+          <artifactId>angular</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>github-com-webcomponents-shadydom</artifactId>
-      <version>v1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery</artifactId>
-      <version>1.12.4</version>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>reconnecting-eventsource</artifactId>
+      <version>1.1.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -201,12 +212,23 @@
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <version>3.0.0</version>
+      <version>4.0.3</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>angular-mocks</artifactId>
       <version>${angular.version}</version>
       <scope>test</scope>
@@ -219,7 +241,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <finalName>mailsink</finalName>
+          <finalName>${project.artifactId}</finalName>
           <executable>true</executable>
           <addResources>true</addResources>
         </configuration>
@@ -257,8 +279,8 @@
             </goals>
             <phase>validate</phase>
             <configuration>
-              <nodeVersion>v4.4.5</nodeVersion>
-              <npmVersion>3.9.5</npmVersion>
+              <nodeVersion>v12.13.1</nodeVersion>
+              <npmVersion>6.12.1</npmVersion>
             </configuration>
           </execution>
           <execution>
@@ -282,7 +304,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.7.201606060606</version>
+        <version>0.8.5</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
@@ -306,7 +328,7 @@
               <providerSelection>2.0</providerSelection>
               <sources>
                 <fileset>
-                  <directory>${pom.basedir}/src/test/groovy</directory>
+                  <directory>${project.basedir}/src/test/groovy</directory>
                   <includes>
                     <include>**/*.groovy</include>
                   </includes>
@@ -317,13 +339,37 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>external.atlassian.jgitflow</groupId>
-        <artifactId>jgitflow-maven-plugin</artifactId>
-        <version>1.0-m5.1</version>
+        <groupId>com.amashchenko.maven.plugin</groupId>
+        <artifactId>gitflow-maven-plugin</artifactId>
+        <version>1.15.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>5.2.4</version>
         <configuration>
-          <pushFeatures>true</pushFeatures>
-          <pushReleases>true</pushReleases>
-          <noReleaseBuild>true</noReleaseBuild>
+          <failBuildOnCVSS>7</failBuildOnCVSS>
+          <suppressionFile>owasp/cve_suppress.xml</suppressionFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>2.6.0</version>
+        <configuration>
+          <from>
+            <image>openjdk:11-jre-slim</image>
+          </from>
+          <to>
+            <image>${project.organization.name}/${project.artifactId}</image>
+          </to>
+          <container>
+            <ports>
+              <port>2500</port>
+              <port>2525</port>
+            </ports>
+            <format>OCI</format>
+          </container>
         </configuration>
       </plugin>
     </plugins>

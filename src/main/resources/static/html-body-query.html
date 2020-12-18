@@ -1,43 +1,43 @@
 <div class="row">
-    <div class="col-xs-12">
-        <form class="form-inline">
-            <div class="form-group">
-                <div class="input-group">
-                    <input id="search"
-                           class="form-control"
-                           autocomplete="off"
-                           placeholder="XPath expression"
-                           ng-model="$ctrl.xpath">
+  <div class="col-xs-12">
+    <form class="form-inline">
+      <div class="form-group">
+        <div class="input-group">
+          <input id="search"
+                 class="form-control"
+                 autocomplete="off"
+                 placeholder="XPath expression"
+                 ng-model="$ctrl.xpath">
 
-                    <div class="input-group-btn" uib-dropdown>
-                        <button class="btn btn-default" ng-click="$ctrl.onQuery()">query</button>
+          <div class="input-group-btn" uib-dropdown>
+            <button class="btn btn-default" ng-click="$ctrl.onQuery()">query</button>
 
-                        <button type="button" class="btn btn-default" uib-dropdown-toggle>
-                            <span class="caret"></span>
-                            <span class="sr-only"></span>
-                        </button>
+            <button type="button" class="btn btn-default" uib-dropdown-toggle>
+              <span class="caret"></span>
+              <span class="sr-only"></span>
+            </button>
 
-                        <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="split-button">
-                            <li>
-                                <a ng-click="$ctrl.copyToClipboardAsCurl()">copy to clipboard (cURL)</a>
-                            </li>
-                            <li>
-                                <a ng-click="$ctrl.toggleSource()">{{$ctrl.showHtmlSource ? 'show xpath result' : 'show HTML source'}}</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+            <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="split-button">
+              <li>
+                <a ng-click="$ctrl.copyToClipboardAsCurl()">copy to clipboard (cURL)</a>
+              </li>
+              <li>
+                <a ng-click="$ctrl.toggleSource()">{{$ctrl.showHtmlSource ? 'show xpath result' : 'show HTML source'}}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 <hr>
 
 <div class="alert alert-dismissible" ng-class="'alert-' + $ctrl.errorType" ng-if="$ctrl.errorMessage">
-    <strong>Warning!</strong> {{$ctrl.errorMessage}}
+  <strong>Warning!</strong> {{$ctrl.errorMessage}}
 </div>
 
-<div ng-if="!$ctrl.errorMessage && $ctrl.showHtmlSource" hljs hljs-source="$ctrl.mail.content.html"></div>
+<div ng-if="!$ctrl.errorMessage && $ctrl.showHtmlSource" hljs hljs-source="$ctrl.mail.html"></div>
 
 <div ng-if="!$ctrl.errorMessage && !$ctrl.showHtmlSource" hljs hljs-source="$ctrl.queryResult"></div>

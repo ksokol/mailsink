@@ -1,39 +1,41 @@
 <div>
-    <!-- remove focus on first link in mail body -->
-    <button style="position:fixed; top:10px; left:10px; opacity:0"></button>
-    <div class="modal-body">
-        <table class="table table-condensed">
-            <tbody>
-            <tr>
-                <td><strong></strong></td>
-                <td><message-source class="pull-right" mail="mail"></message-source></td>
-            </tr>
-            <tr>
-                <td><strong>Message ID</strong></td>
-                <td>{{::mail.content.messageId}}</td>
-            </tr>
-            <tr>
-                <td><strong>Sender</strong></td>
-                <td>{{::mail.content.sender}}</td>
-            </tr>
-            <tr>
-                <td><strong>Recipient</strong></td>
-                <td>{{::mail.content.recipient}}</td>
-            </tr>
-            <tr>
-                <td><strong>Subject</strong></td>
-                <td>{{::mail.content.subject}}</td>
-            </tr>
-            <tr>
-                <td><strong>Date</strong></td>
-                <td>{{::mail.content.createdAt}}</td>
-            </tr>
-            </tbody>
-        </table>
+  <!-- remove focus on first link in mail body -->
+  <button style="position:fixed; top:10px; left:10px; opacity:0"></button>
+  <div class="modal-body">
+    <table class="table table-condensed">
+      <tbody>
+      <tr>
+        <td><strong></strong></td>
+        <td>
+          <message-source class="pull-right" mail="mail"></message-source>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Message ID</strong></td>
+        <td>{{::mail.messageId}}</td>
+      </tr>
+      <tr>
+        <td><strong>Sender</strong></td>
+        <td>{{::mail.sender}}</td>
+      </tr>
+      <tr>
+        <td><strong>Recipient</strong></td>
+        <td>{{::mail.recipient}}</td>
+      </tr>
+      <tr>
+        <td><strong>Subject</strong></td>
+        <td>{{::mail.subject}}</td>
+      </tr>
+      <tr>
+        <td><strong>Date</strong></td>
+        <td>{{::mail.createdAt}}</td>
+      </tr>
+      </tbody>
+    </table>
 
-        <mail-body-panel mail="mail"></mail-body-panel>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" ng-click="close()">close</button>
-    </div>
+    <mail-body-panel mail="mail"></mail-body-panel>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" ng-click="close()">close</button>
+  </div>
 </div>

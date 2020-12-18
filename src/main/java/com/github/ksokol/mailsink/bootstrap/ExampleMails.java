@@ -14,38 +14,37 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * @author Kamill Sokol
- */
+@ConditionalOnExampleMailsEnabled
 @Component
 class ExampleMails {
 
-    private static final Logger log = LoggerFactory.getLogger(ExampleMailApplicationRunner.class);
+  private static final Logger log = LoggerFactory.getLogger(ExampleMails.class);
 
-    private static final String FOLDER = "example";
-    private static final String FILE_EXTENSION = ".eml";
+  private static final String FOLDER = "example";
+  private static final String FILE_EXTENSION = ".eml";
 
-    private final InputStreamToMailConverter converter = new InputStreamToMailConverter();
+  private final InputStreamToMailConverter converter = new InputStreamToMailConverter();
 
-    List<Mail> listExampleMails() throws IOException {
-        List<Mail> exampleMails = new ArrayList<>();
+  List<Mail> listExampleMails() throws IOException {
+    List<Mail> exampleMails = new ArrayList<>();
 
-        listEmlFiles().forEach(resource -> {
-            try {
-                log.info("importing example mail {}", resource.getFilename());
-                exampleMails.add(converter.convert(resource.getInputStream()));
-            } catch (Exception exception) {
-                log.warn(exception.getMessage(), exception);
-            }
-        });
+    listEmlFiles().forEach(resource -> {
+      try {
+        log.info("importing example mail {}", resource.getFilename());
+        exampleMails.add(converter.convert(resource.getInputStream()));
+      } catch (Exception exception) {
+        log.warn(exception.getMessage(), exception);
+      }
+    });
 
-        return exampleMails;
-    }
+    return exampleMails;
+  }
 
-    private Stream<Resource> listEmlFiles() throws IOException {
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        return Arrays.stream(resolver.getResources(String.format("/%s/**", FOLDER)))
-                .filter(resource -> resource.getFilename().endsWith(FILE_EXTENSION));
+  private Stream<Resource> listEmlFiles() throws IOException {
+    PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
-    }
+    return Arrays.stream(resolver.getResources(String.format("/%s/**", FOLDER)))
+      .filter(resource -> resource.getFilename() != null)
+      .filter(resource -> resource.getFilename().endsWith(FILE_EXTENSION));
+  }
 }

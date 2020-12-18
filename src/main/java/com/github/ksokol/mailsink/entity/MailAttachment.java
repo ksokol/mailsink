@@ -1,5 +1,7 @@
 package com.github.ksokol.mailsink.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
@@ -8,78 +10,78 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
-/**
- * @author Kamill Sokol
- */
 @Access(AccessType.PROPERTY)
 @Entity
 public class MailAttachment {
 
-    private Long id;
-    private String contentId;
-    private String filename;
-    private String mimeType;
-    private String dispositionType;
-    private byte[] data;
-    private Mail mail;
+  private Long id;
+  private String contentId;
+  private String filename;
+  private String mimeType;
+  private String dispositionType;
+  private byte[] data;
+  private Mail mail;
 
-    @Id
-    @GeneratedValue
-    public Long getId() {
-        return id;
-    }
+  @Id
+  @GeneratedValue
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getContentId() {
-        return contentId;
-    }
+  @JsonIgnore
+  public String getContentId() {
+    return contentId;
+  }
 
-    public void setContentId(String contentId) {
-        this.contentId = contentId;
-    }
+  public void setContentId(String contentId) {
+    this.contentId = contentId;
+  }
 
-    public String getFilename() {
-        return filename;
-    }
+  public String getFilename() {
+    return filename;
+  }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
 
-    public String getMimeType() {
-        return mimeType;
-    }
+  public String getMimeType() {
+    return mimeType;
+  }
 
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
-    }
+  public void setMimeType(String mimeType) {
+    this.mimeType = mimeType;
+  }
 
-    public String getDispositionType() {
-        return dispositionType;
-    }
+  public String getDispositionType() {
+    return dispositionType;
+  }
 
-    public void setDispositionType(String dispositionType) {
-        this.dispositionType = dispositionType;
-    }
+  public void setDispositionType(String dispositionType) {
+    this.dispositionType = dispositionType;
+  }
 
-    @Lob
-    public byte[] getData() {
-        return data;
-    }
+  @JsonIgnore
+  @Lob
+  public byte[] getData() {
+    return data;
+  }
 
-    public void setData(byte[] data) {
-        this.data = data;
-    }
+  public void setData(byte[] data) {
+    this.data = data;
+  }
 
-    @ManyToOne(optional = false)
-    public Mail getMail() {
-        return mail;
-    }
+  @JsonIgnore
+  @ManyToOne(optional = false)
+  public Mail getMail() {
+    return mail;
+  }
 
-    public void setMail(Mail mail) {
-        this.mail = mail;
-    }
+  public void setMail(Mail mail) {
+    this.mail = mail;
+  }
 }
