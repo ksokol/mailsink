@@ -1,6 +1,9 @@
 name: security check
 
-on: [push]
+on:
+  push:
+    branches:
+      - develop
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
